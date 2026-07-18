@@ -182,6 +182,34 @@ def _transfer_manifest(_args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _validate(args: list[str]) -> tuple[int, dict]:
+    from datetime import datetime, timezone
+
+    from .config import FactoryConfig
+    from .gltf_validation import validate_glb
+
+    config = FactoryConfig.load()
+    source = Path(_option(args, "--input"))
+    if "--report" in args:
+        report_path = Path(_option(args, "--report"))
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        report_path = config.reports_root / "runs" / run_id / "gltf-validation.json"
+    report = validate_glb(config, source, report_path)
+    return 0, envelope(
+        "validate",
+        True,
+        "Authoritative GLB passed Khronos validation",
+        {
+            "input": report["input"],
+            "input_sha256": report["input_sha256"],
+            "report_path": str(report_path.resolve(strict=False)),
+            "errors": report["issues"].get("numErrors", 0),
+            "warnings": report["issues"].get("numWarnings", 0),
+        },
+    )
+
+
 def _verify(args: list[str]) -> tuple[int, dict]:
     from .config import FactoryConfig
     from .verification import verify
@@ -223,6 +251,7 @@ def _handlers() -> dict[str, Handler]:
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
+        "validate": _validate,
         "verify": _verify,
         "version": _version,
     }
