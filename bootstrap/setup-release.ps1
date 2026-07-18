@@ -58,15 +58,15 @@ function Get-VerifiedArchive($Name, $Url, $ExpectedHash) {
     return $archive
 }
 
-if (-not (Test-Path -LiteralPath $nodeExe)) {
+if (-not (Test-Path -LiteralPath $nodeExe) -or -not (Test-Path -LiteralPath $npmCmd)) {
     $nodeArchive = Get-VerifiedArchive 'node-win-x64.zip' $manifest.node.url $manifest.node.sha256
     & tar.exe -xf $nodeArchive -C $nodeDir
     if ($LASTEXITCODE -ne 0) {
         throw "Node archive extraction failed: $LASTEXITCODE"
     }
 }
-if (-not (Test-Path -LiteralPath $nodeExe)) {
-    throw "Node executable missing after verified extraction: $nodeExe"
+if (-not (Test-Path -LiteralPath $nodeExe) -or -not (Test-Path -LiteralPath $npmCmd)) {
+    throw "Node or npm executable missing after verified extraction: $nodeHome"
 }
 
 if (-not (Test-Path -LiteralPath $gltfpackExe)) {

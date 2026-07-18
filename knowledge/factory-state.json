@@ -2,7 +2,7 @@
   "capabilities": {
     "armorpaint": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\armorpaint\\ArmorPaint.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\armorpaint\\ArmorPaint.exe",
       "status": "unavailable",
       "version": null
     },
@@ -26,77 +26,77 @@
     },
     "comfyui": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\comfyui\\main.py",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\comfyui\\main.py",
       "status": "unavailable",
       "version": null
     },
     "gltf_validator": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\release-node\\node_modules\\gltf-validator\\package.json",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\gltf-validator\\package.json",
       "status": "available",
       "version": "2.0.0-dev.3.10"
     },
     "gltfpack": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\gltfpack\\gltfpack.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\gltfpack\\gltfpack.exe",
       "status": "available",
       "version": "1.2"
     },
     "material_maker": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\material-maker\\material_maker.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\material-maker\\material_maker.exe",
       "status": "unavailable",
       "version": null
     },
     "model_root": {
-      "detail": "free_bytes=797535969280",
+      "detail": "free_bytes=797592416256",
       "path": "G:\\LLMs",
       "status": "available",
       "version": null
     },
     "node": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\node\\node-v24.17.0-win-x64\\node.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\node\\node-v24.17.0-win-x64\\node.exe",
       "status": "available",
       "version": "v24.17.0"
     },
     "playwright_core": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\release-node\\node_modules\\playwright-core\\package.json",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\playwright-core\\package.json",
       "status": "available",
       "version": "1.61.1"
     },
     "python": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\python\\cpython-3.12.11-windows-x86_64-none\\python.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\python\\cpython-3.12.11-windows-x86_64-none\\python.exe",
       "status": "available",
       "version": "Python 3.12.11"
     },
     "three": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\release-node\\node_modules\\three\\package.json",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\three\\package.json",
       "status": "available",
       "version": "0.185.1"
     },
     "threejs_viewer": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\tools\\threejs-viewer\\package.json",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\tools\\threejs-viewer\\package.json",
       "status": "available",
       "version": null
     },
     "uv": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\.tooling\\uv\\uv.exe",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\uv\\uv.exe",
       "status": "available",
       "version": "uv 0.11.29 (901092ee1 2026-07-15 x86_64-pc-windows-msvc)"
     }
   },
-  "checked_at": "2026-07-18T22:16:25.093016+00:00",
+  "checked_at": "2026-07-18T22:37:32.918849+00:00",
   "last_verification": {
-    "checked_at": "2026-07-18T22:17:33.543860+00:00",
-    "git_commit": "3b962ac3a58bcab30d8005c7ad8c5198abb93d74",
+    "checked_at": "2026-07-18T22:37:55.759954+00:00",
+    "git_commit": "0e4e16524a0a1edc1b42a04f60ff89c5e35bf478",
     "ok": true,
-    "report_path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\codex-release-pipeline\\reports\\runs\\20260718T221733.543860Z\\phase-2-verification.json"
+    "report_path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\reports\\runs\\20260718T223755.759954Z\\phase-2-verification.json"
   },
   "schema_version": 1
 }

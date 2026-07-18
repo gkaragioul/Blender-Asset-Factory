@@ -42,6 +42,12 @@ class ReleaseBootstrapTest(unittest.TestCase):
         self.assertEqual(manifest["gltfpack"]["license"], "MIT")
         self.assertEqual(manifest["gltf_validator"]["license"], "Apache-2.0")
 
+    def test_partial_node_extraction_requires_npm_before_it_is_complete(self):
+        installer = (ROOT / "bootstrap" / "setup-release.ps1").read_text(encoding="utf-8")
+        extraction_guard = installer.split("$nodeArchive =", 1)[0].rsplit("if (", 1)[-1]
+        self.assertIn("$nodeExe", extraction_guard)
+        self.assertIn("$npmCmd", extraction_guard)
+
 
 if __name__ == "__main__":
     unittest.main()
