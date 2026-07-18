@@ -260,6 +260,29 @@ def _preview(args: list[str]) -> tuple[int, dict]:
             "report_path": str(report_path.resolve(strict=False)),
         },
     )
+
+
+def _report(args: list[str]) -> tuple[int, dict]:
+    from datetime import datetime, timezone
+
+    from .config import FactoryConfig
+    from .contact_sheet import build_contact_sheet
+
+    config = FactoryConfig.load()
+    manifest = Path(_option(args, "--manifest"))
+    output = Path(_option(args, "--output"))
+    if "--qa-report" in args:
+        report_path = Path(_option(args, "--qa-report"))
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        report_path = config.reports_root / "runs" / run_id / "contact-sheet.json"
+    report = build_contact_sheet(config, manifest, output, report_path)
+    return 0, envelope(
+        "report",
+        True,
+        "Deterministic QA contact sheet created",
+        {"output": report["output"], "output_sha256": report["output_sha256"], "view_ids": report["view_ids"], "report_path": str(report_path.resolve(strict=False))},
+    )
     return 0, envelope(
         "optimize",
         True,
@@ -314,6 +337,7 @@ def _handlers() -> dict[str, Handler]:
         "learn": _learn,
         "optimize": _optimize,
         "preview": _preview,
+        "report": _report,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
