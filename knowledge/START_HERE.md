@@ -15,7 +15,7 @@ Run `factory.ps1 doctor` before mutations.
 
 - armorpaint: `unavailable`
 - blender: `available`
-- bridge: `available`
+- bridge: `unavailable`
 - comfyui: `unavailable`
 - gltf_validator: `unavailable`
 - gltfpack: `unavailable`
