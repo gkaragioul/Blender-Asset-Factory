@@ -1,0 +1,19 @@
+{
+  "active_asset_preserved": "ps1_ww2_pump_shotgun_01",
+  "candidate_lessons": [],
+  "failures_and_recoveries": [
+    "PowerShell Expand-Archive was too slow for portable Node; replaced it with tar extraction.",
+    "The first Three.js preview omitted three.core.js; a browser regression now proves the complete staged module graph.",
+    "An invalid hand-copied PNG fixture triggered a texture decode error; the fixture now constructs CRC-valid PNG bytes deterministically."
+  ],
+  "next_action": "finish_task_3_atlas_uv_wear",
+  "project_id": "factory-release-pipeline-phase-2",
+  "status": "active",
+  "successful_techniques": [
+    "Verify downloadable archives before extraction",
+    "Use gltfpack -vtf and numeric UV-bound comparison for pixel atlases",
+    "Capture browser phase evidence and treat console errors as release failures",
+    "Publish a unique staged package only after completion sentinel creation"
+  ],
+  "summary": "Installed and pinned the local release toolchain on G:, then implemented strict GLB validation, UV-stable gltfpack derivatives, real Three.js runtime renders, semantic contact sheets, and immutable transactional publication."
+}

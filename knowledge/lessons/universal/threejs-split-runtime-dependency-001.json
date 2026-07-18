@@ -1,0 +1,16 @@
+{
+  "evidence": [
+    {
+      "reference": "tests/test_runtime_preview.py::RuntimePreviewTest::test_real_threejs_viewer_loads_and_captures_triangle",
+      "type": "regression"
+    }
+  ],
+  "lesson_id": "threejs-split-runtime-dependency-001",
+  "scope": "universal",
+  "source_projects": [
+    "factory-release-pipeline-phase-2"
+  ],
+  "statement": "A browser preview must stage every local module imported by the pinned Three.js build; Three.js 0.185.1 requires three.core.js beside three.module.js.",
+  "status": "promoted",
+  "title": "Stage the complete pinned Three.js module graph"
+}

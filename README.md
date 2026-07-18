@@ -28,7 +28,7 @@ Specifications control output paths and normally publish beneath `assets`.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\bootstrap\setup.ps1
 ```
 
-The bootstrap pins uv and Python beneath `.tooling` on `G:` and does not modify the user `PATH`.
+The bootstrap pins uv, Python, portable Node.js, Khronos glTF Validator, native gltfpack, Three.js, and Playwright Core beneath `.tooling` on `G:`. It uses an installed Chrome or Edge executable for loopback-only runtime QA and does not modify the user `PATH`.
 
 ## Generate the original reference crate
 
@@ -57,10 +57,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 resume --json
 powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 verify --json
 ```
 
+## Release pipeline
+
+The authoritative GLB is never optimized in place. These commands validate it, create a separate derivative, render runtime evidence, and assemble QA reporting:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 validate --input <authoritative.glb> --report <validation.json> --json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 optimize --input <authoritative.glb> --output <optimized.glb> --report <optimization.json> --pixel-atlas --json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 preview --input <asset.glb> --output <engine.png> --report <preview.json> --json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 report --manifest <views.json> --output <contact-sheet.png> --qa-report <report.json> --json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 release --job <release-job.json> --json
+```
+
+`release` publishes to `assets/releases/<asset-id>/<version>` only after every mandatory gate succeeds. Published versions are immutable; failed runs retain structured evidence beneath `reports/runs` and publish nothing.
+
 ## Durable memory
 
 Start new conversations with [knowledge/START_HERE.md](knowledge/START_HERE.md). Machine-readable active state is in [knowledge/active-project.json](knowledge/active-project.json). The repository—not chat history—is authoritative.
 
 ## Architecture
 
-See [the approved factory design](docs/superpowers/specs/2026-07-18-style-neutral-self-improving-asset-factory-design.md) and [the Phase 1 plan](docs/superpowers/plans/2026-07-18-foundation-and-memory.md).
+See [the approved factory design](docs/superpowers/specs/2026-07-18-style-neutral-self-improving-asset-factory-design.md), [the Phase 1 plan](docs/superpowers/plans/2026-07-18-foundation-and-memory.md), and [the Phase 2 release-pipeline plan](docs/superpowers/plans/2026-07-19-release-pipeline.md).

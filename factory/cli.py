@@ -324,9 +324,9 @@ def _verify(args: list[str]) -> tuple[int, dict]:
     result = envelope(
         "verify",
         ok,
-        "Phase 1 verification passed"
+        "Phase 2 verification passed"
         if ok
-        else "Phase 1 verification failed",
+        else "Phase 2 verification failed",
         {
             "report_path": report["report_path"],
             "test_exit_code": report["test_exit_code"],

@@ -71,6 +71,67 @@ def build_transfer_manifest(config: FactoryConfig) -> dict:
                 "sha256": sha256_file(path) if path.is_file() else None,
             }
         )
+    release_runtime_path = config.tooling_root / "release-runtime.json"
+    release_runtime = (
+        json.loads(release_runtime_path.read_text(encoding="utf-8-sig"))
+        if release_runtime_path.is_file()
+        else {}
+    )
+    release_manifest_path = (
+        config.root / "tools" / "manifests" / "release-toolchain.json"
+    )
+    release_manifest = (
+        json.loads(release_manifest_path.read_text(encoding="utf-8-sig"))
+        if release_manifest_path.is_file()
+        else {}
+    )
+    for name in ("node", "gltfpack"):
+        value = release_runtime.get(name)
+        if not value:
+            continue
+        path = Path(value)
+        metadata = release_manifest.get(name, {})
+        entries.append(
+            {
+                "kind": "release_runtime",
+                "name": name,
+                "path": value,
+                "version": release_runtime.get(name + "_version")
+                or metadata.get("version"),
+                "source": metadata.get("url"),
+                "license": metadata.get("license"),
+                "size": path.stat().st_size if path.is_file() else None,
+                "sha256": sha256_file(path) if path.is_file() else None,
+            }
+        )
+    node_modules = (
+        Path(release_runtime["node_modules"])
+        if release_runtime.get("node_modules")
+        else None
+    )
+    for name, package, manifest_key in (
+        ("gltf_validator", "gltf-validator", "gltf_validator"),
+        ("playwright_core", "playwright-core", "playwright_core"),
+        ("three", "three", "three"),
+    ):
+        package_json = node_modules / package / "package.json" if node_modules else None
+        if not package_json or not package_json.is_file():
+            continue
+        package_data = json.loads(package_json.read_text(encoding="utf-8-sig"))
+        metadata = release_manifest.get(manifest_key, {})
+        entries.append(
+            {
+                "kind": "npm_package",
+                "name": name,
+                "path": str(package_json),
+                "version": package_data.get("version"),
+                "source": f"https://www.npmjs.com/package/{package}/v/{package_data.get('version')}",
+                "license": metadata.get("license") or package_data.get("license"),
+                "size": package_json.stat().st_size,
+                "sha256": sha256_file(package_json),
+            }
+        )
+    entries.sort(key=lambda entry: (entry["kind"], entry["name"]))
     return {
         "schema_version": 1,
         "root": str(config.root),

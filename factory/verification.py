@@ -50,9 +50,21 @@ def verify(config: FactoryConfig) -> tuple[bool, dict]:
         config.reports_root
         / "runs"
         / run_id
-        / "phase-1-verification.json"
+        / "phase-2-verification.json"
     )
-    mandatory = ("python", "uv", "blender", "model_root")
+    mandatory = (
+        "python",
+        "uv",
+        "blender",
+        "model_root",
+        "browser",
+        "node",
+        "gltf_validator",
+        "gltfpack",
+        "playwright_core",
+        "three",
+        "threejs_viewer",
+    )
     mandatory_ok = all(
         doctor_report["capabilities"][name]["status"] == "available"
         for name in mandatory

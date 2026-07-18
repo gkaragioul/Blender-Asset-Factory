@@ -64,6 +64,17 @@ def _probe_bridge(url: str) -> tuple[bool, str]:
 
 def probe(config: FactoryConfig) -> dict:
     capabilities: dict[str, dict] = {}
+    browser_candidates = (
+        Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
+        Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"),
+        Path(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"),
+    )
+    browser = next((path for path in browser_candidates if path.is_file()), None)
+    capabilities["browser"] = (
+        _cap("available", browser)
+        if browser
+        else _cap("unavailable", detail="Chrome or Edge was not found")
+    )
     blender = next(
         (path for path in config.blender_candidates if path.is_file()), None
     )

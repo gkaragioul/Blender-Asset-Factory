@@ -1,13 +1,13 @@
 {
-  "schema_version": 1,
-  "project_id": "ps1_ww2_pump_shotgun_01",
-  "status": "active",
-  "working_directory": "G:/DevWork/GameDev/BlenderAssetFactory/.worktrees/codex-ps1-ww2-pump-shotgun",
+  "blocked_by": [],
   "next_action": "finish_task_3_atlas_uv_wear",
+  "project_id": "ps1_ww2_pump_shotgun_01",
   "required_reads": [
     ".superpowers/sdd/task-3-brief.md",
     "docs/superpowers/specs/2026-07-18-ps1-ww2-pump-shotgun-premium-polish-design.md",
     "specs/ps1_ww2_pump_shotgun_01.json"
   ],
-  "blocked_by": []
+  "schema_version": 1,
+  "status": "active",
+  "working_directory": "G:/DevWork/GameDev/BlenderAssetFactory/.worktrees/codex-ps1-ww2-pump-shotgun"
 }

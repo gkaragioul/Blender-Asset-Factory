@@ -16,13 +16,17 @@ Run `factory.ps1 doctor` before mutations.
 - armorpaint: `unavailable`
 - blender: `available`
 - bridge: `unavailable`
+- browser: `available`
 - comfyui: `unavailable`
-- gltf_validator: `unavailable`
-- gltfpack: `unavailable`
+- gltf_validator: `available`
+- gltfpack: `available`
 - material_maker: `unavailable`
 - model_root: `available`
+- node: `available`
+- playwright_core: `available`
 - python: `available`
-- threejs_viewer: `unavailable`
+- three: `available`
+- threejs_viewer: `available`
 - uv: `available`
 
 ## Required reading
