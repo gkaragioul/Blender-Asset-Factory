@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "root": ".",
+  "model_root": "G:/LLMs",
+  "tooling_root": ".tooling",
+  "reports_root": "reports",
+  "bridge_url": "http://127.0.0.1:9876",
+  "blender_candidates": [
+    "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe",
+    "G:/Tools/Blender/blender.exe"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.blender-asset-factory/schemas/config.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "root",
+    "model_root",
+    "tooling_root",
+    "reports_root",
+    "bridge_url",
+    "blender_candidates"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "root": {"const": "."},
+    "model_root": {"const": "G:/LLMs"},
+    "tooling_root": {"const": ".tooling"},
+    "reports_root": {"const": "reports"},
+    "bridge_url": {"const": "http://127.0.0.1:9876"},
+    "blender_candidates": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    }
+  }
+}
