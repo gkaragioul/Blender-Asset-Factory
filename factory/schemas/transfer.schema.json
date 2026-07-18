@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.blender-asset-factory/schemas/transfer.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "root", "model_root", "entries"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "root": {"type": "string"},
+    "model_root": {"const": "G:\\LLMs"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "name",
+          "path",
+          "version",
+          "source",
+          "license",
+          "size",
+          "sha256"
+        ]
+      }
+    }
+  }
+}

@@ -146,12 +146,50 @@ def _learn(args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _index_models(args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .io import atomic_write_json
+    from .transfer import index_models
+
+    config = FactoryConfig.load()
+    index = index_models(config, hash_files="--hash" in args)
+    path = config.model_root / "manifests" / "model-index.json"
+    config.require_owned_path(path)
+    atomic_write_json(path, index)
+    return 0, envelope(
+        "index-models",
+        True,
+        f"Indexed {len(index['models'])} model files",
+        {"index_path": str(path), "model_count": len(index["models"])},
+    )
+
+
+def _transfer_manifest(_args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .io import atomic_write_json
+    from .transfer import build_transfer_manifest
+
+    config = FactoryConfig.load()
+    manifest = build_transfer_manifest(config)
+    path = config.root / "tools" / "manifests" / "transfer.json"
+    config.require_owned_path(path)
+    atomic_write_json(path, manifest)
+    return 0, envelope(
+        "transfer-manifest",
+        True,
+        f"Inventoried {len(manifest['entries'])} runtime dependencies",
+        {"manifest_path": str(path), "entry_count": len(manifest["entries"])},
+    )
+
+
 def _handlers() -> dict[str, Handler]:
     return {
         "doctor": _doctor,
+        "index-models": _index_models,
         "learn": _learn,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
+        "transfer-manifest": _transfer_manifest,
         "version": _version,
     }
 
