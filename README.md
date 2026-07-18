@@ -12,6 +12,16 @@ The first production profile is premium PS1-era WWII art. Profiles are data, so 
 - Blender: discovered explicitly; currently Blender 5.2 LTS
 - Blender bridge: loopback only at `127.0.0.1:9876`
 
+Canonical content directories:
+
+- Projects: `G:\DevWork\GameDev\BlenderAssetFactory\projects`
+- Generated assets: `G:\DevWork\GameDev\BlenderAssetFactory\assets`
+- Specifications: `G:\DevWork\GameDev\BlenderAssetFactory\specs`
+- Generators: `G:\DevWork\GameDev\BlenderAssetFactory\scripts`
+- Standalone renders: `G:\DevWork\GameDev\BlenderAssetFactory\renders`
+
+Specifications control output paths and normally publish beneath `assets`.
+
 ## First-time setup
 
 ```powershell
@@ -19,6 +29,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\bootstrap\setup.ps1
 ```
 
 The bootstrap pins uv and Python beneath `.tooling` on `G:` and does not modify the user `PATH`.
+
+## Generate the original reference crate
+
+```powershell
+& 'C:\Program Files\Blender Foundation\Blender 5.2\blender.exe' `
+  --background --factory-startup `
+  --python 'G:\DevWork\GameDev\BlenderAssetFactory\scripts\generate_asset.py' `
+  -- --spec 'G:\DevWork\GameDev\BlenderAssetFactory\specs\ps1_crate.json'
+```
 
 ## Daily entry points
 
