@@ -36,8 +36,35 @@ def _version(_args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _doctor(_args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .doctor import probe
+
+    report = probe(FactoryConfig.load())
+    mandatory = ("python", "uv", "blender", "model_root")
+    ok = all(
+        report["capabilities"][name]["status"] == "available"
+        for name in mandatory
+    )
+    errors = [] if ok else [
+        {
+            "code": "mandatory_capability_missing",
+            "message": "One or more mandatory capabilities are unavailable",
+        }
+    ]
+    return (0 if ok else 1), envelope(
+        "doctor",
+        ok,
+        "Factory capabilities are healthy"
+        if ok
+        else "Factory capabilities need attention",
+        report,
+        errors,
+    )
+
+
 def _handlers() -> dict[str, Handler]:
-    return {"version": _version}
+    return {"doctor": _doctor, "version": _version}
 
 
 def run(argv: list[str]) -> tuple[int, dict, bool]:

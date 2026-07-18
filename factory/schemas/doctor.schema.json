@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.blender-asset-factory/schemas/doctor.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "checked_at", "capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "checked_at": {"type": "string"},
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "path", "version", "detail"],
+        "properties": {
+          "status": {"enum": ["available", "unavailable", "degraded"]},
+          "path": {"type": ["string", "null"]},
+          "version": {"type": ["string", "null"]},
+          "detail": {"type": "string"}
+        }
+      }
+    }
+  }
+}
