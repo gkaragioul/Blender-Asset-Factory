@@ -2,3 +2,7 @@
 .superpowers/
 __pycache__/
 *.pyc
+.tooling/
+reports/runs/
+tmp/factory/
+*.tmp

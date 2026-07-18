@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "uv": {
+    "version": "0.11.29",
+    "installer": "https://astral.sh/uv/0.11.29/install.ps1"
+  },
+  "python": {
+    "implementation": "cpython",
+    "version": "3.12.11"
+  }
+}
