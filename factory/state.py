@@ -38,6 +38,22 @@ def save_factory_state(config: FactoryConfig, doctor_report: dict) -> None:
     )
 
 
+def record_verification(config: FactoryConfig, report: dict) -> None:
+    path = config.root / "knowledge" / "factory-state.json"
+    state = (
+        _read_json(path)
+        if path.is_file()
+        else {"schema_version": 1, "checked_at": None, "capabilities": {}}
+    )
+    state["last_verification"] = {
+        "ok": bool(report["ok"]),
+        "checked_at": report["checked_at"],
+        "git_commit": report.get("git_commit"),
+        "report_path": report["report_path"],
+    }
+    atomic_write_json(path, state)
+
+
 def resume_action(config: FactoryConfig) -> dict:
     active = load_active_project(config)
     return {
@@ -109,12 +125,16 @@ def render_bootstrap(config: FactoryConfig) -> str:
 def render_factory_state(config: FactoryConfig) -> str:
     state_path = config.root / "knowledge" / "factory-state.json"
     state = _read_json(state_path) if state_path.is_file() else {}
+    verification = state.get("last_verification", {})
     lines = [
         "# Blender Asset Factory - Verified State",
         "",
         f"- Repository root: `{config.root}`",
         f"- Model root: `{config.model_root}`",
         f"- Last doctor check: `{_display(state.get('checked_at'))}`",
+        f"- Last verification passed: `{_display(verification.get('ok'))}`",
+        f"- Last verification commit: `{_display(verification.get('git_commit'))}`",
+        f"- Last verification report: `{_display(verification.get('report_path'))}`",
         "",
         "## Capabilities",
         "",

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from factory.config import FactoryConfig
-from factory.state import refresh_bootstrap, resume_action
+from factory.state import record_verification, refresh_bootstrap, resume_action
 
 
 class StateTest(unittest.TestCase):
@@ -69,6 +69,30 @@ class StateTest(unittest.TestCase):
             second = (knowledge / "START_HERE.md").read_text(encoding="utf-8")
         self.assertEqual(first, second)
         self.assertIn("Run `factory.ps1 doctor` before mutations", first)
+
+    def test_record_verification_persists_transferable_summary(self):
+        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+            root = Path(temp)
+            knowledge = root / "knowledge"
+            knowledge.mkdir()
+            (knowledge / "factory-state.json").write_text(
+                '{"schema_version":1,"checked_at":null,"capabilities":{}}',
+                encoding="utf-8",
+            )
+            record_verification(
+                self.make_config(root),
+                {
+                    "ok": True,
+                    "checked_at": "2026-07-18T21:00:00+00:00",
+                    "git_commit": "abc123",
+                    "report_path": "G:/reports/phase-1-verification.json",
+                },
+            )
+            saved = json.loads(
+                (knowledge / "factory-state.json").read_text(encoding="utf-8")
+            )
+        self.assertEqual(saved["last_verification"]["git_commit"], "abc123")
+        self.assertTrue(saved["last_verification"]["ok"])
 
 
 if __name__ == "__main__":

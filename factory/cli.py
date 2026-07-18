@@ -182,6 +182,39 @@ def _transfer_manifest(_args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _verify(args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .verification import verify
+
+    config = FactoryConfig.load()
+    ok, report = verify(config)
+    if ok and "--save" in args:
+        from .state import record_verification, refresh_bootstrap
+
+        record_verification(config, report)
+        refresh_bootstrap(config)
+    result = envelope(
+        "verify",
+        ok,
+        "Phase 1 verification passed"
+        if ok
+        else "Phase 1 verification failed",
+        {
+            "report_path": report["report_path"],
+            "test_exit_code": report["test_exit_code"],
+        },
+        []
+        if ok
+        else [
+            {
+                "code": "verification_failed",
+                "message": "Inspect the verification report",
+            }
+        ],
+    )
+    return (0 if ok else 1), result
+
+
 def _handlers() -> dict[str, Handler]:
     return {
         "doctor": _doctor,
@@ -190,6 +223,7 @@ def _handlers() -> dict[str, Handler]:
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
+        "verify": _verify,
         "version": _version,
     }
 
