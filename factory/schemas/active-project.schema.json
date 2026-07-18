@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.blender-asset-factory/schemas/active-project.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "status",
+    "working_directory",
+    "next_action",
+    "required_reads",
+    "blocked_by"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_id": {"type": ["string", "null"]},
+    "status": {"enum": ["idle", "active", "complete", "blocked"]},
+    "working_directory": {"type": ["string", "null"]},
+    "next_action": {"type": ["string", "null"]},
+    "required_reads": {"type": "array", "items": {"type": "string"}},
+    "blocked_by": {"type": "array", "items": {"type": "string"}}
+  }
+}

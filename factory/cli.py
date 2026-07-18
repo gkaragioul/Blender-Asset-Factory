@@ -36,11 +36,17 @@ def _version(_args: list[str]) -> tuple[int, dict]:
     )
 
 
-def _doctor(_args: list[str]) -> tuple[int, dict]:
+def _doctor(args: list[str]) -> tuple[int, dict]:
     from .config import FactoryConfig
     from .doctor import probe
 
-    report = probe(FactoryConfig.load())
+    config = FactoryConfig.load()
+    report = probe(config)
+    if "--save" in args:
+        from .state import refresh_bootstrap, save_factory_state
+
+        save_factory_state(config, report)
+        refresh_bootstrap(config)
     mandatory = ("python", "uv", "blender", "model_root")
     ok = all(
         report["capabilities"][name]["status"] == "available"
@@ -63,8 +69,49 @@ def _doctor(_args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _refresh_memory(_args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .state import refresh_bootstrap
+
+    config = FactoryConfig.load()
+    refresh_bootstrap(config)
+    return 0, envelope(
+        "refresh-memory",
+        True,
+        "Durable factory memory refreshed",
+        {"start_here": str(config.root / "knowledge" / "START_HERE.md")},
+    )
+
+
+def _resume(_args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .state import resume_action
+
+    action = resume_action(FactoryConfig.load())
+    blocked = bool(action["blocked_by"])
+    return (1 if blocked else 0), envelope(
+        "resume",
+        not blocked,
+        action["summary"],
+        action,
+        [
+            {
+                "code": "active_project_blocked",
+                "message": ", ".join(action["blocked_by"]),
+            }
+        ]
+        if blocked
+        else [],
+    )
+
+
 def _handlers() -> dict[str, Handler]:
-    return {"doctor": _doctor, "version": _version}
+    return {
+        "doctor": _doctor,
+        "refresh-memory": _refresh_memory,
+        "resume": _resume,
+        "version": _version,
+    }
 
 
 def run(argv: list[str]) -> tuple[int, dict, bool]:

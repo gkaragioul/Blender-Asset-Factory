@@ -1,0 +1,72 @@
+{
+  "capabilities": {
+    "armorpaint": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\armorpaint\\ArmorPaint.exe",
+      "status": "unavailable",
+      "version": null
+    },
+    "blender": {
+      "detail": "",
+      "path": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+      "status": "available",
+      "version": "Blender 5.2.0 LTS"
+    },
+    "bridge": {
+      "detail": "scene.get_info succeeded",
+      "path": null,
+      "status": "available",
+      "version": null
+    },
+    "comfyui": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\comfyui\\main.py",
+      "status": "unavailable",
+      "version": null
+    },
+    "gltf_validator": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\gltf-validator\\gltf_validator.exe",
+      "status": "unavailable",
+      "version": null
+    },
+    "gltfpack": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\gltfpack\\gltfpack.exe",
+      "status": "unavailable",
+      "version": null
+    },
+    "material_maker": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\material-maker\\material_maker.exe",
+      "status": "unavailable",
+      "version": null
+    },
+    "model_root": {
+      "detail": "free_bytes=793120796672",
+      "path": "G:\\LLMs",
+      "status": "available",
+      "version": null
+    },
+    "python": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\python\\cpython-3.12.11-windows-x86_64-none\\python.exe",
+      "status": "available",
+      "version": "Python 3.12.11"
+    },
+    "threejs_viewer": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\tools\\threejs-viewer\\package.json",
+      "status": "unavailable",
+      "version": null
+    },
+    "uv": {
+      "detail": "",
+      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.worktrees\\factory-foundation-memory\\.tooling\\uv\\uv.exe",
+      "status": "available",
+      "version": "uv 0.11.29 (901092ee1 2026-07-15 x86_64-pc-windows-msvc)"
+    }
+  },
+  "checked_at": "2026-07-18T20:54:54.090137+00:00",
+  "schema_version": 1
+}
