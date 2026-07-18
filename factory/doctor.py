@@ -100,6 +100,63 @@ def probe(config: FactoryConfig) -> dict:
             else _cap("unavailable")
         )
 
+    release_runtime_path = config.tooling_root / "release-runtime.json"
+    release_runtime = (
+        json.loads(release_runtime_path.read_text(encoding="utf-8-sig"))
+        if release_runtime_path.is_file()
+        else {}
+    )
+    node = Path(release_runtime["node"]) if release_runtime.get("node") else None
+    if node and node.is_file():
+        try:
+            capabilities["node"] = _cap(
+                "available", node, _run_version(node, "--version")
+            )
+        except Exception as error:
+            capabilities["node"] = _cap("degraded", node, detail=str(error))
+    else:
+        capabilities["node"] = _cap("unavailable")
+
+    gltfpack = (
+        Path(release_runtime["gltfpack"])
+        if release_runtime.get("gltfpack")
+        else None
+    )
+    capabilities["gltfpack"] = (
+        _cap(
+            "available",
+            gltfpack,
+            str(release_runtime.get("gltfpack_version", "")) or None,
+        )
+        if gltfpack and gltfpack.is_file()
+        else _cap("unavailable", gltfpack)
+    )
+    node_modules = (
+        Path(release_runtime["node_modules"])
+        if release_runtime.get("node_modules")
+        else None
+    )
+    for capability, package in (
+        ("gltf_validator", "gltf-validator"),
+        ("playwright_core", "playwright-core"),
+        ("three", "three"),
+    ):
+        package_json = node_modules / package / "package.json" if node_modules else None
+        if package_json and package_json.is_file():
+            try:
+                package_data = json.loads(
+                    package_json.read_text(encoding="utf-8-sig")
+                )
+                capabilities[capability] = _cap(
+                    "available", package_json, package_data.get("version")
+                )
+            except Exception as error:
+                capabilities[capability] = _cap(
+                    "degraded", package_json, detail=str(error)
+                )
+        else:
+            capabilities[capability] = _cap("unavailable", package_json)
+
     if config.model_root.is_dir():
         free = shutil.disk_usage(config.model_root).free
         capabilities["model_root"] = _cap(
@@ -115,10 +172,6 @@ def probe(config: FactoryConfig) -> dict:
     optional = {
         "armorpaint": config.tooling_root / "armorpaint" / "ArmorPaint.exe",
         "comfyui": config.tooling_root / "comfyui" / "main.py",
-        "gltf_validator": config.tooling_root
-        / "gltf-validator"
-        / "gltf_validator.exe",
-        "gltfpack": config.tooling_root / "gltfpack" / "gltfpack.exe",
         "material_maker": config.tooling_root
         / "material-maker"
         / "material_maker.exe",

@@ -83,6 +83,33 @@ class DoctorTest(unittest.TestCase):
             probe(config)
             self.assertFalse(missing.exists())
 
+    def test_release_runtime_is_probed_from_pinned_files(self):
+        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+            tooling = Path(temp)
+            node = tooling / "node.exe"
+            gltfpack = tooling / "gltfpack.exe"
+            node_modules = tooling / "release-node" / "node_modules"
+            for package, version in (("gltf-validator", "2.0.0-dev.3.10"), ("three", "0.185.1"), ("playwright-core", "1.61.1")):
+                package_dir = node_modules / package
+                package_dir.mkdir(parents=True, exist_ok=True)
+                (package_dir / "package.json").write_text(json.dumps({"name": package, "version": version}))
+            node.write_bytes(b"node")
+            gltfpack.write_bytes(b"gltfpack")
+            (tooling / "release-runtime.json").write_text(json.dumps({
+                "node": str(node),
+                "gltfpack": str(gltfpack),
+                "gltfpack_version": "1.2",
+                "node_modules": str(node_modules),
+            }))
+            base = FactoryConfig.load()
+            config = FactoryConfig(base.root, base.model_root, tooling, base.reports_root, base.bridge_url, base.blender_candidates)
+            with patch("factory.doctor._probe_bridge", return_value=(False, "offline")), patch("factory.doctor._run_version", return_value="v24.17.0"):
+                report = probe(config)
+        self.assertEqual(report["capabilities"]["node"]["version"], "v24.17.0")
+        self.assertEqual(report["capabilities"]["gltfpack"]["version"], "1.2")
+        self.assertEqual(report["capabilities"]["gltf_validator"]["version"], "2.0.0-dev.3.10")
+        self.assertEqual(report["capabilities"]["playwright_core"]["version"], "1.61.1")
+
 
 if __name__ == "__main__":
     unittest.main()

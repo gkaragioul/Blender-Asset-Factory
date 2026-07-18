@@ -14,7 +14,7 @@ Install a reproducible release toolchain beneath `G:\DevWork\GameDev\BlenderAsse
 
 - Node.js `24.17.0` LTS, portable Windows x64 archive from nodejs.org, checksum verified against the official `SHASUMS256.txt`.
 - Khronos `gltf-validator` npm package `2.0.0-dev.3.10`.
-- meshoptimizer/gltfpack `1.1`, native Windows binary from the signed GitHub release, with a recorded archive checksum.
+- meshoptimizer/gltfpack `1.2`, native Windows binary from the signed GitHub release, with a recorded archive checksum.
 - Three.js `0.185.1`.
 - `playwright-core` `1.61.1`, using an installed Chrome or Edge executable rather than downloading a second browser.
 

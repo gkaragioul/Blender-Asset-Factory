@@ -1,0 +1,11 @@
+{
+  "name": "blender-asset-factory-release-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "gltf-validator": "2.0.0-dev.3.10",
+    "playwright-core": "1.61.1",
+    "three": "0.185.1"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "node": {
+    "version": "24.17.0",
+    "url": "https://nodejs.org/dist/v24.17.0/node-v24.17.0-win-x64.zip",
+    "sha256": "f2aa33b35b75aca5f3f7b85675a6f6423201053e9381911e64961f3bda2528ab",
+    "license": "MIT"
+  },
+  "gltfpack": {
+    "version": "1.2",
+    "url": "https://github.com/zeux/meshoptimizer/releases/download/v1.2/gltfpack-windows.zip",
+    "sha256": "52e0c061d8b42f1c6bd8fe1cbc1e26a9da579ad5a4f5dd30a8ee0d599062f6c4",
+    "license": "MIT",
+    "attribution": "Uses meshoptimizer. Copyright (c) 2016-2026, Arseny Kapoulkine"
+  },
+  "gltf_validator": {
+    "version": "2.0.0-dev.3.10",
+    "package": "gltf-validator",
+    "license": "Apache-2.0"
+  },
+  "three": {
+    "version": "0.185.1",
+    "package": "three",
+    "license": "MIT"
+  },
+  "playwright_core": {
+    "version": "1.61.1",
+    "package": "playwright-core",
+    "license": "Apache-2.0"
+  }
+}

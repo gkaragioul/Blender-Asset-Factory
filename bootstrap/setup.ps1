@@ -1,4 +1,4 @@
-param([switch]$DryRun)
+param([switch]$DryRun, [switch]$SkipRelease)
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -66,4 +66,10 @@ $runtime = [ordered]@{
     python_version = (& $pythonExe --version).Trim()
 }
 $runtime | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $tooling 'runtime.json')
+if (-not $SkipRelease) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'setup-release.ps1')
+    if ($LASTEXITCODE -ne 0) {
+        throw "Release tool setup failed: $LASTEXITCODE"
+    }
+}
 $result | ConvertTo-Json -Depth 5
