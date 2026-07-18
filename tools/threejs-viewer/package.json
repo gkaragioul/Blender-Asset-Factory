@@ -1,0 +1,7 @@
+{
+  "name": "blender-asset-factory-threejs-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "three": "0.185.1",
+  "playwright-core": "1.61.1"
+}

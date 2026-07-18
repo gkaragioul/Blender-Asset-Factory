@@ -231,6 +231,35 @@ def _optimize(args: list[str]) -> tuple[int, dict]:
         report_path,
         pixel_atlas="--pixel-atlas" in args,
     )
+
+
+def _preview(args: list[str]) -> tuple[int, dict]:
+    from datetime import datetime, timezone
+
+    from .config import FactoryConfig
+    from .runtime_preview import preview_glb
+
+    config = FactoryConfig.load()
+    source = Path(_option(args, "--input"))
+    screenshot = Path(_option(args, "--output"))
+    if "--report" in args:
+        report_path = Path(_option(args, "--report"))
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        report_path = config.reports_root / "runs" / run_id / "threejs-preview.json"
+    report = preview_glb(config, source, screenshot, report_path)
+    return 0, envelope(
+        "preview",
+        True,
+        "GLB loaded and rendered in the pinned Three.js viewer",
+        {
+            "source": report["source"],
+            "screenshot": report["screenshot"],
+            "mesh_count": report["viewer"]["mesh_count"],
+            "triangle_count": report["viewer"]["triangle_count"],
+            "report_path": str(report_path.resolve(strict=False)),
+        },
+    )
     return 0, envelope(
         "optimize",
         True,
@@ -284,6 +313,7 @@ def _handlers() -> dict[str, Handler]:
         "index-models": _index_models,
         "learn": _learn,
         "optimize": _optimize,
+        "preview": _preview,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
