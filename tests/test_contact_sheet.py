@@ -1,7 +1,9 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from factory.config import FactoryConfig
 from factory.contact_sheet import ContactSheetError, build_contact_sheet
@@ -48,6 +50,21 @@ class ContactSheetTest(unittest.TestCase):
             self.assertEqual(report["view_ids"], ["beauty", "wireframe", "engine"])
             self.assertEqual(output.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
             self.assertEqual(json.loads(report_path.read_text())["output_sha256"], report["output_sha256"])
+
+    def test_browser_timeout_records_failure_report(self):
+        temp_root = ROOT / "tmp" / "factory" / "tests"
+        temp_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=temp_root) as temp:
+            root = Path(temp)
+            image = root / "engine.png"
+            image.write_bytes(_fixture_png())
+            manifest = root / "views.json"
+            manifest.write_text(json.dumps({"schema_version": 1, "title": "Timeout", "required_views": ["engine"], "views": [{"id": "engine", "label": "Engine", "path": str(image)}]}))
+            report_path = root / "timeout-report.json"
+            with patch("factory.contact_sheet.subprocess.run", side_effect=subprocess.TimeoutExpired(["node"], 300)):
+                with self.assertRaisesRegex(ContactSheetError, "timed out"):
+                    build_contact_sheet(FactoryConfig.load(), manifest, root / "sheet.png", report_path)
+            self.assertFalse(json.loads(report_path.read_text())["ok"])
 
 
 if __name__ == "__main__":

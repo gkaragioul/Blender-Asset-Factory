@@ -88,16 +88,21 @@ def build_contact_sheet(config: FactoryConfig, manifest_path: Path, output_path:
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     url = f"http://127.0.0.1:{server.server_port}/index.html"
+    completed = None
+    timeout_error = None
     try:
         completed = subprocess.run([str(node), str(capture), url, str(output), str(raw_report), str(_browser_path()), str(node_modules)], cwd=config.root, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired as error:
+        timeout_error = error
     finally:
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
-    browser_report = json.loads(raw_report.read_text(encoding="utf-8")) if raw_report.is_file() else {"ok": False, "error": completed.stderr}
+    browser_report = json.loads(raw_report.read_text(encoding="utf-8")) if raw_report.is_file() else {"ok": False, "error": f"browser capture timed out: {timeout_error}" if timeout_error else "browser capture produced no report"}
+    return_code = completed.returncode if completed is not None else -1
     report = {
         "schema_version": 1,
-        "ok": completed.returncode == 0 and bool(browser_report.get("ok")) and output.is_file(),
+        "ok": return_code == 0 and bool(browser_report.get("ok")) and output.is_file(),
         "title": str(manifest.get("title") or "Asset QA"),
         "manifest": str(manifest_source),
         "manifest_sha256": sha256_file(manifest_source),
