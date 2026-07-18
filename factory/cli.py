@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from collections.abc import Callable
+from pathlib import Path
 
 from . import __version__
 
@@ -105,9 +106,50 @@ def _resume(_args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _option(args: list[str], name: str) -> str:
+    try:
+        return args[args.index(name) + 1]
+    except (ValueError, IndexError) as error:
+        raise ValueError(f"required option missing: {name}") from error
+
+
+def _json_input(config, args: list[str], option: str) -> dict:
+    path = config.require_owned_path(Path(_option(args, option)))
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def _learn(args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .learning import closeout_project, promote_candidate, record_candidate
+
+    if not args:
+        raise ValueError("learn requires candidate, promote, or closeout")
+    config = FactoryConfig.load()
+    action = args[0]
+    action_args = args[1:]
+    if action == "candidate":
+        path = record_candidate(config, _json_input(config, action_args, "--input"))
+        data = {"path": str(path)}
+    elif action == "promote":
+        lesson_id = _option(action_args, "--lesson-id")
+        evidence = _json_input(config, action_args, "--evidence")
+        path = promote_candidate(config, lesson_id, evidence)
+        data = {"path": str(path), "lesson_id": lesson_id}
+    elif action == "closeout":
+        data = closeout_project(
+            config, _json_input(config, action_args, "--input")
+        )
+    else:
+        raise ValueError(f"unknown learn action: {action}")
+    return 0, envelope(
+        "learn", True, f"Learning action completed: {action}", data
+    )
+
+
 def _handlers() -> dict[str, Handler]:
     return {
         "doctor": _doctor,
+        "learn": _learn,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "version": _version,
@@ -132,8 +174,17 @@ def run(argv: list[str]) -> tuple[int, dict, bool]:
             ],
         )
         return 2, result, json_output
-    code, result = handlers[command](args[1:])
-    return code, result, json_output
+    try:
+        code, result = handlers[command](args[1:])
+        return code, result, json_output
+    except Exception as error:
+        result = envelope(
+            command,
+            False,
+            f"Command failed: {command}",
+            errors=[{"code": "command_failed", "message": str(error)}],
+        )
+        return 1, result, json_output
 
 
 def main(argv: list[str] | None = None) -> int:

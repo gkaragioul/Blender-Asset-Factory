@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.blender-asset-factory/schemas/lesson.schema.json",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "lesson_id",
+    "scope",
+    "title",
+    "statement",
+    "source_projects",
+    "status",
+    "evidence"
+  ],
+  "properties": {
+    "lesson_id": {"type": "string", "minLength": 1},
+    "scope": {"enum": ["asset", "profile", "universal"]},
+    "title": {"type": "string", "minLength": 1},
+    "statement": {"type": "string", "minLength": 1},
+    "source_projects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "status": {"enum": ["candidate", "promoted"]},
+    "evidence": {"type": "array", "items": {"type": "object"}}
+  }
+}
