@@ -87,7 +87,7 @@ import subprocess
 import unittest
 from pathlib import Path
 
-ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class BootstrapContractTest(unittest.TestCase):
@@ -106,7 +106,7 @@ class BootstrapContractTest(unittest.TestCase):
         )
         result = json.loads(completed.stdout)
         self.assertEqual(result["schema_version"], 1)
-        self.assertEqual(result["root"], str(ROOT))
+        self.assertEqual(Path(result["root"]), ROOT)
         self.assertEqual(result["model_root"], r"G:\LLMs")
         self.assertEqual(result["uv_version"], "0.11.29")
         self.assertEqual(result["python_version"], "3.12.11")
@@ -260,7 +260,7 @@ from factory.config import ConfigurationError, FactoryConfig
 class FactoryConfigTest(unittest.TestCase):
     def test_loads_canonical_roots(self):
         config = FactoryConfig.load()
-        self.assertEqual(config.root, Path(r"G:\DevWork\GameDev\BlenderAssetFactory"))
+        self.assertEqual(config.root, Path(__file__).resolve().parents[1])
         self.assertEqual(config.model_root, Path(r"G:\LLMs"))
         self.assertEqual(config.bridge_url, "http://127.0.0.1:9876")
 
@@ -299,10 +299,10 @@ Expected: FAIL because `factory.config` does not exist.
 ```json
 {
   "schema_version": 1,
-  "root": "G:/DevWork/GameDev/BlenderAssetFactory",
+  "root": ".",
   "model_root": "G:/LLMs",
-  "tooling_root": "G:/DevWork/GameDev/BlenderAssetFactory/.tooling",
-  "reports_root": "G:/DevWork/GameDev/BlenderAssetFactory/reports",
+  "tooling_root": ".tooling",
+  "reports_root": "reports",
   "bridge_url": "http://127.0.0.1:9876",
   "blender_candidates": [
     "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe",
@@ -328,6 +328,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 CANONICAL_ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
 
 class ConfigurationError(ValueError):
@@ -345,18 +346,23 @@ class FactoryConfig:
 
     @classmethod
     def load(cls, path: Path | None = None) -> "FactoryConfig":
-        source = path or CANONICAL_ROOT / "factory" / "config.json"
+        source = path or PACKAGE_ROOT / "factory" / "config.json"
         data = json.loads(source.read_text(encoding="utf-8-sig"))
+        source_root = source.resolve().parents[1]
+        def owned(value: str) -> Path:
+            candidate = Path(value)
+            return candidate if candidate.is_absolute() else source_root / candidate
         config = cls(
-            root=Path(data["root"]),
+            root=owned(data["root"]).resolve(strict=False),
             model_root=Path(data["model_root"]),
-            tooling_root=Path(data["tooling_root"]),
-            reports_root=Path(data["reports_root"]),
+            tooling_root=owned(data["tooling_root"]).resolve(strict=False),
+            reports_root=owned(data["reports_root"]).resolve(strict=False),
             bridge_url=data["bridge_url"],
             blender_candidates=tuple(Path(item) for item in data["blender_candidates"]),
         )
-        if config.root != CANONICAL_ROOT:
-            raise ConfigurationError(f"root must be {CANONICAL_ROOT}")
+        trusted_worktrees = CANONICAL_ROOT / ".worktrees"
+        if config.root != CANONICAL_ROOT and trusted_worktrees not in config.root.parents:
+            raise ConfigurationError(f"root must be canonical or a trusted worktree beneath {trusted_worktrees}")
         for owned in (config.root, config.model_root, config.tooling_root, config.reports_root):
             config.require_owned_path(owned)
         if config.bridge_url != "http://127.0.0.1:9876":
@@ -381,10 +387,10 @@ class FactoryConfig:
   "required": ["schema_version", "root", "model_root", "tooling_root", "reports_root", "bridge_url", "blender_candidates"],
   "properties": {
     "schema_version": {"const": 1},
-    "root": {"const": "G:/DevWork/GameDev/BlenderAssetFactory"},
+    "root": {"const": "."},
     "model_root": {"const": "G:/LLMs"},
-    "tooling_root": {"type": "string", "pattern": "^G:/"},
-    "reports_root": {"type": "string", "pattern": "^G:/"},
+    "tooling_root": {"const": ".tooling"},
+    "reports_root": {"const": "reports"},
     "bridge_url": {"const": "http://127.0.0.1:9876"},
     "blender_candidates": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
   }
@@ -429,7 +435,7 @@ import subprocess
 import unittest
 from pathlib import Path
 
-ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class FactoryCliTest(unittest.TestCase):
@@ -970,7 +976,7 @@ git commit -m "feat: persist factory state and conversation handoff"
 import unittest
 from pathlib import Path
 
-ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class CodexMemoryContractTest(unittest.TestCase):
@@ -1355,7 +1361,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class ContinuityTest(unittest.TestCase):
