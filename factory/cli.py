@@ -283,6 +283,19 @@ def _report(args: list[str]) -> tuple[int, dict]:
         "Deterministic QA contact sheet created",
         {"output": report["output"], "output_sha256": report["output_sha256"], "view_ids": report["view_ids"], "report_path": str(report_path.resolve(strict=False))},
     )
+
+
+def _release(args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+    from .release import release_package
+
+    result = release_package(FactoryConfig.load(), Path(_option(args, "--job")))
+    return 0, envelope(
+        "release",
+        True,
+        "Validated asset package published transactionally",
+        result,
+    )
     return 0, envelope(
         "optimize",
         True,
@@ -338,6 +351,7 @@ def _handlers() -> dict[str, Handler]:
         "optimize": _optimize,
         "preview": _preview,
         "report": _report,
+        "release": _release,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
