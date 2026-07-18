@@ -56,6 +56,37 @@ def _chunks(payload: bytes) -> tuple[dict, bytes | None]:
     return json_document, binary
 
 
+def _accessor_bounds(document: dict, binary: bytes | None, accessor: dict) -> tuple[list[float | int], list[float | int]]:
+    if "min" in accessor and "max" in accessor:
+        return accessor["min"], accessor["max"]
+    if binary is None or "bufferView" not in accessor:
+        raise GlbInspectionError("accessor bounds cannot be computed without an embedded buffer view")
+    views = document.get("bufferViews", [])
+    view_id = accessor["bufferView"]
+    if not isinstance(view_id, int) or not 0 <= view_id < len(views):
+        raise GlbInspectionError("accessor references an invalid buffer view")
+    view = views[view_id]
+    if view.get("buffer", 0) != 0:
+        raise GlbInspectionError("accessor references an external buffer")
+    component_formats = {5120: ("b", 1), 5121: ("B", 1), 5122: ("h", 2), 5123: ("H", 2), 5125: ("I", 4), 5126: ("f", 4)}
+    dimensions = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}
+    component = component_formats.get(accessor.get("componentType"))
+    width = dimensions.get(accessor.get("type"))
+    if component is None or width is None:
+        raise GlbInspectionError("unsupported accessor component or vector type")
+    code, component_size = component
+    packed_size = component_size * width
+    stride = int(view.get("byteStride", packed_size))
+    start = int(view.get("byteOffset", 0)) + int(accessor.get("byteOffset", 0))
+    count = int(accessor.get("count", 0))
+    if count <= 0 or start < 0 or start + (count - 1) * stride + packed_size > len(binary):
+        raise GlbInspectionError("accessor data exceeds the binary chunk")
+    values = [struct.unpack_from("<" + code * width, binary, start + index * stride) for index in range(count)]
+    minima = [min(value[index] for value in values) for index in range(width)]
+    maxima = [max(value[index] for value in values) for index in range(width)]
+    return minima, maxima
+
+
 def inspect_glb(path: Path) -> dict:
     source = path.resolve(strict=True)
     if source.suffix.lower() != ".glb":
@@ -94,12 +125,11 @@ def inspect_glb(path: Path) -> dict:
                 accessor = accessors[accessor_id]
                 if "sparse" in accessor:
                     raise GlbInspectionError(f"sparse {semantic} evidence is unsupported")
-                if "min" not in accessor or "max" not in accessor:
-                    raise GlbInspectionError(f"{semantic} accessor has no bounds evidence")
+                minima, maxima = _accessor_bounds(document, binary, accessor)
                 channel = semantic.split("_", 1)[1]
                 evidence = {
-                    "min": accessor["min"],
-                    "max": accessor["max"],
+                    "min": minima,
+                    "max": maxima,
                     "count": accessor.get("count", 0),
                 }
                 previous = texcoord_bounds.get(channel)

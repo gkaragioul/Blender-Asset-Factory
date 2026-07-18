@@ -210,6 +210,41 @@ def _validate(args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _optimize(args: list[str]) -> tuple[int, dict]:
+    from datetime import datetime, timezone
+
+    from .config import FactoryConfig
+    from .optimizer import optimize_glb
+
+    config = FactoryConfig.load()
+    source = Path(_option(args, "--input"))
+    destination = Path(_option(args, "--output"))
+    if "--report" in args:
+        report_path = Path(_option(args, "--report"))
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        report_path = config.reports_root / "runs" / run_id / "optimization.json"
+    report = optimize_glb(
+        config,
+        source,
+        destination,
+        report_path,
+        pixel_atlas="--pixel-atlas" in args,
+    )
+    return 0, envelope(
+        "optimize",
+        True,
+        "Verified non-authoritative GLB derivative created",
+        {
+            "authoritative_source": report["authoritative_source"],
+            "derivative": report["derivative"],
+            "derivative_sha256": report["derivative_sha256"],
+            "uv_max_drift": report["uv_max_drift"],
+            "report_path": str(report_path.resolve(strict=False)),
+        },
+    )
+
+
 def _verify(args: list[str]) -> tuple[int, dict]:
     from .config import FactoryConfig
     from .verification import verify
@@ -248,6 +283,7 @@ def _handlers() -> dict[str, Handler]:
         "doctor": _doctor,
         "index-models": _index_models,
         "learn": _learn,
+        "optimize": _optimize,
         "refresh-memory": _refresh_memory,
         "resume": _resume,
         "transfer-manifest": _transfer_manifest,
