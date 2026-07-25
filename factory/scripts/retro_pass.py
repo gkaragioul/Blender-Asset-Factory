@@ -640,6 +640,53 @@ def _uv_overlap_cells(meshes: list, resolution: int):
     return overlapping, int(numpy.count_nonzero(owner >= 0)), per_part
 
 
+# Principled BSDF inputs that suppress the diffuse response, and the values
+# that neutralise them for an albedo bake. See _neutralize_pbr_for_bake.
+BAKE_NEUTRAL_INPUTS = (
+    ("Metallic", 0.0),
+    ("Transmission Weight", 0.0),
+    ("Alpha", 1.0),
+)
+
+
+def _neutralize_pbr_for_bake(meshes: list) -> list:
+    """Zero the shader inputs that make a DIFFUSE/COLOR bake come out black.
+
+    A fully metallic surface has NO diffuse component, so Cycles' DIFFUSE
+    pass returns black for it however rich its base colour texture is. The
+    same is true of full transmission, and of zero alpha.
+
+    This is not hypothetical and not rare. glTF's `metallicFactor` DEFAULTS
+    TO 1.0 when the field is absent, so any glTF/GLB source that omits it
+    imports as fully metallic -- and metal is the normal case for the
+    weapons this pack is built from. Such an asset baked to a completely
+    black albedo, which `_bake_wrote_nothing` would then reject outright,
+    turning a perfectly convertible source into a hard failure.
+
+    Neutralising happens BEFORE the bake, unlike `_strip_maps`, which runs
+    after it and only unlinks the map named in the contract's drop_maps --
+    unlinking a metallic *texture* leaves the socket's default_value at 1.0,
+    so it would not have helped. A PS1 asset is flat unlit albedo; none of
+    these inputs survive into the export anyway.
+    """
+    changed = set()
+    for material in _slot_materials(meshes):
+        bsdf = _principled(material)
+        if bsdf is None:
+            continue
+        for name, neutral in BAKE_NEUTRAL_INPUTS:
+            socket = bsdf.inputs.get(name)
+            if socket is None:
+                continue
+            for link in list(socket.links):
+                material.node_tree.links.remove(link)
+                changed.add(name)
+            if socket.default_value != neutral:
+                socket.default_value = neutral
+                changed.add(name)
+    return sorted(changed)
+
+
 def _bake_target(meshes: list, size: int):
     image = bpy.data.images.new("RetroBake", width=size, height=size, alpha=True)
     for material in _slot_materials(meshes):
@@ -686,6 +733,55 @@ def _bake(meshes: list) -> None:
     bpy.ops.object.bake(
         type="DIFFUSE", pass_filter={"COLOR"}, use_selected_to_active=False
     )
+
+
+PIXEL_SEMANTICS = "byte-passthrough"
+
+
+def _verify_pixel_semantics() -> str:
+    """Pin the colour-management assumption _quantize_to_png depends on.
+
+    _quantize_to_png treats `image.pixels * 255` as the stored sRGB byte.
+    That is true because bpy.data.images.new() returns a BYTE-backed image
+    whose pixels are a raw passthrough of the 8-bit buffer -- measured in
+    Blender 5.2: writing 0.5 reads back 128/255 and saves as byte 128, not
+    the 188 an sRGB-encoding round trip would give.
+
+    That assumption is invisible if it breaks. Because the exported PNG is
+    assembled literally out of palette entry bytes, it stays palette-exact
+    by construction no matter what the source values meant -- so if a future
+    Blender makes these images float-backed, or starts applying a transfer
+    function on write, then rint(raw * 255) misreads every texel, every
+    texel snaps to the WRONG palette entry, conformance still passes,
+    distinct_colours stays plausible, and the only symptom is a
+    systematically washed-out texture that nothing complains about.
+
+    So the assumption is asserted rather than assumed, on every run, and it
+    fails the pass loudly if the buffer semantics change underneath it.
+    """
+    probe = bpy.data.images.new("RetroPixelProbe", width=2, height=1, alpha=True)
+    try:
+        if probe.is_float:
+            raise ValueError(
+                "bpy.data.images.new returned a float-backed image; "
+                "_quantize_to_png assumes a byte buffer whose pixels are "
+                "raw 8-bit values, so its rint(pixels * 255) would misread "
+                "every texel and quantize to the wrong palette entries"
+            )
+        probe.pixels = [0.5, 0.5, 0.5, 1.0, 0.25, 0.25, 0.25, 1.0]
+        readback = [int(round(value * 255.0)) for value in probe.pixels[:]]
+        expected = [128, 128, 128, 255, 64, 64, 64, 255]
+        if readback != expected:
+            raise ValueError(
+                "image.pixels is no longer a raw 8-bit passthrough: wrote "
+                f"[0.5, 0.25] and read back {readback}, expected {expected}. "
+                "A transfer function is being applied to the pixel buffer, "
+                "so _quantize_to_png would snap every texel to the wrong "
+                "palette entry while still producing a palette-exact PNG"
+            )
+    finally:
+        bpy.data.images.remove(probe)
+    return PIXEL_SEMANTICS
 
 
 def _bake_wrote_nothing(image) -> bool:
@@ -802,6 +898,41 @@ def _apply_albedo(meshes: list, png_bytes: bytes, filtering: str):
     return image
 
 
+def _drop_foreign_textures(meshes: list) -> list:
+    """Remove every image texture node that is not the baked albedo.
+
+    "The baked image is the only texture written" has to be ENFORCED, not
+    left to be incidentally true. _strip_maps only unlinks the sockets named
+    in the contract's drop_maps (normal, roughness, metallic) and
+    _apply_albedo only clears Base Color, so any surviving image on some
+    other socket -- Emission Color, Specular IOR Level, Alpha, Coat, a
+    socket a future Principled BSDF adds -- is still reachable and the
+    exporter writes it as a SECOND image.
+
+    That failure is expensive to diagnose from the far end: Gate 1 opens the
+    export, finds an unquantized source PNG next to the palettized one, and
+    reports thousands of foreign pixels. Every clue points at the quantizer,
+    which is innocent. The trenchgun fixture happens to carry no emissive or
+    alpha map, so nothing about the fixture would ever reveal it.
+
+    Removing by "is not the albedo node" rather than by a list of sockets to
+    clear is the point: a list can only ever cover the sockets someone
+    thought of, and Alpha was already missing from DROPPABLE_SOCKETS.
+    """
+    removed = []
+    for material in _slot_materials(meshes):
+        tree = material.node_tree
+        if tree is None:
+            continue
+        for node in list(tree.nodes):
+            if node.type != "TEX_IMAGE" or node.name == ALBEDO_NODE_NAME:
+                continue
+            if node.image is not None:
+                removed.append(node.image.name)
+            tree.nodes.remove(node)
+    return sorted(set(removed))
+
+
 def _strip_maps(meshes: list, drop_maps: list) -> list:
     removed = set()
     for material in _slot_materials(meshes):
@@ -892,6 +1023,7 @@ def main() -> int:
             )
 
         _ensure_materials(meshes)
+        report["stages"]["pixel_semantics"] = _verify_pixel_semantics()
         resolved = _resolve_source_maps(meshes, Path(payload["source"]))
         report["stages"]["source_maps_missing"] = resolved["missing_before"]
         report["stages"]["source_maps_unresolved"] = resolved["unresolved"]
@@ -917,6 +1049,7 @@ def main() -> int:
                 f"{size}x{size}"
             )
 
+        report["stages"]["bake_neutralized"] = _neutralize_pbr_for_bake(meshes)
         baked = _bake_target(meshes, size)
         _bake(meshes)
         if _bake_wrote_nothing(baked):
@@ -944,6 +1077,10 @@ def main() -> int:
         }
 
         report["dropped_maps"] = _strip_maps(meshes, contract["drop_maps"])
+        # After stripping the contract's named maps, remove any image node
+        # that is still not the baked albedo, so the export cannot carry a
+        # second, unquantized texture regardless of what the source had.
+        report["stages"]["foreign_textures_removed"] = _drop_foreign_textures(meshes)
         # The style contract validates a vertex_light_bake flag, but this
         # plan does not implement vertex-colour lighting. Reported as False
         # so no downstream stage can assume it took effect.

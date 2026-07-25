@@ -10,6 +10,7 @@ from factory.config import FactoryConfig
 from factory.palette import conformance, load_palette
 from factory.png import decode_rgba
 from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
+from tests.glb_fixture import write_multi_texture_cube_glb
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
@@ -125,6 +126,62 @@ class RetroTextureTest(unittest.TestCase):
         # the second-most-common colour has to be more than noise.
         self.assertGreater(colours.most_common(2)[1][1], 100)
 
+    def test_source_albedo_maps_were_actually_relinked(self):
+        # The failure `test_baked_texture_carries_real_detail` does NOT
+        # catch. The trenchgun's maps all point at dead absolute paths from
+        # the machine that exported the FBX, and _resolve_source_maps
+        # relinks them from the shipped `textures/` directory. If that stops
+        # working -- `textures/` moves, the zip layout changes,
+        # bpy.ops.file.find_missing_files behaves differently -- then 0 of 18
+        # resolve, every map is unlinked, and the bake falls back to seven
+        # materials' flat base colours. That is seven distinct colours over
+        # thousands of texels each: it passes distinct_colours > 1, passes
+        # the most_common(2) > 100 check, passes conformance, and never
+        # trips _bake_wrote_nothing because the image is not black. The
+        # texture would carry zero albedo information and nothing would say
+        # so.
+        #
+        # Thresholds are set against the measured real state of the fixture:
+        # 18 maps referenced, 15 relinked, 3 unresolvable.
+        stages = self.report["stages"]
+
+        # 15 is exactly what relinking achieves today. Asserting >= 15 fails
+        # the moment relinking degrades at all, while still allowing the
+        # remaining 3 to start resolving if the fixture is ever repacked.
+        self.assertGreaterEqual(
+            stages["source_uvs_pinned"],
+            15,
+            "source albedo maps were not relinked, so the bake is reading "
+            "flat base colours instead of real texture data",
+        )
+
+        # The 3 known-unresolvable maps are a NAME mismatch, not a path
+        # failure: the FBX asks for Cartridge_low_Cartridge_*.png and the zip
+        # ships Cartridge_*.png. Bounding the count catches regression;
+        # requiring every unresolved name to be one of the understood
+        # Cartridge maps catches a NEW class of failure rather than letting
+        # it hide inside the allowance.
+        unresolved = stages["source_maps_unresolved"]
+        self.assertLessEqual(len(unresolved), 3, unresolved)
+        for name in unresolved:
+            self.assertIn("Cartridge", name, f"unexpected unresolved map: {name}")
+
+    def test_pixel_buffer_semantics_are_verified_at_runtime(self):
+        # Quantization reads image.pixels and treats value * 255 as the
+        # stored sRGB byte, which holds only because bpy.data.images.new
+        # returns a byte-backed image with a raw passthrough buffer
+        # (measured: writing 0.5 reads back 128/255, not the 188 an
+        # sRGB-encoding round trip would give).
+        #
+        # This cannot be caught downstream. The exported PNG is assembled
+        # literally out of palette entry bytes, so it is palette-exact by
+        # construction whatever the source values meant -- if the buffer
+        # semantics change, every texel snaps to the WRONG palette entry,
+        # conformance still passes, distinct_colours stays plausible, and the
+        # only symptom is a systematically washed-out texture. So the script
+        # re-derives the claim on every run and fails the pass if it breaks.
+        self.assertEqual(self.report["stages"]["pixel_semantics"], "byte-passthrough")
+
     def test_every_part_receives_atlas_texels(self):
         # A part packed into zero texels is exported with a material and a
         # texture that contain nothing of it. No aggregate coverage number
@@ -212,6 +269,92 @@ class RetroTextureTest(unittest.TestCase):
         # vertex lighting happened because the contract asked for it.
         self.assertTrue(CONTRACT_PAYLOAD["vertex_light_bake"])
         self.assertFalse(self.report["vertex_light_bake"])
+
+
+class RetroTextureForeignMapTest(unittest.TestCase):
+    """The pass must export ONE image whatever the source carried.
+
+    Separate source from the trenchgun on purpose. The trenchgun's maps are
+    base colour / roughness / metallic / normal, and the contract's drop_maps
+    names the last three, so on that fixture "the pass enforces one texture"
+    and "this source happened to have nothing else" are indistinguishable.
+    The cube here carries an EMISSIVE map, on a socket drop_maps does not
+    name, so it survives anything that works from a list of sockets to clear.
+
+    Without positive enforcement the export carries two images: the
+    palettized albedo and the raw source emissive. Gate 1 would then report
+    thousands of foreign pixels coming from a source PNG and every clue would
+    point at the quantizer, which is innocent.
+    """
+
+    def setUp(self):
+        self.config = FactoryConfig.load()
+        if discover_blender(self.config) is None:
+            self.skipTest("Blender is not available on this host")
+
+    def test_exports_one_texture_even_when_the_source_has_extra_maps(self):
+        work = temporary_root() / "retro"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        self.addCleanup(temp_dir.cleanup)
+        temp = Path(temp_dir.name)
+
+        source = write_multi_texture_cube_glb(temp / "multi_texture_cube.glb")
+        # Confirm the fixture really does present two images, so a green
+        # result cannot come from the fixture quietly losing its extra map.
+        self.assertEqual(len(_glb_document(source).get("images", [])), 2)
+
+        output = temp / "out.glb"
+        palette = retro_palette_png(temp)
+        report = run_blender_script(
+            self.config,
+            SCRIPT,
+            {
+                "source": str(source),
+                "output": str(output),
+                "role": "large",
+                "palette": str(palette),
+                "contract": CONTRACT_PAYLOAD,
+            },
+            temp / "report.json",
+        )
+        self.assertTrue(report["ok"], report.get("error"))
+
+        # This source is fully metallic, and a metallic surface has no
+        # diffuse component, so its albedo bake is black unless the pass
+        # neutralises Metallic before baking. glTF's metallicFactor even
+        # DEFAULTS to 1.0 when omitted, so this is the common case for the
+        # metal weapons this pack converts, not an edge case.
+        self.assertIn("Metallic", report["stages"]["bake_neutralized"])
+        self.assertGreater(
+            report["texture"]["distinct_colours"],
+            1,
+            "metallic source baked to a single flat colour",
+        )
+
+        # The emissive map must have been removed by name, not merely
+        # unlinked -- an unlinked-but-present node is what the exporter
+        # walks and writes.
+        self.assertIn("CubeEmissive", report["stages"]["foreign_textures_removed"])
+
+        document = _glb_document(output)
+        self.assertEqual(
+            len(document.get("images", [])),
+            1,
+            "export carries more than the one baked albedo texture",
+        )
+        for material in document.get("materials", []):
+            self.assertNotIn("emissiveTexture", material)
+
+        # And the one surviving image is still exactly palette-conformant.
+        textures = _glb_textures(output)
+        self.assertEqual(len(textures), 1)
+        result = conformance(textures[0], load_palette(palette))
+        self.assertTrue(
+            result["ok"],
+            f"{result['foreign_pixels']} foreign pixels: "
+            f"{result['foreign_colours'][:4]}",
+        )
 
 
 class RetroTextureFailurePathTest(unittest.TestCase):
