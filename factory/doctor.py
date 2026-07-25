@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
+from .blender import discover_blender
 from .config import FactoryConfig
 
 
@@ -88,9 +89,7 @@ def probe(config: FactoryConfig) -> dict:
         if browser
         else _cap("unavailable", detail="Chrome or Edge was not found")
     )
-    blender = next(
-        (path for path in config.blender_candidates if path.is_file()), None
-    )
+    blender = discover_blender(config)
     if blender:
         try:
             capabilities["blender"] = _cap(

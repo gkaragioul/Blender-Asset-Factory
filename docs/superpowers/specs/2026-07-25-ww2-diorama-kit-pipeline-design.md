@@ -274,27 +274,97 @@ No model involvement, pure pass/fail:
   `drop_maps` present.
 - **Palette conformance:** every albedo pixel is a member of the pack palette.
   Catches style drift mechanically.
-- **Grid and pivot conformance:** origin and footprint snap to `grid_unit`.
+- **Grid and pivot conformance:** the base is grounded on the contract's up
+  axis and the horizontal footprint centre snaps to `grid_unit`, both checked
+  against `retro_pass`'s reported bounds. Gate 2 is structurally blind to this
+  — see below.
+- **Lower bounds** (every part owns atlas texels; the shipped texture carries
+  a minimum number of distinct colours; the atlas covers a minimum fraction;
+  declared alpha sources imply `alphaMode: MASK`). See "The structural limit
+  of automated gating" below for why these are not optional extras.
 - File size within budget.
 
 A Gate 1 failure is a pipeline bug, not a taste question. It never reaches
 the user.
 
-### Gate 2 — Silhouette IoU
-
-The load-bearing measurement, and the direct answer to whether decimation
-preserved the form.
+### Gate 2 — Silhouette IoU: a catastrophe floor plus comparative ranking
 
 Render the raw asset from 8 fixed views. Render the PS1 asset from the same 8
 views. Compute silhouette intersection-over-union.
 
-- IoU >= 0.95: form preserved, pass.
-- 0.90 <= IoU < 0.95: flag on the contact sheet for human attention.
-- IoU < 0.90: automatic reject, re-roll at a higher polycount band.
+- **Comparative ranking is the primary mechanism.** `rank_candidates` orders
+  the N candidates for one asset against each other and takes the winner. This
+  is what the "tournament" language elsewhere in this spec always implied, and
+  it needs no invented constant.
+- **`GATE2_CATASTROPHE = 0.45` is an absolute floor, and nothing more.** Below
+  it the conversion has failed outright; above it, IoU does not rank quality.
 
-Objective, cheap, requires no vision model, and it measures precisely the
-risk in `retro_pass` stage 4. This gate is what makes unattended decimation
-across 30 assets trustworthy.
+This section previously specified `IoU >= 0.95` pass, `0.90` flag, `< 0.90`
+reject. **Those numbers were invented, never measured, and are unreachable by
+construction at PS1 triangle budgets.** Left in place, Gate 2 would have
+rejected every asset the pipeline can produce. What the measurements showed:
+
+- A real, correct conversion of the trenchgun fixture — 45,881 triangles down
+  to 2,470, an 18.6x reduction — scores minimum IoU **0.613** (mean 0.637),
+  with a per-view spread of 0.57–0.62. That is uniform boundary erosion, not a
+  collapsed shape.
+- Re-rendering the same pair at 4x resolution (256 → 1024) **LOWERED** the
+  score to minimum 0.5735 / mean 0.595. That rules out pixel quantization on a
+  thin object: more resolution resolves finer boundary detail the decimated
+  mesh genuinely lacks. **0.61 is real, unavoidable shape loss from an 18.6x
+  reduction, not a measurement artefact.**
+- The Y-up double-rotation defect — a genuinely catastrophic failure, the
+  asset standing on its muzzle — scored **0.03**.
+
+0.03 against 0.613 is ample separation for the question this gate can actually
+answer. Only fine discrimination near 0.95 was fantasy. Comparing a PS1 asset
+to its own high-poly ancestor measures how much was decimated, which the
+triangle counts already report.
+
+Consequently there is no `flag` verdict: `gate2` and `verdict` emit only
+`pass` or `reject`.
+
+### The structural limit of automated gating
+
+Recorded here because it is a limit of this design, not a code defect, and it
+has been rediscovered five times.
+
+**Gate 1 is composed entirely of upper bounds and set-membership tests, and
+Gate 2 is a relative measure between an asset and itself.** An upper bound
+(`triangles <= budget`) is satisfied by zero. A membership test (every texel is
+in the palette) is satisfied by a constant — one colour is trivially a subset
+of any palette. A relative measure is invariant to any defect present on both
+sides of the comparison. So a DEGENERATE asset satisfies all three families
+trivially, and there is no fourth family of check to add.
+
+The five escapes, all one defect:
+
+1. A black texture (relink failure; Cycles evaluates unresolvable images as
+   black) passes palette conformance perfectly.
+2. Flat per-part base colours pass a "texture carries detail" check.
+3. A solid slab replacing an alpha cutout passes both gates — Gate 1 checks
+   palette and budget, Gate 2 compares silhouettes of the *same* geometry
+   before and after conversion.
+4. A wiped UV atlas passes conformance, again because one colour is trivially
+   in any palette.
+5. A per-material black bake passes an *aggregate* "the bake wrote something"
+   check, because healthy materials outvote the dead one.
+
+Gate 2 in particular structurally cannot detect that the source was already
+wrong, and — because it frames each render on its own bounding box, which is
+deliberate and makes the comparison translation-invariant — it is also blind
+to pivot and grounding regressions.
+
+**The mitigation is LOWER bounds in Gate 1, sourced from `retro_pass`'s own
+report**, which the orchestrator previously discarded: a minimum atlas-texel
+count per part, a minimum distinct-colour count measured from the shipped PNG,
+a minimum atlas coverage fraction, and `alpha_sources` implying
+`alphaMode: MASK`. Grid and pivot conformance is likewise policed from the
+reported bounds, since Gate 2 cannot see it.
+
+This mitigates rather than closes the gap. Every check added must ship with a
+test proving it FAILS on the trivially-conforming input; a check without a
+proof-of-failure test is how all five blind spots happened.
 
 ### Gate 3 — Independent vision judge
 
