@@ -1,0 +1,3 @@
+G:\DevWork\GameDev\BlenderAssetFactory
+
+This is the canonical parent folder for all Blender projects and generated assets.

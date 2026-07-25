@@ -6,3 +6,10 @@ __pycache__/
 reports/runs/
 tmp/factory/
 *.tmp
+
+# Generated pack and run output (regenerable from source + providers)
+projects/
+products/
+reports/
+dist/
+tmp/

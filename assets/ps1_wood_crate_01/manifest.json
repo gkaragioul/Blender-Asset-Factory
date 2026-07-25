@@ -1,0 +1,20 @@
+{
+  "asset_id": "ps1_wood_crate_01",
+  "display_name": "PS1 Wood Crate 01",
+  "style": "ps1_survival_horror",
+  "generator": "ps1_crate",
+  "triangles": 204,
+  "triangle_budget": 300,
+  "within_budget": true,
+  "dimensions_m": [
+    1.98,
+    1.98,
+    1.94
+  ],
+  "files": {
+    "blend": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\assets\\ps1_wood_crate_01\\ps1_wood_crate_01.blend",
+    "glb": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\assets\\ps1_wood_crate_01\\ps1_wood_crate_01.glb",
+    "preview": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\assets\\ps1_wood_crate_01\\ps1_wood_crate_01_preview.png",
+    "manifest": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\assets\\ps1_wood_crate_01\\manifest.json"
+  }
+}

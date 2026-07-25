@@ -10,13 +10,20 @@ class FactoryConfigTest(unittest.TestCase):
     def test_loads_canonical_roots(self):
         config = FactoryConfig.load()
         self.assertEqual(config.root, Path(__file__).resolve().parents[1])
-        self.assertEqual(config.model_root, Path(r"G:\LLMs"))
+        self.assertEqual(config.model_root, config.root / "models")
         self.assertEqual(config.bridge_url, "http://127.0.0.1:9876")
 
-    def test_rejects_owned_write_outside_g(self):
+    def test_rejects_owned_write_outside_configured_roots(self):
         config = FactoryConfig.load()
-        with self.assertRaisesRegex(ConfigurationError, "drive G"):
-            config.require_owned_path(Path(r"C:\temp\forbidden"))
+        with self.assertRaisesRegex(ConfigurationError, "factory-owned path"):
+            config.require_owned_path(Path("/tmp/forbidden"))
+
+    def test_allows_model_root_as_owned_storage(self):
+        config = FactoryConfig.load()
+        self.assertEqual(
+            config.require_owned_path(config.model_root / "manifests"),
+            config.model_root / "manifests",
+        )
 
     def test_rejects_configuration_root_mismatch(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -25,10 +32,10 @@ class FactoryConfigTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schema_version": 1,
-                        "root": "C:/wrong",
-                        "model_root": "G:/LLMs",
-                        "tooling_root": "G:/safe",
-                        "reports_root": "G:/safe/reports",
+                        "root": "/tmp/wrong",
+                        "model_root": "models",
+                        "tooling_root": ".tooling",
+                        "reports_root": "reports",
                         "bridge_url": "http://127.0.0.1:9876",
                         "blender_candidates": [],
                     }

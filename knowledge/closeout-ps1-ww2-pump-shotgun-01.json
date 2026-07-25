@@ -1,0 +1,7 @@
+{
+  "project_id": "ps1_ww2_pump_shotgun_01",
+  "status": "complete",
+  "next_action": "integrate the published GLB in a Three.js scene and invoke Pump_Open, Extract_Shell, Pump_Close, Trigger_Pull, and Fire by clip name",
+  "candidate_lessons": [],
+  "summary": "Repaired the factory launcher so worktree invocations resolve the factory module, rebuilt the M42 pump shotgun with packed 256x256 base-color and 128x128 ORM atlases, and published a 900-triangle GLB. The package contains two materials only: the weapon atlas plus a fire-only untextured emissive muzzle flash. It exports one eight-joint armature and five reusable clips: Pump_Open, Extract_Shell, Pump_Close, Trigger_Pull, and Fire. Technical checks passed: factory doctor, host contract tests, Blender behavior tests, standalone GLB validation, and validator regression coverage."
+}

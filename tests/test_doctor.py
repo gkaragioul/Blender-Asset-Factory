@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from factory.config import FactoryConfig
 from factory.doctor import _probe_bridge, probe
+from tests.temp_paths import temporary_root
 
 
 class DoctorTest(unittest.TestCase):
@@ -23,7 +24,7 @@ class DoctorTest(unittest.TestCase):
                 sent.append(payload)
 
             def recv(self, _size):
-                return b'{"id":"doctor","success":true,"result":{}}\n'
+                return b'{"status":"success","result":{}}'
 
         with patch(
             "factory.doctor.socket.create_connection",
@@ -33,12 +34,12 @@ class DoctorTest(unittest.TestCase):
 
         request = json.loads(sent[0].decode("utf-8"))
         self.assertTrue(ok)
-        self.assertEqual(request["command"], "scene.get_info")
+        self.assertEqual(request["type"], "get_scene_info")
         self.assertEqual(request["params"], {})
-        self.assertEqual(detail, "scene.get_info succeeded")
+        self.assertEqual(detail, "get_scene_info succeeded")
 
     def test_finds_blender_candidate_and_reports_missing_optionals(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             blender = Path(temp) / "blender.exe"
             blender.write_bytes(b"fixture")
             config = FactoryConfig(
@@ -69,7 +70,7 @@ class DoctorTest(unittest.TestCase):
         )
 
     def test_doctor_does_not_create_missing_model_root(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             missing = Path(temp) / "missing-model-root"
             base = FactoryConfig.load()
             config = FactoryConfig(
@@ -84,7 +85,7 @@ class DoctorTest(unittest.TestCase):
             self.assertFalse(missing.exists())
 
     def test_release_runtime_is_probed_from_pinned_files(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             tooling = Path(temp)
             node = tooling / "node.exe"
             gltfpack = tooling / "gltfpack.exe"
@@ -109,6 +110,13 @@ class DoctorTest(unittest.TestCase):
         self.assertEqual(report["capabilities"]["gltfpack"]["version"], "1.2")
         self.assertEqual(report["capabilities"]["gltf_validator"]["version"], "2.0.0-dev.3.10")
         self.assertEqual(report["capabilities"]["playwright_core"]["version"], "1.61.1")
+
+    def test_linux_browser_can_be_discovered_from_path(self):
+        base = FactoryConfig.load()
+        with patch("factory.doctor.shutil.which", return_value="/usr/bin/google-chrome"), patch("factory.doctor.Path.is_file", return_value=True), patch("factory.doctor._probe_bridge", return_value=(False, "offline")):
+            report = probe(base)
+        self.assertEqual(report["capabilities"]["browser"]["status"], "available")
+        self.assertEqual(report["capabilities"]["browser"]["path"], "/usr/bin/google-chrome")
 
 
 if __name__ == "__main__":

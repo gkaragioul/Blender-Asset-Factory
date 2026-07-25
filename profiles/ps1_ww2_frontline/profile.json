@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "profile_id": "ps1_ww2_frontline",
+  "display_name": "PS1 WW2 Frontline Commercial Pack",
+  "purpose": "Commercial low-poly WW2-inspired assets for Three.js games and AI game prototypes.",
+  "geometry": {
+    "faceted_normals": true,
+    "weapon_triangles": [500, 1200],
+    "prop_triangles": [100, 600],
+    "environment_triangles": [300, 1500],
+    "silhouette_first": true
+  },
+  "textures": {
+    "filtering": "nearest",
+    "base_color_sizes": [128, 256],
+    "orm_sizes": [64, 128],
+    "palette_style": "muted wartime browns, dark steel, olive drab, canvas khaki, soot, mud, worn paint"
+  },
+  "legal_style_bounds": {
+    "fictionalized_designs": true,
+    "avoid_trademarks": true,
+    "avoid_extremist_symbols": true,
+    "avoid_exact_weapon_branding": true
+  }
+}

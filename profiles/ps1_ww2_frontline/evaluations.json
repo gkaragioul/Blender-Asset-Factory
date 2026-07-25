@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "profile_id": "ps1_ww2_frontline",
+  "visual_scores": {
+    "minimum_total": 0.82,
+    "criteria": [
+      {"id": "thumbnail_silhouette", "weight": 0.22, "description": "Readable asset identity at marketplace thumbnail size."},
+      {"id": "material_separation", "weight": 0.18, "description": "Wood, metal, canvas, paint, and grime separate clearly."},
+      {"id": "ps1_texture_authenticity", "weight": 0.18, "description": "Low-resolution pixel atlas feels deliberate, not accidental noise."},
+      {"id": "ww2_frontline_believability", "weight": 0.16, "description": "Period-inspired but fictionalized forms feel coherent."},
+      {"id": "runtime_lightweight", "weight": 0.14, "description": "Triangle, material, texture, and file-size budgets remain lightweight."},
+      {"id": "storefront_appeal", "weight": 0.12, "description": "Preview/contact sheet is attractive enough to sell."}
+    ]
+  }
+}

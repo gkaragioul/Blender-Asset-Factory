@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "asset_id": "ww2_double_barrel_shotgun_benchmark_01",
+  "style_profile": "ps1_ww2_frontline",
+  "intended_use": "Fictionalized side-by-side break-action shotgun benchmark for a lightweight Three.js WW2-inspired prop pack; visually recognizable in third-person, first-person, and thumbnail views without copying a specific manufacturer or model.",
+  "required_parts": [
+    "continuous_shoulder_stock_with_comb_and_butt",
+    "narrow_grip_wrist_transition",
+    "break_action_receiver_with_hinge",
+    "top_lever_and_tang",
+    "two_side_by_side_barrels",
+    "central_barrel_rib",
+    "paired_muzzle_openings",
+    "wooden_fore_end_attached_beneath_barrels",
+    "two_triggers",
+    "trigger_guard",
+    "front_bead_sight",
+    "clear_wood_steel_material_separation"
+  ],
+  "forbidden_details": [
+    "manufacturer_logos",
+    "copied_model_markings",
+    "copied_decorative_engraving",
+    "extremist_symbols",
+    "modern_optics",
+    "rails",
+    "detachable_magazines",
+    "over_under_barrel_layout",
+    "floating_or_disconnected_controls",
+    "random_procedural_surface_noise"
+  ],
+  "budgets": {
+    "master_source_triangles_max": 250000,
+    "lod0_triangles_max": 3500,
+    "lod1_triangles_max": 1800,
+    "lod2_triangles_max": 700,
+    "runtime_materials_max": 3,
+    "master_texture_max_px": 2048,
+    "runtime_texture_max_px": 512,
+    "runtime_glb_target_bytes": 1048576
+  },
+  "cameras": [
+    "hero_three_quarter_left",
+    "hero_three_quarter_right",
+    "orthographic_left",
+    "orthographic_right",
+    "orthographic_front_muzzle",
+    "orthographic_rear",
+    "orthographic_top",
+    "orthographic_bottom",
+    "break_action_detail",
+    "receiver_clay_detail",
+    "first_person_gameplay",
+    "thumbnail_black_silhouette"
+  ],
+  "retry_budget": {
+    "concept": 3,
+    "multi_view_consistency": 2,
+    "reconstruction": 3,
+    "repair": 2,
+    "retopology": 2,
+    "texture": 2
+  },
+  "references": [
+    {
+      "id": "nakhjir-01",
+      "kind": "consistent_identity_receiver_and_stock",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_1.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-01.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-01.jpg"
+    },
+    {
+      "id": "nakhjir-02",
+      "kind": "consistent_identity_disassembled_side_layout",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_2.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-02.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-02.jpg"
+    },
+    {
+      "id": "nakhjir-03",
+      "kind": "consistent_identity_barrel_rib_and_receiver",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_3.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-03.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-03.jpg"
+    },
+    {
+      "id": "nakhjir-04",
+      "kind": "consistent_identity_stock_wrist_tang_top",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_4.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-04.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-04.jpg"
+    },
+    {
+      "id": "nakhjir-05",
+      "kind": "consistent_identity_muzzle_chambers_and_receiver",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_5.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-05.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-05.jpg"
+    },
+    {
+      "id": "nakhjir-06",
+      "kind": "consistent_identity_full_side_silhouette",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nakhjir_2_Double_Barrel_Shotgun_6.jpg",
+      "creator": "Kamitoghani",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/nakhjir-06.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/nakhjir-06.jpg"
+    },
+    {
+      "id": "break-action-closeup",
+      "kind": "receiver_hinge_extractors_and_open_chambers",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Break-action_shotgun_close-up_01.jpg",
+      "creator": "Thierry Marthy",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/break-action-closeup.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/break-action-closeup.jpg"
+    },
+    {
+      "id": "public-domain-diagram",
+      "kind": "clean_side_silhouette_and_break_action_diagram",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Shotgun_(PSF).png",
+      "creator": "Pearson Scott Foresman",
+      "license": "Public Domain",
+      "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/public-domain-diagram.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/public-domain-diagram.png"
+    },
+    {
+      "id": "met-cc0-shotgun",
+      "kind": "historical_full_side_proportion_and_wood_steel_hierarchy",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Double-barreled_Shotgun_MET_sfsb55.218_006.jpg",
+      "creator": "Antoine Giraud, Nicolas Bouillet, and Jean François Brunon; Metropolitan Museum of Art",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "license_snapshot_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/licenses/met-cc0-shotgun.json",
+      "local_path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/projects/ww2_lowpoly_frontline_pack/benchmark-shotgun-v1/references/raw/met-cc0-shotgun.jpg"
+    }
+  ]
+}

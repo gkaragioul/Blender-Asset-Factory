@@ -27,7 +27,8 @@ class _QuietHandler(SimpleHTTPRequestHandler):
 
 
 def _browser_path() -> Path:
-    candidates = (
+    linux_browser = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
+    candidates = tuple(Path(path) for path in (linux_browser,) if path) + (
         Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
         Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"),
         Path(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"),

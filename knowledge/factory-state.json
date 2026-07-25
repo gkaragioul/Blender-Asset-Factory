@@ -2,15 +2,15 @@
   "capabilities": {
     "armorpaint": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\armorpaint\\ArmorPaint.exe",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/armorpaint/ArmorPaint.exe",
       "status": "unavailable",
       "version": null
     },
     "blender": {
       "detail": "",
-      "path": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe",
+      "path": "/usr/bin/blender",
       "status": "available",
-      "version": "Blender 5.2.0 LTS"
+      "version": "Blender 4.0.2"
     },
     "bridge": {
       "detail": "timed out",
@@ -20,83 +20,77 @@
     },
     "browser": {
       "detail": "",
-      "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "path": "/usr/bin/google-chrome",
       "status": "available",
       "version": null
     },
     "comfyui": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\comfyui\\main.py",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/comfyui/main.py",
       "status": "unavailable",
       "version": null
     },
     "gltf_validator": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\gltf-validator\\package.json",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/release-node/node_modules/gltf-validator/package.json",
       "status": "available",
       "version": "2.0.0-dev.3.10"
     },
     "gltfpack": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\gltfpack\\gltfpack.exe",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/release-node/node_modules/.bin/gltfpack",
       "status": "available",
-      "version": "1.2"
+      "version": "gltfpack 1.2"
     },
     "material_maker": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\material-maker\\material_maker.exe",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/material-maker/material_maker.exe",
       "status": "unavailable",
       "version": null
     },
     "model_root": {
-      "detail": "free_bytes=797592416256",
-      "path": "G:\\LLMs",
+      "detail": "free_bytes=154006392832",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/models",
       "status": "available",
       "version": null
     },
     "node": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\node\\node-v24.17.0-win-x64\\node.exe",
+      "path": "/home/<user>/.local/bin/node",
       "status": "available",
-      "version": "v24.17.0"
+      "version": "v22.23.1"
     },
     "playwright_core": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\playwright-core\\package.json",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/release-node/node_modules/playwright-core/package.json",
       "status": "available",
       "version": "1.61.1"
     },
     "python": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\python\\cpython-3.12.11-windows-x86_64-none\\python.exe",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/SpiralWarrior/server/.venv/bin/python3",
       "status": "available",
-      "version": "Python 3.12.11"
+      "version": "Python 3.11.15"
     },
     "three": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\release-node\\node_modules\\three\\package.json",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/.tooling/release-node/node_modules/three/package.json",
       "status": "available",
       "version": "0.185.1"
     },
     "threejs_viewer": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\tools\\threejs-viewer\\package.json",
+      "path": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/tools/threejs-viewer/package.json",
       "status": "available",
       "version": null
     },
     "uv": {
       "detail": "",
-      "path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\.tooling\\uv\\uv.exe",
+      "path": "/home/<user>/.local/bin/uv",
       "status": "available",
-      "version": "uv 0.11.29 (901092ee1 2026-07-15 x86_64-pc-windows-msvc)"
+      "version": "uv 0.11.30 (x86_64-unknown-linux-gnu)"
     }
   },
-  "checked_at": "2026-07-18T22:37:32.918849+00:00",
-  "last_verification": {
-    "checked_at": "2026-07-18T22:37:55.759954+00:00",
-    "git_commit": "0e4e16524a0a1edc1b42a04f60ff89c5e35bf478",
-    "ok": true,
-    "report_path": "G:\\DevWork\\GameDev\\BlenderAssetFactory\\reports\\runs\\20260718T223755.759954Z\\phase-2-verification.json"
-  },
+  "checked_at": "2026-07-21T23:31:41.044924+00:00",
   "schema_version": 1
 }

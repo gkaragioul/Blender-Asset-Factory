@@ -231,6 +231,19 @@ def _optimize(args: list[str]) -> tuple[int, dict]:
         report_path,
         pixel_atlas="--pixel-atlas" in args,
     )
+    return 0, envelope(
+        "optimize",
+        True,
+        "Optimized derivative created and validated",
+        {
+            "authoritative_source": report["authoritative_source"],
+            "derivative": report["derivative"],
+            "source_sha256": report["source_sha256"],
+            "derivative_sha256": report["derivative_sha256"],
+            "uv_max_drift": report["uv_max_drift"],
+            "report_path": str(report_path.resolve(strict=False)),
+        },
+    )
 
 
 def _preview(args: list[str]) -> tuple[int, dict]:
@@ -310,6 +323,48 @@ def _release(args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _art(args: list[str]) -> tuple[int, dict]:
+    from .art_runs import approve_concept, create_art_run, stage_concept_candidate
+    from .config import FactoryConfig
+
+    if not args:
+        raise ValueError("art requires init, stage-concept, or approve-concept")
+    config = FactoryConfig.load()
+    action = args[0]
+    action_args = args[1:]
+    if action == "init":
+        result = create_art_run(
+            config,
+            Path(_option(action_args, "--brief")),
+            run_id=_option(action_args, "--run-id"),
+        )
+        summary = "Immutable art run initialized"
+        data = result
+    elif action == "stage-concept":
+        result = stage_concept_candidate(
+            config,
+            _option(action_args, "--run-id"),
+            _option(action_args, "--candidate-id"),
+            Path(_option(action_args, "--image")),
+            _json_input(config, action_args, "--metadata"),
+        )
+        summary = "Concept candidate staged immutably"
+        data = result
+    elif action == "approve-concept":
+        result = approve_concept(
+            config,
+            _option(action_args, "--run-id"),
+            _option(action_args, "--candidate-id"),
+            approved_by=_option(action_args, "--approved-by"),
+            evidence=_option(action_args, "--evidence"),
+        )
+        summary = "Concept approval gate recorded"
+        data = {**result, "concept_approved": True}
+    else:
+        raise ValueError(f"unknown art action: {action}")
+    return 0, envelope("art", True, summary, data)
+
+
 def _verify(args: list[str]) -> tuple[int, dict]:
     from .config import FactoryConfig
     from .verification import verify
@@ -345,6 +400,7 @@ def _verify(args: list[str]) -> tuple[int, dict]:
 
 def _handlers() -> dict[str, Handler]:
     return {
+        "art": _art,
         "doctor": _doctor,
         "index-models": _index_models,
         "learn": _learn,

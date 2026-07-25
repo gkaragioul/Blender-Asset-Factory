@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "profile_id": "ps1_ww2_frontline",
+  "materials": {
+    "aged_walnut": {
+      "base_palette": ["#2a1409", "#5a2b13", "#8a5325", "#c0894d"],
+      "notes": "Directional pixel grain, darker underside, chipped high edges."
+    },
+    "blued_steel": {
+      "base_palette": ["#11161a", "#263039", "#46535b", "#9da7aa"],
+      "notes": "Dark receiver planes, sparse edge highlights, oil grime."
+    },
+    "canvas_khaki": {
+      "base_palette": ["#403b27", "#6b6442", "#9b8d58", "#c0b579"],
+      "notes": "Soft blocky weave impression; no high-res fabric."
+    },
+    "olive_drab_paint": {
+      "base_palette": ["#202719", "#3e4a29", "#65723d", "#9ba46e"],
+      "notes": "Paint chips expose darker metal or wood underneath."
+    }
+  }
+}

@@ -11,6 +11,7 @@ from factory.learning import (
     promote_candidate,
     record_candidate,
 )
+from tests.temp_paths import temporary_root
 
 
 class LearningPolicyTest(unittest.TestCase):
@@ -25,7 +26,7 @@ class LearningPolicyTest(unittest.TestCase):
         )
 
     def test_candidate_does_not_become_lesson_without_evidence(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             path = record_candidate(
                 self.config(root),
@@ -44,7 +45,7 @@ class LearningPolicyTest(unittest.TestCase):
                 )
 
     def test_user_approval_promotes_profile_lesson(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             config = self.config(root)
             record_candidate(
@@ -76,7 +77,7 @@ class LearningPolicyTest(unittest.TestCase):
             / "candidates"
             / "cli-candidate-001.json"
         )
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             path = Path(temp) / "candidate.json"
             path.write_text(
                 json.dumps(

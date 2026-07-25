@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "pack_id": "ww2_lowpoly_frontline_pack",
+  "display_name": "WW2 Low-Poly Frontline Asset Pack",
+  "automation": "ai_only",
+  "platform": "linux-native",
+  "output_root": "products/ww2_lowpoly_frontline_pack",
+  "product_manifest": "products/ww2_lowpoly_frontline_pack/pack-manifest.json",
+  "style_profile": "ps1_ww2_frontline",
+  "production_mode": {
+    "human_modeling_required": false,
+    "blender_authority": true,
+    "hermes_mcp_blender": "localhost:9876",
+    "iteration_policy": "generate_validate_preview_score_retry_until_pass"
+  },
+  "quality_gates": {
+    "khronos_gltf_errors": 0,
+    "minimum_visual_score": 0.82,
+    "threejs_preview_required": true,
+    "contact_sheet_required": true,
+    "optimized_derivative_required": true,
+    "buyer_docs_required": true
+  },
+  "release_targets": {
+    "marketplaces": ["itch.io", "sketchfab-store-or-alternative", "direct-download"],
+    "archive_name": "ww2-lowpoly-frontline-asset-pack.zip",
+    "include_source_blend": true,
+    "include_optimized_glb": true
+  },
+  "first_batch": [
+    "ww2_pump_shotgun_01",
+    "ww2_double_barrel_shotgun_01",
+    "ww2_bolt_rifle_01",
+    "ww2_smg_01",
+    "ww2_ammo_crate_01",
+    "ww2_sandbag_stack_01"
+  ],
+  "full_pack_minimum_asset_count": 15
+}

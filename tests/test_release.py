@@ -8,6 +8,7 @@ from factory.config import FactoryConfig
 from factory.io import sha256_file
 from factory.release import ReleaseAdapters, ReleaseError, release_package
 from tests.glb_fixture import _fixture_png, write_triangle_glb
+from tests.temp_paths import temporary_root
 
 
 class ReleaseTest(unittest.TestCase):
@@ -66,7 +67,7 @@ class ReleaseTest(unittest.TestCase):
         return ReleaseAdapters(validate, optimize, preview, contact)
 
     def test_all_gates_finish_before_atomic_publication(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             config, source, job, published = self._fixture(root)
             before = sha256_file(source)
@@ -82,7 +83,7 @@ class ReleaseTest(unittest.TestCase):
             self.assertTrue(all(len(item["sha256"]) == 64 for item in manifest["files"]))
 
     def test_failed_gate_reports_but_never_publishes(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             config, _source, job, published = self._fixture(root)
             calls = []

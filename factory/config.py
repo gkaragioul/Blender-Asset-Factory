@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-CANONICAL_ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory")
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -62,9 +61,10 @@ class FactoryConfig:
                 Path(item) for item in data["blender_candidates"]
             ),
         )
-        trusted_worktrees = CANONICAL_ROOT / ".worktrees"
+        canonical_root = source_root
+        trusted_worktrees = canonical_root / ".worktrees"
         if (
-            config.root != CANONICAL_ROOT
+            config.root != canonical_root
             and trusted_worktrees not in config.root.parents
         ):
             raise ConfigurationError(
@@ -84,8 +84,9 @@ class FactoryConfig:
 
     def require_owned_path(self, path: Path) -> Path:
         resolved = path.resolve(strict=False)
-        if resolved.drive.upper() != "G:":
+        owned_roots = (self.root, self.model_root)
+        if not any(resolved == root or root in resolved.parents for root in owned_roots):
             raise ConfigurationError(
-                f"factory-owned path must be on drive G: {resolved}"
+                f"factory-owned path must be beneath the factory root or model root: {resolved}"
             )
         return resolved

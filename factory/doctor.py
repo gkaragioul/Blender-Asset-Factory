@@ -41,22 +41,27 @@ def _probe_bridge(url: str) -> tuple[bool, str]:
         parsed = urlparse(url)
         request = {
             "id": "factory-doctor",
-            "command": "scene.get_info",
+            "type": "get_scene_info",
             "params": {},
         }
         with socket.create_connection(
             (parsed.hostname or "127.0.0.1", parsed.port or 9876), timeout=1
         ) as connection:
-            connection.sendall((json.dumps(request) + "\n").encode("utf-8"))
+            connection.sendall(json.dumps(request).encode("utf-8"))
             buffer = b""
-            while b"\n" not in buffer:
+            while True:
                 chunk = connection.recv(65536)
                 if not chunk:
-                    raise ConnectionError("bridge closed before a full response")
+                    break
                 buffer += chunk
-        response = json.loads(buffer.split(b"\n", 1)[0].decode("utf-8"))
-        if response.get("success"):
-            return True, "scene.get_info succeeded"
+                try:
+                    json.loads(buffer.decode("utf-8"))
+                    break
+                except json.JSONDecodeError:
+                    continue
+        response = json.loads(buffer.decode("utf-8"))
+        if response.get("status") == "success" or response.get("success"):
+            return True, "get_scene_info succeeded"
         return False, str(response.get("error", "bridge request failed"))
     except Exception as error:
         return False, str(error)
@@ -64,12 +69,20 @@ def _probe_bridge(url: str) -> tuple[bool, str]:
 
 def probe(config: FactoryConfig) -> dict:
     capabilities: dict[str, dict] = {}
+    path_browser = next(
+        (
+            shutil.which(name)
+            for name in ("google-chrome", "chromium", "chromium-browser", "microsoft-edge", "msedge")
+            if shutil.which(name)
+        ),
+        None,
+    )
     browser_candidates = (
         Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),
         Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"),
         Path(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"),
     )
-    browser = next((path for path in browser_candidates if path.is_file()), None)
+    browser = Path(path_browser) if path_browser else next((path for path in browser_candidates if path.is_file()), None)
     capabilities["browser"] = (
         _cap("available", browser)
         if browser

@@ -8,6 +8,7 @@ from unittest.mock import patch
 from factory.config import FactoryConfig
 from factory.gltf_validation import GltfValidationError, validate_glb
 from tests.glb_fixture import write_triangle_glb
+from tests.temp_paths import temporary_root
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,7 +25,7 @@ class GltfValidationTest(unittest.TestCase):
         self.assertEqual(json.loads(report_path.read_text())["input_sha256"], report["input_sha256"])
 
     def test_validator_errors_fail_closed_and_are_recorded(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             source = write_triangle_glb(root / "bad.glb")
             config = FactoryConfig(root, root / "models", root / ".tooling", root / "reports", "http://127.0.0.1:9876", ())

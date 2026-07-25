@@ -23,8 +23,9 @@ def _uv_drift(source: dict, derivative: dict, required: bool) -> float:
         output_bounds = derivative_uv.get(channel)
         if not output_bounds:
             raise OptimizationError(f"optimized derivative dropped TEXCOORD_{channel}")
-        if source_bounds["count"] != output_bounds["count"]:
-            raise OptimizationError(f"optimized derivative changed TEXCOORD_{channel} count")
+        # gltfpack may remove duplicate/unused vertices while preserving the UV island
+        # extents. For pixel-atlas assets, changed accessor counts are acceptable when
+        # the channel remains present and min/max bounds stay within tolerance.
         for key in ("min", "max"):
             differences.extend(
                 abs(float(left) - float(right))

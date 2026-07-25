@@ -1,11 +1,11 @@
 # Blender Asset Factory - Verified State
 
-- Repository root: `G:\DevWork\GameDev\BlenderAssetFactory`
-- Model root: `G:\LLMs`
-- Last doctor check: `2026-07-18T22:37:32.918849+00:00`
-- Last verification passed: `True`
-- Last verification commit: `0e4e16524a0a1edc1b42a04f60ff89c5e35bf478`
-- Last verification report: `G:\DevWork\GameDev\BlenderAssetFactory\reports\runs\20260718T223755.759954Z\phase-2-verification.json`
+- Repository root: `/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0`
+- Model root: `/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/models`
+- Last doctor check: `2026-07-21T23:31:41.044924+00:00`
+- Last verification passed: `none`
+- Last verification commit: `none`
+- Last verification report: `none`
 
 ## Capabilities
 

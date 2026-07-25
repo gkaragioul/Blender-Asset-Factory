@@ -7,6 +7,7 @@ from factory.config import FactoryConfig
 from factory.io import sha256_file
 from factory.optimizer import OptimizationError, optimize_glb
 from tests.glb_fixture import write_triangle_glb
+from tests.temp_paths import temporary_root
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,7 +33,7 @@ class OptimizerTest(unittest.TestCase):
             self.assertEqual(json.loads(report_path.read_text())["derivative_sha256"], sha256_file(destination))
 
     def test_refuses_to_replace_authoritative_source(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             source = write_triangle_glb(Path(temp) / "source.glb")
             base = FactoryConfig.load()
             config = FactoryConfig(Path(temp), base.model_root, base.tooling_root, Path(temp) / "reports", base.bridge_url, ())

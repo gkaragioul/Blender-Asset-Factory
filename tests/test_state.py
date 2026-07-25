@@ -5,6 +5,7 @@ from pathlib import Path
 
 from factory.config import FactoryConfig
 from factory.state import record_verification, refresh_bootstrap, resume_action
+from tests.temp_paths import temporary_root
 
 
 class StateTest(unittest.TestCase):
@@ -19,7 +20,7 @@ class StateTest(unittest.TestCase):
         )
 
     def test_resume_returns_exact_m42_continuation(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             (root / "knowledge").mkdir()
             (root / "knowledge" / "active-project.json").write_text(
@@ -41,7 +42,7 @@ class StateTest(unittest.TestCase):
         self.assertEqual(action["next_action"], "finish_task_3_atlas_uv_wear")
 
     def test_refresh_bootstrap_is_deterministic(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             knowledge = root / "knowledge"
             knowledge.mkdir()
@@ -71,7 +72,7 @@ class StateTest(unittest.TestCase):
         self.assertIn("Run `factory.ps1 doctor` before mutations", first)
 
     def test_record_verification_persists_transferable_summary(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             root = Path(temp)
             knowledge = root / "knowledge"
             knowledge.mkdir()

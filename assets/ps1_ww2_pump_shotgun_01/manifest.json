@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "asset_id": "ps1_ww2_pump_shotgun_01",
+  "display_name": "M42 Field Service Pump",
+  "generation_token": "sync-1-10672-24989029393800",
+  "dimensions_m": [
+    1.02,
+    0.108,
+    0.233
+  ],
+  "triangles": 900,
+  "triangle_budget": 900,
+  "within_budget": true,
+  "material_count": 2,
+  "weapon_material_count": 1,
+  "flash_material_count": 1,
+  "length_valid": true,
+  "orientation_valid": true,
+  "transforms_valid": true,
+  "texture_count": 2,
+  "textures_embedded": true,
+  "base_color_size": [
+    256,
+    256
+  ],
+  "orm_size": [
+    128,
+    128
+  ],
+  "texture_dimensions": {
+    "base_color": [
+      256,
+      256
+    ],
+    "orm": [
+      128,
+      128
+    ]
+  },
+  "uv_complete": true,
+  "uv_padding_px": 4,
+  "validation_status": "builder_validated",
+  "target_length_m": 1.02,
+  "pivot_m": [
+    -0.06,
+    0.0,
+    -0.06
+  ],
+  "pivot_convention": "firing-hand grip; barrel +X; Blender Z-up; glTF Y-up",
+  "collision_object": "COLLISION_PS1_WW2_Pump_Shotgun_01",
+  "collision_triangles": 12,
+  "preview_resolution": [
+    960,
+    540
+  ],
+  "files": {
+    "blend": "ps1_ww2_pump_shotgun_01.blend",
+    "glb": "ps1_ww2_pump_shotgun_01.glb",
+    "preview": "ps1_ww2_pump_shotgun_01_preview.png",
+    "manifest": "manifest.json"
+  },
+  "file_sizes_bytes": {
+    "blend": 178880,
+    "glb": 146844,
+    "preview": 246579
+  }
+}

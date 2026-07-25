@@ -6,11 +6,12 @@ from unittest.mock import patch
 from factory.cli import run
 from factory.config import FactoryConfig
 from factory.transfer import TransferError, index_models
+from tests.temp_paths import temporary_root
 
 
 class TransferTest(unittest.TestCase):
     def test_model_index_is_sorted_and_relative(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             model_root = Path(temp)
             (model_root / "checkpoints").mkdir()
             (model_root / "vae").mkdir()
@@ -37,8 +38,8 @@ class TransferTest(unittest.TestCase):
 
     def test_symlinks_outside_model_root_are_rejected(self):
         with tempfile.TemporaryDirectory(
-            dir="G:\\"
-        ) as model_temp, tempfile.TemporaryDirectory(dir="G:\\") as outside_temp:
+            dir=temporary_root()
+        ) as model_temp, tempfile.TemporaryDirectory(dir=temporary_root()) as outside_temp:
             model_root = Path(model_temp)
             outside = Path(outside_temp) / "outside.safetensors"
             outside.write_bytes(b"outside")
@@ -60,7 +61,7 @@ class TransferTest(unittest.TestCase):
                 index_models(config, hash_files=True)
 
     def test_index_models_cli_writes_external_manifest(self):
-        with tempfile.TemporaryDirectory(dir="G:\\") as temp:
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
             model_root = Path(temp)
             (model_root / "checkpoints").mkdir()
             (model_root / "checkpoints" / "fixture.safetensors").write_bytes(
