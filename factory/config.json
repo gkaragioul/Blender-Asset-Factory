@@ -8,6 +8,8 @@
   "blender_candidates": [
     "/usr/bin/blender",
     "/snap/bin/blender",
-    "/usr/local/bin/blender"
+    "/usr/local/bin/blender",
+    "C:/Program Files/Blender Foundation/*/blender.exe",
+    "C:/Program Files/Blender Foundation/Blender/blender.exe"
   ]
 }
