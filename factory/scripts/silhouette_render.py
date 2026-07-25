@@ -126,7 +126,6 @@ def _bounds(meshes: list) -> tuple[tuple[float, float, float], float]:
 
 def main() -> int:
     payload_path, report_path = _arguments()
-    payload = json.loads(payload_path.read_text(encoding="utf-8"))
     report = {
         "ok": False,
         "renders": [],
@@ -136,6 +135,10 @@ def main() -> int:
         "error": None,
     }
     try:
+        # Parsed INSIDE the try -- see retro_pass.main for why. A payload that
+        # cannot be read must produce a report saying so, not the same silence
+        # a crashed Blender produces.
+        payload = json.loads(payload_path.read_text(encoding="utf-8"))
         meshes = _import(Path(payload["source"]))
         if not meshes:
             raise ValueError("source contains no mesh objects")

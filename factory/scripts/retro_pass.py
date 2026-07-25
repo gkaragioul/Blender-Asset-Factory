@@ -30,9 +30,17 @@ from mathutils import Vector
 # nearest-colour searches can silently disagree on a tie or an edge case and
 # turn every asset in a pack into a gate failure. There is exactly one
 # implementation of each, shared across the process boundary.
+#
+# APPEND, never insert(0). The repository root contains `scripts`, `tests`,
+# `tools`, `models`, `docs` and `profiles`, every one of which Python 3 will
+# happily import as a namespace package. Putting the root FIRST on sys.path
+# means any of those names shadows a same-named module Blender itself (or one
+# of its addons) imports, and the failure would surface as an unrelated
+# AttributeError deep inside an addon. Appending gives factory.* the same
+# reachability with none of the shadowing.
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPOSITORY_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPOSITORY_ROOT))
+    sys.path.append(str(_REPOSITORY_ROOT))
 
 from factory.palette import load_palette  # noqa: E402
 from factory.png import encode_rgba  # noqa: E402
@@ -265,14 +273,36 @@ def _world_bounds(meshes: list):
 
 
 def _remove_floaters(meshes: list) -> list:
+    """Drop parts too small to be visible, measured by PROJECTED AREA.
+
+    Area, not volume, and that distinction is the whole point of this
+    function's shape.
+
+    The volume form -- the product of all three AABB extents against
+    `(diagonal * FLOATER_FRACTION) ** 3` -- deletes every FLAT part, whatever
+    its size. A zero-thickness quad has one extent of 0, floored at 1e-9, so a
+    1x1 card on an asset of diagonal 1.7 scored volume 1e-9 against a
+    threshold of 4.9e-9 and was culled. That is not an edge case in this pack:
+    cutout cards are how PS1-era art renders barbed wire (`barbed_wire_coil`,
+    `barbed_wire_post`), chain-link, foliage and signpost lettering. Every
+    one of those assets would have arrived at the exporter with its geometry
+    silently gone.
+
+    Projecting onto the two LARGEST extents ignores thickness entirely, which
+    is the correct question: a floater is something too small to SEE, and a
+    flat card of real extent is not. The threshold is the same fraction of the
+    asset diagonal, squared instead of cubed, so it stays scale-free -- a part
+    is a floater when its projected area is smaller than a square
+    FLOATER_FRACTION of the diagonal on a side.
+    """
     _minimum, _maximum = _world_bounds(meshes)
     diagonal = math.dist(_minimum, _maximum)
-    threshold = (diagonal * FLOATER_FRACTION) ** 3
+    threshold = (diagonal * FLOATER_FRACTION) ** 2
     kept = []
     for obj in meshes:
-        dimensions = obj.dimensions
-        volume = max(dimensions[0], 1e-9) * max(dimensions[1], 1e-9) * max(dimensions[2], 1e-9)
-        if volume < threshold:
+        extents = sorted(obj.dimensions, reverse=True)
+        area = max(extents[0], 1e-9) * max(extents[1], 1e-9)
+        if area < threshold:
             bpy.data.objects.remove(obj, do_unlink=True)
         else:
             kept.append(obj)
@@ -519,19 +549,27 @@ def _resolve_source_maps(meshes: list, source: Path) -> dict:
         name for name, image in sorted(images.items()) if not _image_loaded(image)
     ]
 
-    # Searched narrow-to-wide, and never wider than the asset's own folder:
-    # find_missing_files walks the directory recursively, so handing it a
-    # broad root would be both slow and a way to pick up an unrelated file
-    # that merely shares a name.
-    for directory in (source.parent, source.parent.parent):
-        if not any(not _image_loaded(image) for image in images.values()):
-            break
-        if not directory.is_dir():
-            continue
-        try:
-            bpy.ops.file.find_missing_files(directory=str(directory))
-        except RuntimeError:
-            continue
+    # EXACTLY the source file's own directory, and never its parent.
+    #
+    # find_missing_files walks the directory RECURSIVELY and binds purely by
+    # FILENAME. The pack layout is raw/<asset_id>/model.glb, so source.parent
+    # is asset A's own folder while source.parent.parent is the folder holding
+    # every asset in the pack. Names like BaseColor.png and diffuse.png repeat
+    # across assets constantly, so searching the parent binds asset A's
+    # material to asset B's albedo -- and which one it finds depends on
+    # directory walk order, making it a determinism hazard on top of a
+    # correctness one. Determinism is the property the packs are sold on.
+    #
+    # Nothing is lost by narrowing: the recursive walk still reaches a
+    # `textures/` (or any other) subdirectory beside the mesh, which is where
+    # authored sources actually keep their maps. Anything genuinely outside
+    # the asset's own folder is not this asset's texture.
+    if any(not _image_loaded(image) for image in images.values()):
+        if source.parent.is_dir():
+            try:
+                bpy.ops.file.find_missing_files(directory=str(source.parent))
+            except RuntimeError:
+                pass
 
     unresolved = []
     for name, image in sorted(images.items()):
@@ -624,7 +662,20 @@ def _finalize_uvs(meshes: list) -> None:
             layers[0].active_render = True
 
 
-def _shared_uv_atlas(meshes: list) -> bool:
+def _shared_uv_atlas(meshes: list, resolution: int):
+    """Rebuild one shared 0..1 atlas for every part. Returns MEASURED facts.
+
+    Returns (overlapping_texels, covered_texels, per_part_texels) straight
+    from _uv_overlap_cells, run at the resolution the bake will use.
+
+    This used to `return True`, unconditionally, which made the report's
+    `stages.uv_regenerated` a constant and every assertion over it vacuous --
+    the check could not fail on a stage that decides whether the texture means
+    anything at all. Returning the measurement instead means a wiped or empty
+    atlas shows up as 0 covered texels, which is falsy, fails the existing
+    assertion, and gives Gate 1 a real lower bound to police (see
+    factory/gates.py MIN_ATLAS_COVERAGE).
+    """
     # A PS1 asset carries ONE texture, so every part must own a distinct
     # region of ONE 0..1 UV space.
     #
@@ -703,7 +754,7 @@ def _shared_uv_atlas(meshes: list) -> bool:
     )
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
-    return True
+    return _uv_overlap_cells(meshes, resolution)
 
 
 def _rasterize_uvs(obj, resolution: int):
@@ -1438,7 +1489,6 @@ def _strip_maps(meshes: list, drop_maps: list) -> list:
 
 def main() -> int:
     payload_path, report_path = _arguments()
-    payload = json.loads(payload_path.read_text(encoding="utf-8"))
     report = {
         "ok": False,
         "stages": {},
@@ -1465,6 +1515,13 @@ def main() -> int:
         "error": None,
     }
     try:
+        # Parsed INSIDE the try. Outside it, a malformed or unreadable payload
+        # raises before the report is written, and the host sees the generic
+        # "Blender produced no report" -- the same signal a crashed Blender
+        # gives. run_blender_script now deletes any stale report before
+        # launching, so that signal is honest; keeping the parse in here is
+        # what makes it RARE, and gives a real JSON-decode message instead.
+        payload = json.loads(payload_path.read_text(encoding="utf-8"))
         contract = payload["contract"]
         role = payload["role"]
         bands = contract["polycount_bands"]
@@ -1528,8 +1585,12 @@ def main() -> int:
         _prepare_uv_layers(meshes)
         report["stages"]["source_uvs_pinned"] = _pin_source_uvs(meshes)
         size = contract["texture_size"]
-        report["stages"]["uv_regenerated"] = _shared_uv_atlas(meshes)
-        overlapping, covered, per_part = _uv_overlap_cells(meshes, size)
+        overlapping, covered, per_part = _shared_uv_atlas(meshes, size)
+        # A MEASURED fact, not a constant: the number of atlas texels the
+        # rebuilt layout actually claims. 0 is falsy, so a wiped or empty
+        # atlas fails any truth assertion over this key instead of sailing
+        # past one that could never fail.
+        report["stages"]["uv_regenerated"] = covered
         report["stages"]["uv_overlap_cells"] = overlapping
         report["stages"]["uv_covered_cells"] = covered
         # Per-part texel counts: a part that scores 0 here is in the export

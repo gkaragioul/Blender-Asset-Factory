@@ -248,7 +248,13 @@ class RetroTextureTest(unittest.TestCase):
             "covered atlas cells are claimed by more than one part",
         )
         self.assertGreater(stages["uv_covered_cells"], 1000)
+        # uv_regenerated is the atlas stage's own MEASUREMENT of how many
+        # texels the rebuilt layout claims -- it used to be a hardcoded True,
+        # which made this assertion unable to fail on a load-bearing stage.
+        # Asserting it equals the independently-taken coverage count is what
+        # ties the two together: a wiped atlas scores 0 on both.
         self.assertTrue(stages["uv_regenerated"])
+        self.assertEqual(stages["uv_regenerated"], stages["uv_covered_cells"])
 
     def test_uses_nearest_neighbour_sampling(self):
         document = _glb_document(self.output)

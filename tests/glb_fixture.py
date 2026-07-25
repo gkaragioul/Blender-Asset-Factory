@@ -368,3 +368,310 @@ def write_cutout_cube_glb(path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(cutout_cube_glb_bytes())
     return path
+
+
+THIN_PLANE_COLOUR = (146, 118, 82)
+
+
+def thin_plane_glb_bytes() -> bytes:
+    """A GENUINELY FLAT 1x1 card: two triangles, zero thickness.
+
+    Every other fixture in this file is a cube, and the docstrings said why in
+    as many words -- "a cube rather than a plane/triangle because retro_pass's
+    floater removal discards it". That was a defect being worked around rather
+    than filed. `_remove_floaters` compared an AABB VOLUME whose zero extent
+    was floored at 1e-9 against `(diagonal * 0.001) ** 3`, so a 1x1 card on an
+    asset of diagonal 1.414 scored 1e-9 against 2.8e-9 and was deleted.
+
+    Cutout cards are not an exotic input for this pack. `barbed_wire_coil`,
+    `barbed_wire_post`, foliage, chain-link and signpost lettering planes are
+    all catalogued assets and all of them are flat. Every fixture being shaped
+    to dodge the defect is exactly why nothing could catch it.
+
+    The plane lies in the glTF XY plane (z == 0). The glTF importer maps
+    glTF (x, y, z) to Blender (x, -z, y), so it arrives with zero extent on
+    Blender Y; retro_pass's -90deg X rotation for `up_axis: "Y"` then stands it
+    upright with the 0..1 extent on the up axis, which is how a real card is
+    oriented.
+    """
+    corners = ((-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), (0.5, 1.0, 0.0), (-0.5, 1.0, 0.0))
+    positions = b"".join(struct.pack("<3f", *corner) for corner in corners)
+    uvs = b"".join(
+        struct.pack("<2f", corner[0] + 0.5, corner[1]) for corner in corners
+    )
+    indices = b"".join(struct.pack("<3H", *face) for face in ((0, 1, 2), (0, 2, 3)))
+    png = _solid_png(4, 4, THIN_PLANE_COLOUR)
+
+    uv_offset = len(positions)
+    indices_offset = uv_offset + len(uvs)
+    geometry_length = indices_offset + len(indices)
+    geometry = positions + uvs + indices + b"\x00" * ((4 - geometry_length % 4) % 4)
+    image_offset = len(geometry)
+    binary = geometry + png
+    binary += b"\x00" * ((4 - len(binary) % 4) % 4)
+
+    document = {
+        "asset": {"version": "2.0", "generator": "BAF thin plane fixture"},
+        "buffers": [{"byteLength": len(binary)}],
+        "bufferViews": [
+            {"buffer": 0, "byteOffset": 0, "byteLength": len(positions), "target": 34962},
+            {"buffer": 0, "byteOffset": uv_offset, "byteLength": len(uvs), "target": 34962},
+            {"buffer": 0, "byteOffset": indices_offset, "byteLength": len(indices), "target": 34963},
+            {"buffer": 0, "byteOffset": image_offset, "byteLength": len(png)},
+        ],
+        "accessors": [
+            {"bufferView": 0, "componentType": 5126, "count": 4, "type": "VEC3", "min": [-0.5, 0, 0], "max": [0.5, 1, 0]},
+            {"bufferView": 1, "componentType": 5126, "count": 4, "type": "VEC2", "min": [0, 0], "max": [1, 1]},
+            {"bufferView": 2, "componentType": 5123, "count": 6, "type": "SCALAR", "min": [0], "max": [3]},
+        ],
+        "images": [{"name": "PlaneBaseColor", "bufferView": 3, "mimeType": "image/png"}],
+        "samplers": [{"magFilter": 9728, "minFilter": 9728, "wrapS": 33071, "wrapT": 33071}],
+        "textures": [{"sampler": 0, "source": 0}],
+        "materials": [
+            {
+                "name": "PlaneMaterial",
+                "doubleSided": True,
+                "pbrMetallicRoughness": {
+                    "baseColorFactor": [1, 1, 1, 1],
+                    "baseColorTexture": {"index": 0},
+                    "metallicFactor": 0.0,
+                    "roughnessFactor": 0.9,
+                },
+            }
+        ],
+        "meshes": [
+            {
+                "name": "ThinPlane",
+                "primitives": [
+                    {"attributes": {"POSITION": 0, "TEXCOORD_0": 1}, "indices": 2, "material": 0}
+                ],
+            }
+        ],
+        "nodes": [{"mesh": 0}],
+        "scenes": [{"nodes": [0]}],
+        "scene": 0,
+    }
+    json_chunk = json.dumps(document, separators=(",", ":")).encode("utf-8")
+    json_chunk += b" " * ((4 - len(json_chunk) % 4) % 4)
+    total = 12 + 8 + len(json_chunk) + 8 + len(binary)
+    return (
+        struct.pack("<4sII", b"glTF", 2, total)
+        + struct.pack("<I4s", len(json_chunk), b"JSON")
+        + json_chunk
+        + struct.pack("<I4s", len(binary), b"BIN\x00")
+        + binary
+    )
+
+
+def write_thin_plane_glb(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(thin_plane_glb_bytes())
+    return path
+
+
+# ---------------------------------------------------------------------------
+# ADVERSARIAL GATE FIXTURES
+#
+# Every one of these is a DEGENERATE asset that the pre-existing Gate 1 passed
+# happily, because that gate was made entirely of upper bounds and
+# set-membership tests and "nothing" satisfies both. They exist to prove the
+# lower bounds in factory/gates.py fail on the trivially-conforming input --
+# a check without a proof-of-failure test is how five blind spots happened.
+#
+# Each builder changes exactly ONE thing from the conforming pair
+# (`gate_glb_bytes()` + `conforming_retro_report()`), so a rejection is
+# attributable to that one thing and to nothing else.
+# ---------------------------------------------------------------------------
+
+GATE_PALETTE = ((20, 18, 16), (104, 82, 56), (188, 192, 186))
+GATE_TEXTURE_SIZE = 64
+NEAREST = 9728
+LINEAR = 9729
+
+
+def palette_texture_png(
+    size: int = GATE_TEXTURE_SIZE, colours=GATE_PALETTE
+) -> bytes:
+    """A conforming atlas: every palette entry present, none foreign."""
+    rgba = bytearray()
+    for index in range(size * size):
+        rgba.extend((*colours[index % len(colours)], 255))
+    ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+    stride = size * 4
+    raw = b"".join(
+        b"\x00" + bytes(rgba[row * stride : (row + 1) * stride]) for row in range(size)
+    )
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", ihdr)
+        + _png_chunk(b"IDAT", zlib.compress(raw))
+        + _png_chunk(b"IEND", b"")
+    )
+
+
+def black_texture_png(size: int = GATE_TEXTURE_SIZE) -> bytes:
+    """A uniformly black atlas -- and a PERFECTLY palette-conforming one.
+
+    The first blind spot found on this branch: a relink failure makes Cycles
+    evaluate every source map as black, the quantizer snaps that to the
+    darkest palette entry, and one colour is trivially a member of any
+    palette. Nothing about the shipped file is off-palette; it simply carries
+    no information.
+    """
+    return _solid_png(size, size, GATE_PALETTE[0])
+
+
+def flat_part_colours_png(size: int = GATE_TEXTURE_SIZE) -> bytes:
+    """Two flat regions -- the "bake fell back to flat base colours" case.
+
+    Also fully palette-conforming, and it passes any `distinct_colours > 1`
+    check, which is what the earlier "texture carries detail" assertion used.
+    """
+    rgba = bytearray()
+    for row in range(size):
+        colour = GATE_PALETTE[0] if row < size // 2 else GATE_PALETTE[2]
+        for _column in range(size):
+            rgba.extend((*colour, 255))
+    ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+    stride = size * 4
+    raw = b"".join(
+        b"\x00" + bytes(rgba[row * stride : (row + 1) * stride]) for row in range(size)
+    )
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", ihdr)
+        + _png_chunk(b"IDAT", zlib.compress(raw))
+        + _png_chunk(b"IEND", b"")
+    )
+
+
+def gate_glb_bytes(
+    texture: bytes | None = None,
+    *,
+    materials: list[dict] | None = None,
+    mag_filter: int | None = NEAREST,
+) -> bytes:
+    """A minimal GLB carrying one embedded texture, for Gate 1 to inspect.
+
+    `mag_filter=None` omits the sampler entirely, which is the "glTF leaves
+    the default filter implementation-defined" case -- every real runtime
+    picks a linear one, so it must be rejected rather than assumed nearest.
+    """
+    texture = palette_texture_png() if texture is None else texture
+    document: dict = {
+        "asset": {"version": "2.0"},
+        "images": [{"bufferView": 0, "mimeType": "image/png"}],
+        "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": len(texture)}],
+        "buffers": [{"byteLength": len(texture)}],
+        "materials": materials if materials is not None else [{"name": "flat"}],
+        "textures": [{"source": 0}],
+    }
+    if mag_filter is not None:
+        document["samplers"] = [{"magFilter": mag_filter, "minFilter": mag_filter}]
+        document["textures"][0]["sampler"] = 0
+    body = json.dumps(document, separators=(",", ":")).encode("utf-8")
+    body += b" " * ((4 - len(body) % 4) % 4)
+    binary = texture + b"\x00" * ((4 - len(texture) % 4) % 4)
+    total = 12 + 8 + len(body) + 8 + len(binary)
+    return (
+        struct.pack("<III", 0x46546C67, 2, total)
+        + struct.pack("<II", len(body), 0x4E4F534A)
+        + body
+        + struct.pack("<II", len(binary), 0x004E4942)
+        + binary
+    )
+
+
+def conforming_retro_report(**overrides) -> dict:
+    """The retro_pass measurements of a healthy asset, shaped like the real one.
+
+    Numbers are scaled-down analogues of the measured trenchgun conversion
+    (bounds grounded at ~0 with both horizontal centres on the grid; every
+    part owning atlas texels; no alpha sources). Override exactly one key to
+    build a degenerate case.
+    """
+    report = {
+        "ok": True,
+        "triangles_out": 100,
+        "bounds": {
+            "min": {"x": -0.25, "y": 1.66e-09, "z": -0.5},
+            "max": {"x": 0.25, "y": 0.2, "z": 0.5},
+            "origin": {"x": 0.0, "y": 0.0, "z": 0.0},
+        },
+        "stages": {
+            "uv_texels_per_part": {"Barrel": 2109, "Stock": 890},
+            "uv_covered_cells": 2999,
+            "uv_overlap_cells": 0,
+            "uv_regenerated": 2999,
+            "alpha_sources": [],
+        },
+        "texture": {
+            "size": GATE_TEXTURE_SIZE,
+            "quantized": True,
+            "palette_colours": len(GATE_PALETTE),
+            "distinct_colours": len(GATE_PALETTE),
+            "atlas_coverage": 0.7322,
+            "alpha_mode": "OPAQUE",
+            "alpha_cutoff": 0.5,
+            "cutout_texels": 0,
+        },
+    }
+    for key, value in overrides.items():
+        if key in ("stages", "texture", "bounds") and isinstance(value, dict):
+            report[key] = {**report[key], **value}
+        else:
+            report[key] = value
+    return report
+
+
+def wiped_atlas_retro_report() -> dict:
+    """The atlas stage produced nothing: no covered texels, no part regions.
+
+    Fourth instance of the blind spot -- a wiped atlas passes palette
+    conformance because whatever single colour remains is trivially in the
+    palette.
+    """
+    return conforming_retro_report(
+        stages={
+            "uv_texels_per_part": {"Barrel": 0, "Stock": 0},
+            "uv_covered_cells": 0,
+            "uv_regenerated": 0,
+        }
+    )
+
+
+def untextured_part_retro_report() -> dict:
+    """One part shipping with no atlas region at all.
+
+    The per-material black bake: six healthy materials outvote one dead one,
+    so the aggregate `_bake_wrote_nothing` check never fires.
+    """
+    return conforming_retro_report(
+        stages={"uv_texels_per_part": {"Barrel": 2109, "Stock": 0}}
+    )
+
+
+def lost_cutout_retro_report() -> dict:
+    """The source declared alpha sources and the export came out OPAQUE.
+
+    The tracked launch blocker for `barbed_wire_coil`: a cutout mask that goes
+    missing degrades silently to a solid slab, and neither gate could see it.
+    """
+    return conforming_retro_report(
+        stages={"alpha_sources": ["CutoutMaterial"]},
+        texture={"alpha_mode": "OPAQUE"},
+    )
+
+
+def misplaced_retro_report() -> dict:
+    """A normalize regression: not grounded, and off the grid horizontally.
+
+    This is what the Y-up rotation defect did, and Gate 2 is structurally
+    blind to it -- silhouette IoU frames each render on its own bounding box.
+    """
+    return conforming_retro_report(
+        bounds={
+            "min": {"x": -0.13, "y": 0.42, "z": -0.5},
+            "max": {"x": 0.37, "y": 0.62, "z": 0.5},
+        }
+    )

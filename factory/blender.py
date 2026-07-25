@@ -55,6 +55,24 @@ def run_blender_script(
     config.require_owned_path(report_path)
     payload_path = report_path.with_name(report_path.name + ".payload.json")
     atomic_write_json(payload_path, payload)
+    # Remove any report left behind by an EARLIER run before launching, so
+    # `report_path.is_file()` below can only ever be satisfied by THIS run.
+    #
+    # Without this a Blender that dies before its script writes -- a Cycles
+    # segfault, an OOM kill, a --factory-startup addon failure -- leaves the
+    # previous run's report in place, and this function returns it as though
+    # it were the result of the run that just crashed. Callers then stamp the
+    # CURRENT contract digest onto a report describing an asset built under
+    # the OLD contract (see factory/retro.py), and the pack certifies
+    # `verdict: pass` for a GLB nobody rebuilt. That defeats the
+    # reproducibility claim the packs are sold on.
+    #
+    # unlink alone is not enough: the Blender-side scripts must also parse
+    # their payload INSIDE the try that guarantees a report is written, or a
+    # malformed payload reproduces the same "no report" ambiguity from the
+    # other end. See retro_pass.main and silhouette_render.main.
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.unlink(missing_ok=True)
     command = [
         str(executable),
         "--background",

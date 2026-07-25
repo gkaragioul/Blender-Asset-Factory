@@ -8,6 +8,7 @@ from factory.blender import discover_blender, run_blender_script
 from factory.config import FactoryConfig
 from factory.style_contract import StyleContract
 from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
+from tests.glb_fixture import write_thin_plane_glb
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
@@ -203,6 +204,62 @@ class RetroGeometryTest(unittest.TestCase):
         # A failed geometry pass must not produce an exported asset that a
         # downstream stage could mistake for a valid, in-budget one.
         self.assertFalse(output.is_file())
+
+
+class FlatGeometrySurvivesTest(unittest.TestCase):
+    """A zero-thickness card must reach the exporter.
+
+    `_remove_floaters` compared an AABB VOLUME -- with zero extents floored at
+    1e-9 -- against `(diagonal * 0.001) ** 3`. That deletes ALL planar
+    geometry, whatever its size: a 1x1 card scored 1e-9 against a threshold of
+    2.8e-9. Cutout cards are how this pack renders `barbed_wire_coil`,
+    `barbed_wire_post`, foliage, chain-link and signpost lettering, so the
+    defect silently emptied real catalogued assets.
+
+    It survived because it was worked AROUND rather than filed: every fixture
+    in tests/glb_fixture.py was a cube, and two of them said so in their
+    docstrings. This test uses a genuine plane, so nothing about it can dodge
+    the defect.
+    """
+
+    def setUp(self):
+        self.config = FactoryConfig.load()
+        if discover_blender(self.config) is None:
+            self.skipTest("Blender is not available on this host")
+        work = self.config.root / "tmp" / "factory" / "tests" / "retro-plane"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        self.addCleanup(temp_dir.cleanup)
+        self.temp = Path(temp_dir.name)
+
+    def test_a_zero_thickness_plane_is_not_removed_as_a_floater(self):
+        source = write_thin_plane_glb(self.temp / "plane" / "plane.glb")
+        output = self.temp / "plane.glb"
+        report = run_blender_script(
+            self.config,
+            SCRIPT,
+            {
+                "source": str(source),
+                "output": str(output),
+                "role": "small",
+                "palette": str(retro_palette_png(self.temp)),
+                "contract": CONTRACT_PAYLOAD,
+            },
+            self.temp / "report.json",
+        )
+        self.assertTrue(report["ok"], report.get("error"))
+        # cleanup is the part count AFTER _remove_floaters. Under the old
+        # volume threshold this was 0 and the run then failed outright with
+        # an empty bounds computation -- so this assertion discriminates.
+        self.assertEqual(report["stages"]["split"], 1)
+        self.assertEqual(report["stages"]["cleanup"], 1)
+        self.assertEqual(report["parts"], ["PlaneMaterial"])
+        self.assertTrue(output.is_file())
+        self.assertEqual(_glb_triangles(output), report["triangles_out"])
+        self.assertEqual(report["triangles_out"], 2)
+        # And the flat part must own real atlas texels: surviving the floater
+        # cull is worth nothing if it ships untextured.
+        self.assertGreater(min(report["stages"]["uv_texels_per_part"].values()), 0)
 
 
 if __name__ == "__main__":
