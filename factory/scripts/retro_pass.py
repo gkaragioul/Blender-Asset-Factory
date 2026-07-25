@@ -648,13 +648,30 @@ BAKE_NEUTRAL_INPUTS = (
     ("Alpha", 1.0),
 )
 
+# drop_maps entries whose scalar FACTOR is also flattened in the EXPORT, not
+# merely unlinked. Only metallic: see _restore_pbr_after_bake.
+FLATTEN_FACTOR_ON_DROP = ("metallic",)
 
-def _neutralize_pbr_for_bake(meshes: list) -> list:
+
+def _socket_value(socket):
+    value = socket.default_value
+    try:
+        return list(value)
+    except TypeError:
+        return value
+
+
+def _neutralize_pbr_for_bake(meshes: list) -> tuple[list, list]:
     """Zero the shader inputs that make a DIFFUSE/COLOR bake come out black.
+
+    Returns (changed_socket_names, restore_plan). The restore plan is not
+    optional bookkeeping -- see _restore_pbr_after_bake for why leaving these
+    mutations in place silently corrupts the exported asset.
 
     A fully metallic surface has NO diffuse component, so Cycles' DIFFUSE
     pass returns black for it however rich its base colour texture is. The
-    same is true of full transmission, and of zero alpha.
+    same is true of full transmission, and alpha below 1 attenuates the
+    baked albedo toward black in proportion to how transparent it is.
 
     This is not hypothetical and not rare. glTF's `metallicFactor` DEFAULTS
     TO 1.0 when the field is absent, so any glTF/GLB source that omits it
@@ -666,10 +683,14 @@ def _neutralize_pbr_for_bake(meshes: list) -> list:
     Neutralising happens BEFORE the bake, unlike `_strip_maps`, which runs
     after it and only unlinks the map named in the contract's drop_maps --
     unlinking a metallic *texture* leaves the socket's default_value at 1.0,
-    so it would not have helped. A PS1 asset is flat unlit albedo; none of
-    these inputs survive into the export anyway.
+    so it would not have helped.
+
+    Links are recorded and re-made rather than abandoned, because these
+    sockets are neutralised only to get a clean albedo out of the bake; they
+    are not statements about what the asset is.
     """
     changed = set()
+    restore = []
     for material in _slot_materials(meshes):
         bsdf = _principled(material)
         if bsdf is None:
@@ -678,13 +699,86 @@ def _neutralize_pbr_for_bake(meshes: list) -> list:
             socket = bsdf.inputs.get(name)
             if socket is None:
                 continue
+            restore.append(
+                (
+                    material.name,
+                    name,
+                    _socket_value(socket),
+                    [(link.from_socket, link.to_socket) for link in socket.links],
+                )
+            )
             for link in list(socket.links):
                 material.node_tree.links.remove(link)
                 changed.add(name)
             if socket.default_value != neutral:
                 socket.default_value = neutral
                 changed.add(name)
-    return sorted(changed)
+    return sorted(changed), restore
+
+
+def _restore_pbr_after_bake(meshes: list, restore: list, drop_maps: list) -> dict:
+    """Put back everything _neutralize_pbr_for_bake changed, except metallic.
+
+    This exists because the bake's needs and the EXPORT's contents are two
+    different things, and conflating them destroys assets silently.
+
+    The glTF exporter writes an unlinked Principled socket's default_value
+    out as a material FACTOR. So an unrestored neutralisation does not just
+    affect the bake -- it ships. Left alone, every converted asset would
+    export alpha forced to 1.0 regardless of what the source said.
+
+    That is not a cosmetic issue. Forcing alpha to 1.0 turns intentionally
+    transparent or cutout geometry into a solid slab, and NO gate catches it:
+    Gate 1 checks palette conformance and triangle budget, Gate 2 compares
+    silhouettes of the same geometry before and after, so both pass happily.
+    Alpha cutout is exactly how PS1-era art renders barbed wire, chain-link,
+    foliage and glass -- and `barbed_wire_coil` is a planned asset in this
+    very pack. Transmission is the same class of intent, so it is restored
+    too.
+
+    Metallic is the one deliberate exception, and it is driven by the
+    contract rather than left over from the bake: when the contract's
+    drop_maps names `metallic`, the asset is declared non-metallic, so the
+    exported factor is flattened to 0 to match. This is also required for
+    correctness rather than merely allowed -- the pass bakes flat albedo into
+    the base colour texture, and a renderer told `metallicFactor: 1` treats
+    that albedo as reflectance and draws the asset black, the exact opposite
+    of the flat PS1 look intended.
+
+    Returns the sockets restored and the sockets deliberately left flat, so
+    the decision is visible in the report instead of implicit.
+    """
+    flat_sockets = {
+        DROPPABLE_SOCKETS[name]
+        for name in drop_maps
+        if name in FLATTEN_FACTOR_ON_DROP and name in DROPPABLE_SOCKETS
+    }
+    materials = {material.name: material for material in _slot_materials(meshes)}
+    restored = set()
+    flattened = set()
+    for material_name, socket_name, original, links in restore:
+        material = materials.get(material_name)
+        if material is None:
+            continue
+        bsdf = _principled(material)
+        if bsdf is None:
+            continue
+        socket = bsdf.inputs.get(socket_name)
+        if socket is None:
+            continue
+        if socket_name in flat_sockets:
+            flattened.add(socket_name)
+            continue
+        socket.default_value = original
+        for from_socket, to_socket in links:
+            try:
+                material.node_tree.links.new(from_socket, to_socket)
+            except (ReferenceError, RuntimeError):
+                # The node feeding this socket may already be gone; the
+                # restored default_value still carries the source's intent.
+                pass
+        restored.add(socket_name)
+    return {"restored": sorted(restored), "flattened": sorted(flattened)}
 
 
 def _bake_target(meshes: list, size: int):
@@ -918,6 +1012,14 @@ def _drop_foreign_textures(meshes: list) -> list:
     Removing by "is not the albedo node" rather than by a list of sockets to
     clear is the point: a list can only ever cover the sockets someone
     thought of, and Alpha was already missing from DROPPABLE_SOCKETS.
+
+    KNOWN GAP -- this is not exhaustive, despite covering every socket. It
+    walks only `material.node_tree.nodes` and does not recurse into
+    ShaderNodeGroup node trees, so a TEX_IMAGE nested inside a node group
+    (a common PBR channel-packing pattern) still reaches the exporter and
+    still becomes a second image. Tracked as a known Minor rather than fixed
+    here; do not read this function as a guarantee that only one image can
+    ever be exported.
     """
     removed = []
     for material in _slot_materials(meshes):
@@ -1049,7 +1151,8 @@ def main() -> int:
                 f"{size}x{size}"
             )
 
-        report["stages"]["bake_neutralized"] = _neutralize_pbr_for_bake(meshes)
+        neutralized, restore_plan = _neutralize_pbr_for_bake(meshes)
+        report["stages"]["bake_neutralized"] = neutralized
         baked = _bake_target(meshes, size)
         _bake(meshes)
         if _bake_wrote_nothing(baked):
@@ -1075,6 +1178,13 @@ def main() -> int:
             # mostly empty is visible rather than merely disappointing.
             "atlas_coverage": round(covered / float(size * size), 4),
         }
+
+        # Undo the bake-only mutations BEFORE export, and before
+        # _drop_foreign_textures removes the nodes their links point at.
+        # Without this the asset ships with alpha forced to 1.0.
+        report["stages"]["shading_factors"] = _restore_pbr_after_bake(
+            meshes, restore_plan, contract["drop_maps"]
+        )
 
         report["dropped_maps"] = _strip_maps(meshes, contract["drop_maps"])
         # After stripping the contract's named maps, remove any image node

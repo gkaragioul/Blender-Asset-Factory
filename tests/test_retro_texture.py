@@ -10,7 +10,7 @@ from factory.config import FactoryConfig
 from factory.palette import conformance, load_palette
 from factory.png import decode_rgba
 from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
-from tests.glb_fixture import write_multi_texture_cube_glb
+from tests.glb_fixture import TRANSLUCENT_ALPHA, write_multi_texture_cube_glb
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
@@ -271,6 +271,15 @@ class RetroTextureTest(unittest.TestCase):
         self.assertFalse(self.report["vertex_light_bake"])
 
 
+def _material_by_name(document: dict, name: str) -> dict:
+    for material in document.get("materials", []):
+        if material.get("name") == name:
+            return material
+    raise AssertionError(
+        f"no material {name!r} in {[m.get('name') for m in document.get('materials', [])]}"
+    )
+
+
 class RetroTextureForeignMapTest(unittest.TestCase):
     """The pass must export ONE image whatever the source carried.
 
@@ -287,37 +296,45 @@ class RetroTextureForeignMapTest(unittest.TestCase):
     point at the quantizer, which is innocent.
     """
 
-    def setUp(self):
-        self.config = FactoryConfig.load()
-        if discover_blender(self.config) is None:
-            self.skipTest("Blender is not available on this host")
+    report: dict
+    output: Path
+    palette: Path
+    source: Path
 
-    def test_exports_one_texture_even_when_the_source_has_extra_maps(self):
+    @classmethod
+    def setUpClass(cls):
+        cls.config = FactoryConfig.load()
+        if discover_blender(cls.config) is None:
+            raise unittest.SkipTest("Blender is not available on this host")
+
         work = temporary_root() / "retro"
         work.mkdir(parents=True, exist_ok=True)
         temp_dir = tempfile.TemporaryDirectory(dir=work)
-        self.addCleanup(temp_dir.cleanup)
+        cls.addClassCleanup(temp_dir.cleanup)
         temp = Path(temp_dir.name)
 
-        source = write_multi_texture_cube_glb(temp / "multi_texture_cube.glb")
-        # Confirm the fixture really does present two images, so a green
-        # result cannot come from the fixture quietly losing its extra map.
-        self.assertEqual(len(_glb_document(source).get("images", [])), 2)
-
-        output = temp / "out.glb"
-        palette = retro_palette_png(temp)
-        report = run_blender_script(
-            self.config,
+        cls.source = write_multi_texture_cube_glb(temp / "multi_texture_cube.glb")
+        cls.output = temp / "out.glb"
+        cls.palette = retro_palette_png(temp)
+        cls.report = run_blender_script(
+            cls.config,
             SCRIPT,
             {
-                "source": str(source),
-                "output": str(output),
+                "source": str(cls.source),
+                "output": str(cls.output),
                 "role": "large",
-                "palette": str(palette),
+                "palette": str(cls.palette),
                 "contract": CONTRACT_PAYLOAD,
             },
             temp / "report.json",
         )
+
+    def test_exports_one_texture_even_when_the_source_has_extra_maps(self):
+        report = self.report
+        source, output, palette = self.source, self.output, self.palette
+        # Confirm the fixture really does present two images, so a green
+        # result cannot come from the fixture quietly losing its extra map.
+        self.assertEqual(len(_glb_document(source).get("images", [])), 2)
         self.assertTrue(report["ok"], report.get("error"))
 
         # This source is fully metallic, and a metallic surface has no
@@ -355,6 +372,68 @@ class RetroTextureForeignMapTest(unittest.TestCase):
             f"{result['foreign_pixels']} foreign pixels: "
             f"{result['foreign_colours'][:4]}",
         )
+
+    def test_source_transparency_survives_to_the_export(self):
+        # The bake needs opaque, non-metallic inputs to yield a usable
+        # albedo; the EXPORT must still say what the source said. Those are
+        # different things, and conflating them destroys assets silently.
+        #
+        # The glTF exporter writes an unlinked Principled socket's
+        # default_value out as a material factor, so a bake-time
+        # neutralisation that is never restored SHIPS. Forcing alpha to 1.0
+        # turns intentionally transparent or cutout geometry into a solid
+        # slab, and no gate catches it: Gate 1 checks palette conformance and
+        # triangle budget, Gate 2 compares silhouettes of the same geometry
+        # before and after. Alpha cutout is how PS1-era art renders barbed
+        # wire, chain-link, foliage and glass -- and barbed_wire_coil is a
+        # planned asset in this pack.
+        source_material = _material_by_name(
+            _glb_document(self.source), "TranslucentMaterial"
+        )
+        # Assert the SOURCE really is translucent, so this test cannot pass
+        # by the fixture quietly becoming opaque.
+        self.assertEqual(source_material["alphaMode"], "BLEND")
+        self.assertAlmostEqual(
+            source_material["pbrMetallicRoughness"]["baseColorFactor"][3],
+            TRANSLUCENT_ALPHA,
+            places=4,
+        )
+
+        exported = _material_by_name(
+            _glb_document(self.output), "TranslucentMaterial"
+        )
+        self.assertAlmostEqual(
+            exported["pbrMetallicRoughness"].get("baseColorFactor", [1, 1, 1, 1])[3],
+            TRANSLUCENT_ALPHA,
+            places=4,
+            msg="alpha was forced to 1.0; a cutout asset would export as a solid slab",
+        )
+        self.assertEqual(exported.get("alphaMode"), "BLEND")
+
+        # And the decision about what was restored vs deliberately flattened
+        # is recorded rather than implicit.
+        factors = self.report["stages"]["shading_factors"]
+        self.assertIn("Alpha", factors["restored"])
+        self.assertIn("Transmission Weight", factors["restored"])
+        # Metallic is the one deliberate exception, driven by the contract
+        # naming `metallic` in drop_maps: the pass bakes flat albedo into the
+        # base colour texture, and a renderer told metallicFactor 1 treats
+        # that albedo as reflectance and draws the asset black.
+        self.assertIn("metallic", CONTRACT_PAYLOAD["drop_maps"])
+        self.assertIn("Metallic", factors["flattened"])
+        self.assertNotIn("Metallic", factors["restored"])
+        self.assertEqual(exported["pbrMetallicRoughness"]["metallicFactor"], 0)
+
+    def test_translucent_part_still_bakes_real_detail(self):
+        # The other half of the tension: restoring alpha must not come at the
+        # cost of the bake. Both parts of this cube have to end up with real
+        # texels, not a flat colour.
+        self.assertTrue(self.report["ok"], self.report.get("error"))
+        self.assertGreater(self.report["texture"]["distinct_colours"], 1)
+        per_part = self.report["stages"]["uv_texels_per_part"]
+        self.assertIn("TranslucentMaterial", per_part)
+        for name, texels in sorted(per_part.items()):
+            self.assertGreater(texels, 0, f"part {name!r} got no atlas texels")
 
 
 class RetroTextureFailurePathTest(unittest.TestCase):
