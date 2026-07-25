@@ -11,6 +11,16 @@ SCRIPT = Path(__file__).resolve().parent / "scripts" / "silhouette_render.py"
 RESOLUTION = 256
 LUMA_THRESHOLD = 32
 
+# Gate render_masks output on 0%/100% coverage only (with a hair of
+# tolerance for float roundoff), NOT on some larger "looks too thin/thick"
+# floor. A legitimate silhouette can measure well under 1% coverage (the
+# trenchgun's own azimuth-0 view does, at ~0.5% before the VIEWS offset fix,
+# and ~2-5% after it) -- a floor tight enough to reject a broken render
+# would also reject valid work. This only exists to catch the genuinely
+# degenerate case: a scene-setup regression that renders nothing, or
+# renders everything, for every mesh in a pack.
+_DEGENERATE_COVERAGE = 0.001
+
 # Eight fixed views: six around the equator (alternating level and slightly
 # elevated, 45 degrees apart in azimuth) plus one steep top-down view. There
 # is deliberately no view looking up from underneath -- see the report for
@@ -64,14 +74,23 @@ def iou(first: bytes, second: bytes) -> float:
         if a or b:
             union += 1
     if union == 0:
-        # Two blank masks. render_masks separately asserts each render has
-        # coverage strictly between 1% and 99% (see its integration test),
-        # so a blank pair reaching compare() at all means that guard was
-        # skipped or bypassed upstream -- not that silhouette.py silently
-        # certifies a broken renderer as a perfect match. See task-9-report
-        # for the full argument.
+        # Two blank masks. This used to be defended by an assertion that
+        # ONLY ran in a test, against ONLY the raw trenchgun -- i.e. not at
+        # all in production. render_masks (below) now raises SilhouetteError
+        # itself on any degenerate (all-blank or all-solid) render, using
+        # the coverage silhouette_render.py measures at render time, so a
+        # blank-vs-blank pair reaching compare() through the real
+        # render_masks -> compare pipeline means that guard already fired
+        # and stopped the pipeline before compare() was ever called. A
+        # caller that builds masks some OTHER way (bypassing render_masks)
+        # is not covered by that guard -- see task-9-report's Correctness
+        # Question 2 for that residual risk.
         return 1.0
     return intersection / union
+
+
+def _coverage(mask: bytes) -> float:
+    return sum(mask) / len(mask) if mask else 0.0
 
 
 def compare(raw_masks: list[bytes], ps1_masks: list[bytes]) -> dict:
@@ -84,6 +103,12 @@ def compare(raw_masks: list[bytes], ps1_masks: list[bytes]) -> dict:
         "per_view": scores,
         "minimum": min(scores),
         "mean": sum(scores) / len(scores),
+        # Per-view coverage of the inputs actually compared, so a caller
+        # (Gate 2) can tell a low IoU caused by real shape divergence apart
+        # from one caused by a near-degenerate mask, without re-decoding
+        # the source PNGs itself.
+        "raw_coverage": [_coverage(mask) for mask in raw_masks],
+        "ps1_coverage": [_coverage(mask) for mask in ps1_masks],
     }
 
 
@@ -134,6 +159,37 @@ def render_masks(
     if len(paths) != len(VIEWS):
         raise SilhouetteError(
             f"expected {len(VIEWS)} renders, got {len(paths)}"
+        )
+    coverage = report.get("coverage") or []
+    if len(coverage) != len(paths):
+        raise SilhouetteError(
+            f"expected {len(paths)} per-view coverage readings, got {len(coverage)}"
+        )
+    degenerate = [
+        (index, value)
+        for index, value in enumerate(coverage)
+        if value <= _DEGENERATE_COVERAGE or value >= 1.0 - _DEGENERATE_COVERAGE
+    ]
+    if degenerate:
+        # A blank or fully-solid render is not a shape measurement, it is a
+        # broken scene: wrong camera, missing geometry, a shading/world
+        # setting that stopped painting the mesh white on black (see
+        # silhouette_render.py's scene setup for what those settings are
+        # pinned against). Left unguarded, EVERY blank-vs-blank or
+        # solid-vs-solid pair scores compare()'s IoU as a perfect 1.0 (see
+        # iou()'s union==0 branch, and the mirror-image solid case where
+        # intersection == union == every pixel) -- silently certifying a
+        # broken render as a flawless conversion. Raising here, at the one
+        # place that has directly measured coverage, is what makes that
+        # 1.0 trustworthy everywhere else.
+        names = ", ".join(
+            f"view {index} ({paths[index].name}): {value:.4%} lit"
+            for index, value in degenerate
+        )
+        raise SilhouetteError(
+            f"degenerate render(s) for {source}: {names} "
+            f"(want strictly between {_DEGENERATE_COVERAGE:.3%} and "
+            f"{1.0 - _DEGENERATE_COVERAGE:.3%} lit)"
         )
     return paths
 

@@ -23,10 +23,27 @@ def _arguments() -> tuple[Path, Path]:
     )
 
 
+def _ensure_fbx_importer() -> None:
+    # Mirrors factory/scripts/retro_pass.py's _ensure_fbx_importer. Under
+    # --factory-startup, io_scene_fbx can be disabled, in which case
+    # bpy.ops.import_scene.fbx does not exist at all and raises
+    # AttributeError rather than a clean, reportable error. retro_pass.py
+    # already pays for this guard; silhouette_render.py needs the same one
+    # so a host that converts fine can also measure the raw side -- without
+    # it, Gate 2 would fail to render the raw mesh on exactly the hosts
+    # where the rest of the pipeline works.
+    if hasattr(bpy.ops.import_scene, "fbx"):
+        return
+    import addon_utils
+
+    addon_utils.enable("io_scene_fbx", default_set=True, persistent=False)
+
+
 def _import(source: Path) -> list:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     suffix = source.suffix.lower()
     if suffix == ".fbx":
+        _ensure_fbx_importer()
         bpy.ops.import_scene.fbx(filepath=str(source))
     elif suffix in (".glb", ".gltf"):
         bpy.ops.import_scene.gltf(filepath=str(source))
@@ -38,7 +55,15 @@ def _import(source: Path) -> list:
 
 
 def _flat_white(meshes: list) -> None:
+    # Defense in depth, NOT the load-bearing mechanism -- see main() for
+    # why. An emission node tree is invisible to BLENDER_WORKBENCH (it
+    # only exists for EEVEE/Cycles), and Workbench's MATERIAL color mode
+    # reads Material.diffuse_color, not the node graph. diffuse_color is
+    # pinned explicitly here so this material is still correct white if
+    # something ever switches scene.display.shading.color_type back to
+    # "MATERIAL".
     material = bpy.data.materials.new("SilhouetteWhite")
+    material.diffuse_color = (1.0, 1.0, 1.0, 1.0)
     material.use_nodes = True
     tree = material.node_tree
     tree.nodes.clear()
@@ -50,6 +75,39 @@ def _flat_white(meshes: list) -> None:
     for obj in meshes:
         obj.data.materials.clear()
         obj.data.materials.append(material)
+
+
+# Matches factory.silhouette.LUMA_THRESHOLD (32 of 255) so a view judged
+# non-degenerate here agrees with what mask_from_png will later decide from
+# the same PNG bytes.
+_LUMA_THRESHOLD = 32 / 255.0
+
+
+def _coverage_fraction(path: Path) -> float:
+    """Fraction of pixels in the just-written PNG that read as "lit".
+
+    Computed from Blender's own decode of the file it just wrote (via
+    bpy.data.images.load), independently of any host-side PNG decoder, so
+    this is a check on what the render actually produced -- not a
+    duplicate of the host-side mask_from_png algorithm, a second witness
+    to the same file.
+    """
+    image = bpy.data.images.load(str(path))
+    try:
+        pixels = image.pixels[:]
+        total = len(pixels) // 4
+        lit = 0
+        for offset in range(0, len(pixels), 4):
+            luma = (
+                pixels[offset] * 0.299
+                + pixels[offset + 1] * 0.587
+                + pixels[offset + 2] * 0.114
+            )
+            if luma >= _LUMA_THRESHOLD:
+                lit += 1
+        return lit / total if total else 0.0
+    finally:
+        bpy.data.images.remove(image)
 
 
 def _bounds(meshes: list) -> tuple[tuple[float, float, float], float]:
@@ -69,7 +127,14 @@ def _bounds(meshes: list) -> tuple[tuple[float, float, float], float]:
 def main() -> int:
     payload_path, report_path = _arguments()
     payload = json.loads(payload_path.read_text(encoding="utf-8"))
-    report = {"ok": False, "renders": [], "radius": None, "centre": None, "error": None}
+    report = {
+        "ok": False,
+        "renders": [],
+        "coverage": [],
+        "radius": None,
+        "centre": None,
+        "error": None,
+    }
     try:
         meshes = _import(Path(payload["source"]))
         if not meshes:
@@ -93,7 +158,23 @@ def main() -> int:
         scene = bpy.context.scene
         scene.render.engine = "BLENDER_WORKBENCH"
         scene.display.shading.light = "FLAT"
-        scene.display.shading.color_type = "MATERIAL"
+        # color_type = "MATERIAL" reads Material.diffuse_color, which is
+        # fine now that _flat_white pins it -- but "SINGLE" is pinned here
+        # instead so the mask does not depend on per-object material state
+        # surviving at all: every mesh renders pure white regardless of
+        # what material (if any) ended up assigned to it. This is the
+        # actual load-bearing mechanism for "flat white"; _flat_white's
+        # material is a defensive fallback, not the primary one.
+        scene.display.shading.color_type = "SINGLE"
+        scene.display.shading.single_color = (1.0, 1.0, 1.0)
+        # Workbench only reads scene.world's colour when background_type is
+        # "WORLD" -- the default is "THEME", which paints the background
+        # with the current UI theme's viewport colour instead, ignoring
+        # scene.world.color entirely. Without this line, "flat white on
+        # black" silently becomes "flat (fallback grey) on (theme grey)",
+        # and whether that still crosses LUMA_THRESHOLD is an accident of
+        # whichever theme --factory-startup happens to load.
+        scene.display.shading.background_type = "WORLD"
         scene.render.film_transparent = False
         if scene.world is None:
             # --factory-startup with an empty scene (see _import) has no
@@ -102,6 +183,13 @@ def main() -> int:
             # `--factory-startup` run.
             scene.world = bpy.data.worlds.new("SilhouetteWorld")
         scene.world.color = (0.0, 0.0, 0.0)
+        # Pin the view transform. Blender's default view transform (Filmic
+        # or AgX, depending on version) applies a tone-mapping curve before
+        # writing pixels, which can lift pure black or compress pure white
+        # well away from 0/255 -- exactly the kind of unpinned default that
+        # would silently change what LUMA_THRESHOLD sees. "Standard" writes
+        # values through unmodified.
+        scene.view_settings.view_transform = "Standard"
         scene.render.resolution_x = payload["resolution"]
         scene.render.resolution_y = payload["resolution"]
         scene.render.image_settings.file_format = "PNG"
@@ -143,6 +231,7 @@ def main() -> int:
             scene.render.filepath = str(target)
             bpy.ops.render.render(write_still=True)
             report["renders"].append(str(target))
+            report["coverage"].append(_coverage_fraction(target))
         report["ok"] = True
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
