@@ -6,8 +6,10 @@ from pathlib import Path
 from factory.blender import discover_blender
 from factory.catalog import Catalog
 from factory.config import FactoryConfig
+from factory.gates import GATE2_CATASTROPHE
 from factory.pack import build_pack
 from factory.png import encode_rgba
+from factory.silhouette import VIEWS
 from factory.style_contract import StyleContract
 from tests.fixtures import FixtureUnavailable, trenchgun_fbx
 
@@ -77,9 +79,40 @@ class PackBuildTest(unittest.TestCase):
             self.assertEqual(len(report["assets"]), 1)
             entry = report["assets"][0]
             self.assertEqual(entry["id"], "hero")
-            self.assertIn(entry["verdict"], ("pass", "flag", "reject"))
-            self.assertIn("silhouette", entry)
-            self.assertIn("gate1", entry)
+
+            # This used to assert `verdict in ("pass", "flag", "reject")`,
+            # which accepts every value build_pack can emit plus one it
+            # cannot -- so a build in which every stage threw still passed the
+            # only end-to-end orchestrator test there is. The error field was
+            # never asserted at all, and it is the field that says so.
+            self.assertIsNone(entry["error"])
+            self.assertEqual(entry["verdict"], "pass")
+            self.assertTrue(entry["gate1"]["ok"], entry["gate1"]["failures"])
+            self.assertEqual(entry["gate2"]["verdict"], "pass")
+
+            # The real, measured shape of a good conversion: 45,881 source
+            # triangles decimated to 2,470 against the "large" budget of
+            # 2,500. Bounded on BOTH sides -- an upper bound alone is
+            # satisfied by zero, which is the exact defect this fix wave
+            # exists to remove.
+            budget = CONTRACT["polycount_bands"]["large"]
+            self.assertLessEqual(entry["triangles"], budget)
+            self.assertGreater(entry["triangles"], budget // 2)
+            self.assertEqual(entry["gate1"]["details"]["triangles"], entry["triangles"])
+
+            # Eight fixed views, and a minimum above the catastrophe floor.
+            # Measured on this fixture: minimum 0.617, mean 0.636.
+            silhouette = entry["silhouette"]
+            self.assertEqual(len(silhouette["per_view"]), len(VIEWS))
+            self.assertEqual(len(silhouette["raw_coverage"]), len(VIEWS))
+            self.assertEqual(len(silhouette["ps1_coverage"]), len(VIEWS))
+            self.assertEqual(silhouette["minimum"], min(silhouette["per_view"]))
+            self.assertGreaterEqual(silhouette["minimum"], GATE2_CATASTROPHE)
+            self.assertLessEqual(silhouette["mean"], 1.0)
+
+            self.assertTrue(Path(entry["output"]).is_file())
+            self.assertTrue(report["ok"])
+            self.assertEqual(report["counts"], {"pass": 1, "reject": 0})
 
     def test_missing_source_is_recorded_without_aborting_the_run(self):
         with tempfile.TemporaryDirectory(dir=self.work) as temp:

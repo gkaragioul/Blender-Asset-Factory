@@ -9,6 +9,7 @@ from .gates import gate1, gate2, verdict
 from .gltf_validation import validate_glb
 from .io import atomic_write_json
 from .retro import retro_pass
+from .runtime_preview import PreviewError, preview_glb
 from .silhouette import compare, effective_radius, mask_from_png, render_masks
 from .style_contract import StyleContract
 
@@ -27,6 +28,9 @@ def _asset_record(identifier: str) -> dict:
         "gate2": None,
         "silhouette": None,
         "output": None,
+        "validator_ok": None,
+        "preview_ok": None,
+        "preview_error": None,
     }
 
 
@@ -82,9 +86,30 @@ def build_pack(
             record["silhouette"] = comparison
 
             validator_ok = True
+            preview_ok = True
             if validate:
                 validation = validate_glb(config, output, work / "validation.json")
                 validator_ok = bool(validation.get("ok", False))
+                # Gate 1's runtime-preview criterion used to be hardcoded
+                # True, so the spec's "loads in the pinned Three.js viewer"
+                # was unimplemented and a GLB the viewer refuses to load
+                # shipped with `pass`. preview_glb RAISES on failure, which is
+                # the outcome the gate needs to record rather than propagate:
+                # a viewer failure is a rejected asset, not an aborted pack.
+                #
+                # Guarded by the same `validate` flag as the glTF validator
+                # because it is the same class of cost -- it launches a
+                # headless browser per asset.
+                try:
+                    preview = preview_glb(
+                        config, output, work / "preview.png", work / "preview.json"
+                    )
+                    preview_ok = bool(preview.get("ok", False))
+                except PreviewError as error:
+                    preview_ok = False
+                    record["preview_error"] = str(error)
+            record["validator_ok"] = validator_ok
+            record["preview_ok"] = preview_ok
 
             first = gate1(
                 output.read_bytes(),
@@ -92,7 +117,12 @@ def build_pack(
                 entry.role,
                 triangles=retro_report["triangles_out"],
                 validator_ok=validator_ok,
-                preview_ok=True,
+                preview_ok=preview_ok,
+                # The whole retro report, not a field of it. Gate 1's lower
+                # bounds (empty part textures, atlas coverage, cutout alpha
+                # mode) and its grid/grounding checks are all sourced from
+                # measurements this orchestrator previously discarded.
+                retro_report=retro_report,
             )
             second = gate2(comparison)
             record["gate1"] = first
