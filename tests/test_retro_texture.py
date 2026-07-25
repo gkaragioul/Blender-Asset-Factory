@@ -10,10 +10,17 @@ from factory.config import FactoryConfig
 from factory.palette import conformance, load_palette
 from factory.png import decode_rgba
 from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
-from tests.glb_fixture import TRANSLUCENT_ALPHA, write_multi_texture_cube_glb
+from tests.glb_fixture import (
+    CUTOUT_ALPHA_CUTOFF,
+    CUTOUT_MATERIAL_NAME,
+    TRANSLUCENT_ALPHA,
+    write_cutout_cube_glb,
+    write_multi_texture_cube_glb,
+)
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
+ALPHA_BAKE_SKIP_PROBE = Path(__file__).resolve().parent / "alpha_bake_skip_probe.py"
 TEXTURE_SIZE = 256
 CONTRACT_PAYLOAD = {
     "texture_size": TEXTURE_SIZE,
@@ -263,6 +270,32 @@ class RetroTextureTest(unittest.TestCase):
             pbr = material.get("pbrMetallicRoughness", {})
             self.assertNotIn("metallicRoughnessTexture", pbr)
 
+    def test_an_opaque_source_stays_opaque(self):
+        # The counterweight to the cutout support in
+        # RetroTextureCutoutTest. Carrying a cutout mask through the bake
+        # means the exported albedo now has a MEANINGFUL alpha channel, and
+        # the cheap way to implement that is to write the baked alpha
+        # unconditionally and declare MASK on every material. That would
+        # regress every opaque asset in the pack: texels the bake left at
+        # zero (the atlas background, and anything the alpha bake did not
+        # reach) would become holes, and a MASK material makes an engine
+        # discard them rather than ignore them.
+        #
+        # The trenchgun carries no cutout, so its albedo must come out
+        # exactly as opaque as it was before cutout support existed, and its
+        # materials must stay OPAQUE (glTF omits alphaMode for OPAQUE).
+        self.assertEqual(self.report["texture"]["alpha_mode"], "OPAQUE")
+        self.assertEqual(self.report["texture"]["cutout_texels"], 0)
+        for image in _glb_textures(self.output):
+            _width, _height, rgba = decode_rgba(image)
+            self.assertEqual(
+                set(rgba[3::4]),
+                {255},
+                "an opaque source exported an albedo with transparent texels",
+            )
+        for material in _glb_document(self.output).get("materials", []):
+            self.assertIsNone(material.get("alphaMode"), material.get("name"))
+
     def test_reports_vertex_light_bake_as_not_applied(self):
         # The style contract carries the flag and this plan does not
         # implement it. Reporting False keeps a later stage from assuming
@@ -436,6 +469,195 @@ class RetroTextureForeignMapTest(unittest.TestCase):
             self.assertGreater(texels, 0, f"part {name!r} got no atlas texels")
 
 
+class RetroTextureCutoutTest(unittest.TestCase):
+    """A TEXTURE-DRIVEN alpha cutout must survive the bake.
+
+    `RetroTextureForeignMapTest.test_source_transparency_survives_to_the_export`
+    covers the other kind of transparency: a SCALAR alpha factor on the
+    material, which survives because `_restore_pbr_after_bake` puts the
+    Principled Alpha socket's default_value back. A cutout is a different
+    problem with a different fix -- the mask lives in the base colour image's
+    ALPHA CHANNEL, and the pass throws that image away and bakes a new atlas
+    from scratch. There is no socket value to restore, so the mask only
+    reaches the export if it is deliberately baked and merged.
+
+    Left unfixed, `barbed_wire_coil` (asset #6 in this pack) converts to a
+    solid slab and no gate says so: Gate 1 checks palette conformance and the
+    triangle budget, Gate 2 compares silhouettes of the same geometry before
+    and after.
+
+    Cutout is exported as MASK, not BLEND, and the baked alpha is BINARY.
+    PS1 hardware had no per-texel alpha blending for this idiom -- barbed
+    wire, chain-link, foliage and grates were 1-bit stencils -- and a binary
+    mask also avoids the depth-sorting artefacts BLEND brings.
+    """
+
+    report: dict
+    output: Path
+    palette: Path
+    source: Path
+
+    @classmethod
+    def setUpClass(cls):
+        cls.config = FactoryConfig.load()
+        if discover_blender(cls.config) is None:
+            raise unittest.SkipTest("Blender is not available on this host")
+
+        work = temporary_root() / "retro"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        cls.addClassCleanup(temp_dir.cleanup)
+        temp = Path(temp_dir.name)
+
+        cls.source = write_cutout_cube_glb(temp / "cutout_cube.glb")
+        cls.output = temp / "out.glb"
+        cls.palette = retro_palette_png(temp)
+        cls.report = run_blender_script(
+            cls.config,
+            SCRIPT,
+            {
+                "source": str(cls.source),
+                "output": str(cls.output),
+                "role": "large",
+                "palette": str(cls.palette),
+                "contract": CONTRACT_PAYLOAD,
+            },
+            temp / "report.json",
+        )
+
+    def test_the_fixture_really_declares_a_texture_driven_cutout(self):
+        # So a green suite can never come from the fixture quietly losing its
+        # mask. The mask must be in the IMAGE, not in a baseColorFactor.
+        document = _glb_document(self.source)
+        material = _material_by_name(document, CUTOUT_MATERIAL_NAME)
+        self.assertEqual(material["alphaMode"], "MASK")
+        self.assertIn("baseColorTexture", material["pbrMetallicRoughness"])
+        self.assertEqual(
+            material["pbrMetallicRoughness"]["baseColorFactor"], [1, 1, 1, 1]
+        )
+        source_image = _glb_textures(self.source)[0]
+        _width, _height, rgba = decode_rgba(source_image)
+        self.assertEqual(set(rgba[3::4]), {0, 255})
+
+    def test_run_succeeded(self):
+        self.assertTrue(self.report["ok"], self.report.get("error"))
+        self.assertTrue(self.output.is_file())
+
+    def test_exported_albedo_carries_the_cutout_mask(self):
+        # The actual regression: `_quantize_to_png` used to force
+        # `out[:, :, 3] = 255`, discarding whatever alpha the bake captured,
+        # and `_drop_foreign_textures` removed the source base colour image
+        # the mask lived in. The exported atlas must now contain BOTH cut
+        # texels and solid texels.
+        self.assertTrue(self.report["ok"], self.report.get("error"))
+        textures = _glb_textures(self.output)
+        self.assertEqual(len(textures), 1)
+        _width, _height, rgba = decode_rgba(textures[0])
+        alpha = Counter(rgba[3::4])
+        self.assertGreater(
+            alpha[0],
+            0,
+            "the exported albedo has no cut texels: the cutout mask was lost",
+        )
+        self.assertGreater(alpha[255], 0, "the exported albedo is entirely cut away")
+        self.assertEqual(
+            set(alpha),
+            {0, 255},
+            f"cutout alpha is not binary: {sorted(set(alpha))}",
+        )
+        self.assertEqual(self.report["texture"]["cutout_texels"], alpha[0])
+
+    def test_exported_material_declares_mask_alpha_mode(self):
+        # A mask in the texture that the material never declares is invisible
+        # to every engine that reads the glTF: the default alphaMode is
+        # OPAQUE, and an OPAQUE material ignores the alpha channel entirely.
+        self.assertEqual(self.report["texture"]["alpha_mode"], "MASK")
+        material = _material_by_name(_glb_document(self.output), CUTOUT_MATERIAL_NAME)
+        self.assertEqual(material.get("alphaMode"), "MASK")
+        # glTF's default alphaCutoff is 0.5, so the exporter omits the field
+        # when it holds that value. Absent and 0.5 mean the same thing.
+        self.assertEqual(material.get("alphaCutoff", 0.5), CUTOUT_ALPHA_CUTOFF)
+        self.assertEqual(self.report["texture"]["alpha_cutoff"], CUTOUT_ALPHA_CUTOFF)
+
+    def test_rgb_stays_exactly_palette_conformant_through_the_cutout(self):
+        # Quantization applies to RGB ONLY. Dithering or snapping the alpha
+        # channel, or letting the alpha merge disturb RGB, would break the
+        # assertion Gate 1 makes about every asset in the pack -- and that
+        # assertion is not loosened to accommodate cutout.
+        textures = _glb_textures(self.output)
+        self.assertTrue(textures, "exported GLB embeds no image")
+        result = conformance(textures[0], load_palette(self.palette))
+        self.assertEqual(result["pixels"], TEXTURE_SIZE * TEXTURE_SIZE)
+        self.assertTrue(
+            result["ok"],
+            f"{result['foreign_pixels']} foreign pixels: "
+            f"{result['foreign_colours'][:4]}",
+        )
+
+    def test_cutout_part_still_bakes_real_colour_detail(self):
+        # Carrying the mask must not cost the colour bake. The alpha bake is
+        # a SECOND bake into a SECOND image; if it were allowed to overwrite
+        # the colour target the albedo would come out as the mask.
+        self.assertGreater(self.report["texture"]["distinct_colours"], 1)
+        self.assertEqual(len(_glb_document(self.output).get("images", [])), 1)
+
+
+class AlphaBakeSkipTest(unittest.TestCase):
+    """Finding A: a material _bake_alpha skips must not corrupt the atlas.
+
+    _bake_alpha used to `continue` on a material with no Material Output
+    node without first giving it its own alpha-bake target. Whatever node
+    _bake_target left active in that material's tree -- RetroBakeTarget,
+    pointing at the just-finished colour atlas -- stayed active, and because
+    _prepare_bake bakes with use_clear=True the EMIT bake below wrote
+    straight over the colour atlas for that material's faces (and, since
+    use_clear clears the whole shared image once per bake call, over any
+    other material's region that was not itself re-targeted this call).
+
+    Reaching this through the real pipeline is impractical: every real
+    importer manufactures a Material Output node. alpha_bake_skip_probe.py
+    builds the minimal scene by hand -- two materials sharing one "baked"
+    colour image, one of them missing its output node -- and calls
+    _bake_target/_bake_alpha directly, then reports whether that image
+    survived _bake_alpha unchanged.
+    """
+
+    def setUp(self):
+        self.config = FactoryConfig.load()
+        if discover_blender(self.config) is None:
+            self.skipTest("Blender is not available on this host")
+
+    def test_skipped_material_does_not_wipe_the_colour_atlas(self):
+        work = temporary_root() / "retro"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        self.addCleanup(temp_dir.cleanup)
+        temp = Path(temp_dir.name)
+
+        report = run_blender_script(
+            self.config,
+            ALPHA_BAKE_SKIP_PROBE,
+            {},
+            temp / "report.json",
+        )
+
+        self.assertTrue(report["ok"], report.get("error"))
+        # The probe itself must reach the branch under test: MatB really has
+        # no Material Output node, and the pre-bake colour atlas really does
+        # carry two distinct colours (one per UV half) for the corruption to
+        # be visible against.
+        self.assertFalse(report["mat_b_has_output"])
+        self.assertGreaterEqual(report["before_distinct_rgb"], 2)
+
+        self.assertTrue(
+            report["pixels_unchanged"],
+            "the colour atlas changed during _bake_alpha: a material with "
+            "no Material Output node let the alpha bake overwrite it "
+            f"(before {report['before_distinct_rgb']} distinct colours, "
+            f"after {report['after_distinct_rgb']})",
+        )
+
+
 class RetroTextureFailurePathTest(unittest.TestCase):
     def setUp(self):
         self.config = FactoryConfig.load()
@@ -476,6 +698,9 @@ class RetroTextureFailurePathTest(unittest.TestCase):
                 "palette_colours": 0,
                 "distinct_colours": 0,
                 "atlas_coverage": 0.0,
+                "alpha_mode": "OPAQUE",
+                "alpha_cutoff": 0.5,
+                "cutout_texels": 0,
             },
         )
         self.assertEqual(report["dropped_maps"], [])

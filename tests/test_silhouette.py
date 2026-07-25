@@ -195,36 +195,29 @@ class ExportedTriangleCountTest(_BlenderIntegrationTest):
 
     A known defect makes retro_pass's intermediate meshes geometrically
     invalid, and Blender's glTF exporter warns the result "may be exported
-    wrongly". mesh.validate() would tell us definitively, but it also
-    deletes geometry and would move Task 6's triangle counts. Comparing the
-    exported GLB's own triangle count (read straight from its accessors,
-    independent of Blender) against the triangles_out the conversion
-    reported is a cheap proxy that catches the same class of problem
-    (indices referencing geometry that silently vanished on export)
-    without touching the mesh at all.
+    wrongly". retro_pass now calls mesh.validate() (_validate_meshes) before
+    export and recounts triangles_out when it repairs anything, so both
+    sides of the comparison below read the same, post-repair count.
+    Comparing the exported GLB's own triangle count (read straight from its
+    accessors, independent of Blender) against the triangles_out the
+    conversion reported is what catches a regression in that: indices
+    referencing geometry that silently vanished on export.
     """
 
-    # EXPECTED TO FAIL RIGHT NOW. retro_pass's triangles_out is captured
-    # immediately after _decimate, before the bake/UV-finalize/export
-    # stages run, and it does not re-measure after export applies. The
-    # decimate collapse can leave degenerate (zero-area / duplicate-vertex)
-    # triangles behind -- exactly the invalid-mesh condition Blender's own
-    # exporter warns about ("may be exported wrongly") -- and glTF export
-    # silently drops those rather than writing them. Measured on the real
-    # trenchgun/large-band conversion: triangles_out=2479 but the exported
-    # GLB carries 2470 triangles, a silent 9-triangle (0.36%) loss. See
-    # task-9-report.md for the full measurement.
+    # This carried @unittest.expectedFailure through Task 9. retro_pass's
+    # triangles_out was captured immediately after _decimate and never
+    # re-measured, while the decimate collapse left duplicate faces behind --
+    # exactly the invalid-mesh condition Blender's own exporter warns about
+    # ("may be exported wrongly") -- and glTF export repaired them away on
+    # the way out. Measured on the real trenchgun/large-band conversion:
+    # triangles_out=2479 against 2470 triangles in the exported GLB, a silent
+    # 9-triangle (0.36%) loss. See task-9-report.md for that measurement.
     #
-    # Fixing this is explicitly out of scope for Task 9 -- the invalid-mesh
-    # defect in _split_by_material/_decimate is scheduled to be fixed by a
-    # later task, and factory/scripts/retro_pass.py is closed and reviewed
-    # (Tasks 6/7). expectedFailure keeps this test executing and asserting
-    # (so it stays meaningful, unlike skipTest) without adding a red entry
-    # to the suite for a defect this task did not introduce and is not
-    # allowed to fix. When that later task lands, this test will start
-    # reporting "unexpected success" -- unittest's signal to delete this
-    # decorator and let the assertion stand on its own as a real gate.
-    @unittest.expectedFailure
+    # retro_pass now validates its meshes before export and recounts after
+    # (_validate_meshes), so both sides read 2470 and this stands as a real
+    # gate. Do not re-quarantine it: a failure here means geometry is once
+    # again vanishing between the measurement Gate 2 thresholds on and the
+    # file that ships, which makes the IoU below meaningless rather than low.
     def test_exported_triangle_count_matches_retro_pass_report(self):
         with tempfile.TemporaryDirectory(dir=self.work) as temp:
             temp_path = Path(temp)
@@ -259,9 +252,12 @@ class SilhouetteComparisonTest(unittest.TestCase):
     over-broad: it would silently absorb ANY failure anywhere in
     render_masks -> mask_from_png -> compare, including a regression in
     this task's own code, not just the known retro_pass rotation defect
-    it was written to quarantine. It is now split into three
-    independently-reportable methods -- see each one's docstring for what
-    it guards and why it is (or is not) decorated.
+    it was written to quarantine. It is now split into independently-
+    reportable methods -- see each one's docstring for what it guards.
+
+    That rotation defect has since been fixed (export_yup=False in
+    retro_pass's main()), so nothing here is quarantined any more: both
+    methods are undecorated and both must stay green.
     """
 
     _temp_dir: tempfile.TemporaryDirectory | None = None
@@ -347,55 +343,34 @@ class SilhouetteComparisonTest(unittest.TestCase):
             result["mean"], sum(result["per_view"]) / len(result["per_view"])
         )
 
-    def test_current_defect_state_is_pinned(self):
-        """Pins today's known-broken IoU so the rotation fix cannot land silently.
-
-        DELETE OR RAISE THIS THRESHOLD once the retro_pass up-axis
-        double-rotation defect (see task-9-report.md) is fixed. This
-        assertion is written to CURRENTLY PASS -- the conversion is
-        currently this wrong -- and to start FAILING the moment it stops
-        being this wrong, regardless of what the honest post-fix IoU turns
-        out to be. Unlike expectedFailure(minimum > 0.5), which would stay
-        silently "expected failure" forever if the honest post-fix number
-        landed at, say, 0.45, this test turns red on ANY meaningful
-        improvement -- that failure is the signal to act on, not a bug to
-        silence.
-        """
-        self.assertLess(
-            self._result["minimum"], 0.2,
-            "minimum silhouette IoU rose above the known-defect ceiling -- "
-            "the retro_pass rotation bug may be fixed; update or delete "
-            "this test and test_quality_threshold_not_yet_met below",
-        )
-
-    # EXPECTED TO FAIL RIGHT NOW -- and this is the measurement doing its
-    # job. Rendering the raw trenchgun and the retro_pass-converted GLB
-    # (imported fresh, per the HARD REQUIREMENT that this measures what
-    # actually ships) reveals a real, previously undetected orientation
-    # defect: the converted mesh comes back rotated roughly 90 degrees
-    # about the horizontal axis relative to the source, so the barrel's
-    # long axis -- horizontal in the raw render -- points vertically in
-    # the converted render. Visual evidence and the root-cause hypothesis
-    # (retro_pass._normalize applies a manual -90deg X rotation for
-    # up_axis="Y" in factory/scripts/retro_pass.py, and then also exports
-    # with export_yup=True, which performs Blender's own automatic Z-up-
-    # to-Y-up conversion -- the two together compound into an unintended
-    # extra rotation baked into the shipped GLB) are in task-9-report.md,
-    # independently confirmed against the raw glTF (baked node rotation
-    # quaternion, world-space bounds, and the top-down coverage collapse).
+    # Was @unittest.expectedFailure, quarantining the up-axis
+    # double-rotation defect this measurement discovered: retro_pass's
+    # _normalize applied a manual -90deg X rotation for up_axis == "Y" AND
+    # main() exported with export_yup=True, so Blender's exporter applied
+    # its own Z-up-to-Y-up conversion on top. The two compounded and every
+    # converted asset shipped ~180deg about X from the authored
+    # orientation -- baked into the vertex data, visible to any
+    # spec-compliant glTF consumer. Minimum IoU measured 0.03-0.12 across
+    # the 8 views (see task-9-report.md).
     #
-    # This is a NEW finding, distinct from the already-known invalid-mesh
-    # export defect, and it lives in factory/scripts/retro_pass.py, which
-    # is closed/reviewed (Tasks 6/7) and explicitly off limits here. This
-    # test is deliberately NOT weakened to tolerate the rotation (e.g. by
-    # rotating one mask before comparing) -- doing so would hide a real
-    # regression from Gate 2 (Task 10), exactly the failure mode Task 9
-    # exists to prevent. Narrowly scoped to ONLY this threshold assertion
-    # (see test_pipeline_invariants_hold above for everything else this
-    # class checks) so a regression in this task's own code is reported
-    # separately from the known, quarantined retro_pass defect.
-    @unittest.expectedFailure
-    def test_quality_threshold_not_yet_met(self):
+    # Fixed by exporting with export_yup=False, leaving _normalize's
+    # rotation as the single axis conversion -- which also keeps the
+    # reported bounds/origin in the same frame the GLB ships in. Minimum
+    # IoU is now 0.617, so the decorator is gone and this assertion stands
+    # on its own as a real gate.
+    #
+    # A sibling test, ExportedTriangleCountTest, guarded a SEPARATE,
+    # unrelated invalid-geometry defect in _split_by_material/_decimate. It
+    # carried @unittest.expectedFailure through Task 9; this commit fixed
+    # that defect too (retro_pass now calls _validate_meshes before export)
+    # and removed the decorator, so that test is no longer quarantined
+    # either. It stayed untouched by THIS fix -- the rotation defect below --
+    # they were independent bugs.
+    #
+    # Deliberately NOT weakened to tolerate a rotation (e.g. by rotating
+    # one mask before comparing): doing so would hide exactly this class
+    # of ship-breaking regression from Gate 2 (Task 10).
+    def test_quality_threshold_is_met(self):
         # Sanity bound, not Gate 2's real threshold (that belongs to
         # Task 10). This only needs to catch a badly broken camera or a
         # grossly wrong conversion; it must not be loosened to paper over
