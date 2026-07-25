@@ -47,6 +47,7 @@ def run_blender_script(
     script: Path,
     payload: dict,
     report_path: Path,
+    timeout_seconds: float = 600,
 ) -> dict:
     executable = discover_blender(config)
     if executable is None:
@@ -66,7 +67,14 @@ def run_blender_script(
         "--report",
         str(report_path),
     ]
-    completed = subprocess.run(command, capture_output=True, text=True)
+    try:
+        completed = subprocess.run(
+            command, capture_output=True, text=True, timeout=timeout_seconds
+        )
+    except subprocess.TimeoutExpired as error:
+        raise BlenderError(
+            f"Blender script {script} timed out after {timeout_seconds} seconds"
+        ) from error
     if not report_path.is_file():
         raise BlenderError(
             "Blender produced no report\n"

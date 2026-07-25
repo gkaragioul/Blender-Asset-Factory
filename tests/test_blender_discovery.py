@@ -1,9 +1,11 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
-from factory.blender import discover_blender
+from factory.blender import BlenderError, discover_blender, run_blender_script
 from factory.config import FactoryConfig
 from tests.temp_paths import temporary_root
 
@@ -63,6 +65,32 @@ class BlenderDiscoveryTest(unittest.TestCase):
                 temp_path, [str(temp_path / "absent" / "blender")]
             )
             self.assertIsNone(discover_blender(config))
+
+
+class RunBlenderScriptTimeoutTest(unittest.TestCase):
+    def test_subprocess_timeout_is_converted_to_blender_error(self):
+        with tempfile.TemporaryDirectory(dir=temporary_root()) as temp:
+            temp_path = Path(temp)
+            installed = temp_path / "bin" / "blender"
+            installed.parent.mkdir(parents=True)
+            installed.write_text("#!/bin/sh\n", encoding="utf-8")
+            config = _config_with_candidates(temp_path, [str(installed)])
+            script = temp_path / "script.py"
+            script.write_text("", encoding="utf-8")
+            report_path = temp_path / "repo" / "reports" / "report.json"
+
+            command = [str(installed)]
+            with mock.patch(
+                "factory.blender.subprocess.run",
+                side_effect=subprocess.TimeoutExpired(command, 5),
+            ):
+                with self.assertRaises(BlenderError) as context:
+                    run_blender_script(
+                        config, script, {"key": "value"}, report_path, timeout_seconds=5
+                    )
+            message = str(context.exception)
+            self.assertIn(str(script), message)
+            self.assertIn("5", message)
 
 
 if __name__ == "__main__":
