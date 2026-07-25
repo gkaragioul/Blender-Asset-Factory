@@ -20,6 +20,7 @@ from tests.glb_fixture import (
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
+ALPHA_BAKE_SKIP_PROBE = Path(__file__).resolve().parent / "alpha_bake_skip_probe.py"
 TEXTURE_SIZE = 256
 CONTRACT_PAYLOAD = {
     "texture_size": TEXTURE_SIZE,
@@ -599,6 +600,62 @@ class RetroTextureCutoutTest(unittest.TestCase):
         # the colour target the albedo would come out as the mask.
         self.assertGreater(self.report["texture"]["distinct_colours"], 1)
         self.assertEqual(len(_glb_document(self.output).get("images", [])), 1)
+
+
+class AlphaBakeSkipTest(unittest.TestCase):
+    """Finding A: a material _bake_alpha skips must not corrupt the atlas.
+
+    _bake_alpha used to `continue` on a material with no Material Output
+    node without first giving it its own alpha-bake target. Whatever node
+    _bake_target left active in that material's tree -- RetroBakeTarget,
+    pointing at the just-finished colour atlas -- stayed active, and because
+    _prepare_bake bakes with use_clear=True the EMIT bake below wrote
+    straight over the colour atlas for that material's faces (and, since
+    use_clear clears the whole shared image once per bake call, over any
+    other material's region that was not itself re-targeted this call).
+
+    Reaching this through the real pipeline is impractical: every real
+    importer manufactures a Material Output node. alpha_bake_skip_probe.py
+    builds the minimal scene by hand -- two materials sharing one "baked"
+    colour image, one of them missing its output node -- and calls
+    _bake_target/_bake_alpha directly, then reports whether that image
+    survived _bake_alpha unchanged.
+    """
+
+    def setUp(self):
+        self.config = FactoryConfig.load()
+        if discover_blender(self.config) is None:
+            self.skipTest("Blender is not available on this host")
+
+    def test_skipped_material_does_not_wipe_the_colour_atlas(self):
+        work = temporary_root() / "retro"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        self.addCleanup(temp_dir.cleanup)
+        temp = Path(temp_dir.name)
+
+        report = run_blender_script(
+            self.config,
+            ALPHA_BAKE_SKIP_PROBE,
+            {},
+            temp / "report.json",
+        )
+
+        self.assertTrue(report["ok"], report.get("error"))
+        # The probe itself must reach the branch under test: MatB really has
+        # no Material Output node, and the pre-bake colour atlas really does
+        # carry two distinct colours (one per UV half) for the corruption to
+        # be visible against.
+        self.assertFalse(report["mat_b_has_output"])
+        self.assertGreaterEqual(report["before_distinct_rgb"], 2)
+
+        self.assertTrue(
+            report["pixels_unchanged"],
+            "the colour atlas changed during _bake_alpha: a material with "
+            "no Material Output node let the alpha bake overwrite it "
+            f"(before {report['before_distinct_rgb']} distinct colours, "
+            f"after {report['after_distinct_rgb']})",
+        )
 
 
 class RetroTextureFailurePathTest(unittest.TestCase):

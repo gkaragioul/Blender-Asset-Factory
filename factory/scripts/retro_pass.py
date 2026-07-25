@@ -994,10 +994,10 @@ def _bake_alpha(meshes: list, size: int, sources: dict):
     That inversion is not a matter of taste. Cycles clears the target to zero
     and only writes texels the geometry actually covers, so under the natural
     "1.0 means opaque" reading every texel the bake never reached -- the whole
-    atlas background, and any part whose material has no output node -- would
-    read back as fully transparent and be punched out of the export. With the
-    inversion, "not baked" and "solid" are the same value, and only a texel
-    the bake positively decided was transparent becomes a hole.
+    atlas background -- would read back as fully transparent and be punched
+    out of the export. With the inversion, "not baked" and "solid" are the
+    same value, and only a texel the bake positively decided was transparent
+    becomes a hole.
 
     Materials with no recorded alpha link emit a constant 0: their surface is
     solid as far as the MASK is concerned, whatever their scalar alpha says.
@@ -1011,8 +1011,19 @@ def _bake_alpha(meshes: list, size: int, sources: dict):
         if tree is None:
             continue
         output = _output_node(tree)
+        created_output = None
         if output is None:
-            continue
+            # _bake_target already planted BAKE_NODE_NAME in this tree and
+            # left it active+selected (it does not skip on a missing output
+            # node -- only on a missing tree). Skipping here used to leave
+            # that node in place, so the EMIT bake below would land on the
+            # colour atlas instead of a per-material alpha target -- the
+            # exact hazard the paragraph above this loop describes, just not
+            # noticed on this path. A material with no Material Output has
+            # no surface a renderer reads anyway, so wiring one in for the
+            # sole purpose of hosting this bake's target node is harmless.
+            output = tree.nodes.new("ShaderNodeOutputMaterial")
+            created_output = output
         surface = output.inputs["Surface"]
 
         # LESS_THAN outputs exactly 0.0 or 1.0, so the mask is binary before
@@ -1048,13 +1059,15 @@ def _bake_alpha(meshes: list, size: int, sources: dict):
         tree.nodes.active = target
         target.select = True
 
-        undo.append((tree, surface, previous, (threshold, emission, target)))
+        undo.append(
+            (tree, surface, previous, (threshold, emission, target), created_output)
+        )
 
     try:
         _prepare_bake(meshes)
         bpy.ops.object.bake(type="EMIT", use_selected_to_active=False)
     finally:
-        for tree, surface, previous, temporary in undo:
+        for tree, surface, previous, temporary, created_output in undo:
             for link in list(surface.links):
                 tree.links.remove(link)
             for from_socket, to_socket in previous:
@@ -1064,6 +1077,8 @@ def _bake_alpha(meshes: list, size: int, sources: dict):
                     pass
             for node in temporary:
                 tree.nodes.remove(node)
+            if created_output is not None:
+                tree.nodes.remove(created_output)
     return image
 
 
@@ -1460,10 +1475,13 @@ def main() -> int:
         triangles_out, decimate_passes, decimate_repairs = _decimate(meshes, budget)
         report["triangles_out"] = triangles_out
         report["stages"]["decimate"] = budget
-        # {part: polygons the collapse modifier left invalid}. Reported
-        # rather than merely fixed: this is the pass silently losing geometry
-        # it asked for, and an operator comparing triangles_in to
-        # triangles_out deserves to see where the shortfall came from.
+        # {part: polygons _validate_meshes removed}. An entry can be 0 when
+        # the only repair was to custom data (see _validate_meshes'
+        # docstring) -- the key existing does not by itself mean geometry was
+        # lost. Reported rather than merely fixed: this is the pass silently
+        # losing geometry it asked for, and an operator comparing
+        # triangles_in to triangles_out deserves to see where the shortfall
+        # came from.
         report["stages"]["decimate_validation"] = decimate_repairs
 
         if triangles_out > budget:
@@ -1629,13 +1647,19 @@ def main() -> int:
             # are all measured in that frame. Asking the exporter to convert
             # on top of that applied the conversion TWICE and shipped every
             # up_axis == "Y" asset rotated ~180deg about X from the
-            # artist-authored orientation -- silent, baked into the vertex
-            # data, and visible to any spec-compliant glTF consumer.
-            # Measured on a probe box with Blender dims (1, 2, 4): manual
-            # rotation + export_yup=True exports dims (1, 2, 4), where a
-            # correct Y-up glTF is (1, 4, 2).
+            # artist-authored orientation -- silent, and visible to any
+            # spec-compliant glTF consumer. Measured on a probe box with
+            # Blender dims (1, 2, 4): manual rotation + export_yup=True
+            # exports dims (1, 2, 4), where a correct Y-up glTF is (1, 4, 2).
             #
-            # So the scene is written out verbatim, and the frame the report
+            # The rotation is not baked into the vertex data -- export_apply
+            # applies MODIFIERS, not object transforms -- it lives in each
+            # exported node's TRS quaternion. With export_yup=False that
+            # quaternion is _normalize's single -90deg-about-X conversion and
+            # nothing else: every exported node carries
+            # rotation: [-0.7071, 0, 0, 0.7071], which is now the correct
+            # single conversion rather than one of two compounding ones. So
+            # the scene is written out verbatim, and the frame the report
             # describes is exactly the frame the GLB carries.
             export_yup=False,
             export_image_format="AUTO",

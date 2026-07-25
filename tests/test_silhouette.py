@@ -195,13 +195,13 @@ class ExportedTriangleCountTest(_BlenderIntegrationTest):
 
     A known defect makes retro_pass's intermediate meshes geometrically
     invalid, and Blender's glTF exporter warns the result "may be exported
-    wrongly". mesh.validate() would tell us definitively, but it also
-    deletes geometry and would move Task 6's triangle counts. Comparing the
-    exported GLB's own triangle count (read straight from its accessors,
-    independent of Blender) against the triangles_out the conversion
-    reported is a cheap proxy that catches the same class of problem
-    (indices referencing geometry that silently vanished on export)
-    without touching the mesh at all.
+    wrongly". retro_pass now calls mesh.validate() (_validate_meshes) before
+    export and recounts triangles_out when it repairs anything, so both
+    sides of the comparison below read the same, post-repair count.
+    Comparing the exported GLB's own triangle count (read straight from its
+    accessors, independent of Blender) against the triangles_out the
+    conversion reported is what catches a regression in that: indices
+    referencing geometry that silently vanished on export.
     """
 
     # This carried @unittest.expectedFailure through Task 9. retro_pass's
@@ -359,9 +359,13 @@ class SilhouetteComparisonTest(unittest.TestCase):
     # IoU is now 0.617, so the decorator is gone and this assertion stands
     # on its own as a real gate.
     #
-    # A sibling test in ExportedTriangleCountTest is still an
-    # expectedFailure for the SEPARATE, unrelated invalid-geometry defect
-    # in _split_by_material/_decimate. That one is untouched here.
+    # A sibling test, ExportedTriangleCountTest, guarded a SEPARATE,
+    # unrelated invalid-geometry defect in _split_by_material/_decimate. It
+    # carried @unittest.expectedFailure through Task 9; this commit fixed
+    # that defect too (retro_pass now calls _validate_meshes before export)
+    # and removed the decorator, so that test is no longer quarantined
+    # either. It stayed untouched by THIS fix -- the rotation defect below --
+    # they were independent bugs.
     #
     # Deliberately NOT weakened to tolerate a rotation (e.g. by rotating
     # one mask before comparing): doing so would hide exactly this class
