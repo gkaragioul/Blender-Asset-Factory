@@ -19,6 +19,18 @@ CONTRACT_PAYLOAD = {
     "vertex_light_bake": True,
 }
 
+# Same fixture, but with a budget of 1 triangle for the whole asset. This
+# is unreachable within MAX_DECIMATE_PASSES: the trenchgun's 7 split parts
+# each hit a topological floor (a DECIMATE collapse modifier cannot reduce
+# a part below a handful of triangles without breaking manifoldness) well
+# above 1 triangle combined. Used to exercise the non-convergence branch in
+# retro_pass.py's main(), which the "large" role never reaches because it
+# converges (2604 -> 2479 in earlier measurement).
+UNREACHABLE_CONTRACT_PAYLOAD = {
+    **CONTRACT_PAYLOAD,
+    "polycount_bands": {**CONTRACT_PAYLOAD["polycount_bands"], "impossible": 1},
+}
+
 # The contract declares up_axis "Y". retro_pass.py rotates the imported mesh
 # -90deg about X whenever up_axis == "Y" (Blender's own coordinate frame is
 # always Z-up; this rotation moves the mesh's "up" extent from world Z onto
@@ -38,7 +50,7 @@ class RetroGeometryTest(unittest.TestCase):
         except FixtureUnavailable as error:
             self.skipTest(str(error))
 
-    def _run(self, role: str) -> tuple[dict, Path]:
+    def _run(self, role: str, contract: dict = CONTRACT_PAYLOAD) -> tuple[dict, Path]:
         work = self.config.root / "tmp" / "factory" / "tests" / "retro"
         work.mkdir(parents=True, exist_ok=True)
         # Deliberately not a `with tempfile.TemporaryDirectory(...) as temp:`
@@ -61,7 +73,7 @@ class RetroGeometryTest(unittest.TestCase):
                 "source": str(self.source),
                 "output": str(output),
                 "role": role,
-                "contract": CONTRACT_PAYLOAD,
+                "contract": contract,
             },
             report_path,
         )
@@ -108,6 +120,27 @@ class RetroGeometryTest(unittest.TestCase):
         report, _output = self._run("colossal")
         self.assertFalse(report["ok"])
         self.assertIn("colossal", report["error"])
+
+    def test_reports_failure_when_decimate_cannot_converge(self):
+        # Regression test for fix round 1: _decimate's pass loop used to be
+        # bounded only by MAX_DECIMATE_PASSES, and main() exported and set
+        # ok=True regardless of whether triangles_out actually reached the
+        # budget. That let an over-budget asset report success here and get
+        # silently rejected later by Gate 1 (Task 10) with no explanation
+        # of why. A budget of 1 triangle is unreachable for this fixture,
+        # so this exercises the "stop and report" branch for real rather
+        # than asserting on a mock.
+        report, output = self._run("impossible", contract=UNREACHABLE_CONTRACT_PAYLOAD)
+        self.assertFalse(report["ok"])
+        self.assertIn("did not converge", report["error"])
+        self.assertIn("budget=1", report["error"])
+        self.assertIn("impossible", report["error"])
+        # triangles_out must still reflect what was actually achieved, and
+        # it must be reported as over budget -- that's the whole point.
+        self.assertGreater(report["triangles_out"], 1)
+        # A failed geometry pass must not produce an exported asset that a
+        # downstream stage could mistake for a valid, in-budget one.
+        self.assertFalse(output.is_file())
 
 
 if __name__ == "__main__":

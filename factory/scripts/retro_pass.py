@@ -220,7 +220,7 @@ def _normalize(meshes: list, grid_unit: float, up_axis: str) -> dict:
     }
 
 
-def _decimate(meshes: list, budget: int) -> int:
+def _decimate(meshes: list, budget: int) -> tuple[int, int]:
     current = _triangle_count(meshes)
     attempts = 0
     # A single collapse pass at ratio=budget/current typically overshoots the
@@ -235,6 +235,16 @@ def _decimate(meshes: list, budget: int) -> int:
     # landing at or under it. DECIMATE_SAFETY_MARGIN asks for a bit more
     # reduction than the arithmetic minimum each pass so the loop crosses
     # the budget in a handful of passes instead of trailing off forever.
+    #
+    # MAX_DECIMATE_PASSES bounds the loop but does NOT guarantee the budget
+    # is met: a mesh can hit a topological floor (an object's collapse
+    # modifier cannot reduce it further without breaking manifoldness)
+    # before crossing under budget. Convergence is not attempted here at
+    # any cost — the caller (main()) is responsible for checking the
+    # returned triangle count against budget and failing loudly rather
+    # than silently exporting an over-budget asset. See main() and the
+    # task-6 fix-round report for why this split of responsibility was
+    # chosen over looping until convergence or raising the pass cap.
     while current > budget and attempts < MAX_DECIMATE_PASSES:
         ratio = max(min((budget / current) * DECIMATE_SAFETY_MARGIN, 1.0), 0.01)
         for obj in meshes:
@@ -248,7 +258,7 @@ def _decimate(meshes: list, budget: int) -> int:
             bpy.ops.object.modifier_apply(modifier="RetroDecimate")
         current = _triangle_count(meshes)
         attempts += 1
-    return current
+    return current, attempts
 
 
 def main() -> int:
@@ -292,8 +302,23 @@ def main() -> int:
         report["bounds"] = _normalize(meshes, contract["grid_unit"], contract["up_axis"])
         report["stages"]["normalize"] = True
 
-        report["triangles_out"] = _decimate(meshes, budget)
+        triangles_out, decimate_passes = _decimate(meshes, budget)
+        report["triangles_out"] = triangles_out
         report["stages"]["decimate"] = budget
+
+        if triangles_out > budget:
+            # Non-convergence must never be silent: Gate 1 (Task 10) rejects
+            # any asset over its triangle budget, and this is the only
+            # point in the pipeline where we know *why* an over-budget
+            # asset would be rejected. Failing here (ok: false, no export)
+            # rather than exporting anyway surfaces that reason immediately
+            # instead of as an unexplained downstream gate failure.
+            raise ValueError(
+                f"decimate did not converge for role {role!r}: "
+                f"budget={budget} triangles_out={triangles_out} "
+                f"after {decimate_passes} passes "
+                f"(MAX_DECIMATE_PASSES={MAX_DECIMATE_PASSES})"
+            )
 
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.export_scene.gltf(
