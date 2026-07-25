@@ -13,9 +13,12 @@ from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
 from tests.glb_fixture import (
     CUTOUT_ALPHA_CUTOFF,
     CUTOUT_MATERIAL_NAME,
+    EXTERNAL_TEXTURE_NAME,
     TRANSLUCENT_ALPHA,
     write_cutout_cube_glb,
+    write_external_texture_plane_gltf,
     write_multi_texture_cube_glb,
+    write_solid_png,
 )
 from tests.temp_paths import temporary_root
 
@@ -51,6 +54,82 @@ def _glb_textures(path: Path) -> list[bytes]:
         start = binary_offset + view.get("byteOffset", 0)
         images.append(data[start : start + view["byteLength"]])
     return images
+
+
+class TextureSearchBoundaryTest(unittest.TestCase):
+    """A missing map must never be satisfied by ANOTHER asset's file.
+
+    `_resolve_source_maps` used to hand `source.parent.parent` to
+    `bpy.ops.file.find_missing_files`, which walks recursively and binds
+    purely by FILENAME. In the real pack layout (`raw/<asset_id>/model.glb`)
+    that directory holds every other asset in the pack, and names like
+    `BaseColor.png` and `diffuse.png` collide constantly -- so asset A baked
+    asset B's albedo, decided by directory walk order. Cross-asset
+    contamination AND a determinism hazard, in one call.
+
+    Both layouts below are real and both must behave correctly, which is why
+    the boundary is the asset's own FOLDER rather than a fixed number of
+    levels: `raw/<id>/model.gltf` stops at the asset, while
+    `<id>/source/mesh.fbx` widens by one because `source/` is a container
+    inside the asset (the trenchgun fixture is exactly this shape, and
+    RetroTextureTest below proves its 15 maps still relink).
+    """
+
+    def setUp(self):
+        self.config = FactoryConfig.load()
+        if discover_blender(self.config) is None:
+            self.skipTest("Blender is not available on this host")
+        work = temporary_root() / "retro-texture-search"
+        work.mkdir(parents=True, exist_ok=True)
+        temp_dir = tempfile.TemporaryDirectory(dir=work)
+        self.addCleanup(temp_dir.cleanup)
+        self.temp = Path(temp_dir.name)
+
+    def _run(self, source: Path) -> dict:
+        return run_blender_script(
+            self.config,
+            SCRIPT,
+            {
+                "source": str(source),
+                "output": str(self.temp / "out.glb"),
+                "role": "small",
+                "palette": str(retro_palette_png(self.temp)),
+                "contract": CONTRACT_PAYLOAD,
+            },
+            self.temp / "report.json",
+        )
+
+    def test_a_sibling_assets_texture_is_not_borrowed(self):
+        pack = self.temp / "raw"
+        source = write_external_texture_plane_gltf(pack / "hero" / "hero.gltf")
+        # A DIFFERENT asset in the same pack, carrying the same filename. This
+        # is the contamination the old two-level search performed: with it,
+        # source_maps_unresolved came back EMPTY because the intruder's file
+        # satisfied the lookup.
+        write_solid_png(pack / "intruder" / EXTERNAL_TEXTURE_NAME, (17, 240, 61))
+
+        report = self._run(source)
+        self.assertTrue(report["ok"], report.get("error"))
+        self.assertEqual(report["stages"]["source_maps_missing"], 1)
+        self.assertEqual(
+            len(report["stages"]["source_maps_unresolved"]),
+            1,
+            "a sibling asset's same-named texture was borrowed",
+        )
+
+    def test_a_map_inside_the_assets_own_folder_still_resolves(self):
+        # The control. Narrowing the search must not stop legitimate maps from
+        # being found: the walk is still recursive within the asset folder.
+        pack = self.temp / "raw"
+        source = write_external_texture_plane_gltf(
+            pack / "hero" / "hero.gltf", texture_uri="missing/" + EXTERNAL_TEXTURE_NAME
+        )
+        write_solid_png(pack / "hero" / "textures" / EXTERNAL_TEXTURE_NAME, (146, 118, 82))
+
+        report = self._run(source)
+        self.assertTrue(report["ok"], report.get("error"))
+        self.assertEqual(report["stages"]["source_maps_missing"], 1)
+        self.assertEqual(report["stages"]["source_maps_unresolved"], [])
 
 
 class RetroTextureTest(unittest.TestCase):

@@ -463,6 +463,89 @@ def thin_plane_glb_bytes() -> bytes:
     )
 
 
+EXTERNAL_TEXTURE_NAME = "BaseColor.png"
+
+
+def write_external_texture_plane_gltf(
+    path: Path, texture_uri: str = EXTERNAL_TEXTURE_NAME
+) -> Path:
+    """A .gltf whose base colour map is an EXTERNAL file reference.
+
+    Needed to exercise texture relinking at all: every other fixture here
+    embeds its image in the GLB binary chunk, so no resolution ever happens.
+    `texture_uri` is written verbatim, so a caller can point it at a file that
+    does not exist and observe where the pass goes looking for it.
+
+    The buffer is a base64 data URI so the fixture is a single file, which
+    keeps the surrounding directory layout -- the actual subject of the test
+    -- unambiguous.
+    """
+    import base64
+
+    corners = ((-0.5, 0.0, 0.0), (0.5, 0.0, 0.0), (0.5, 1.0, 0.0), (-0.5, 1.0, 0.0))
+    positions = b"".join(struct.pack("<3f", *corner) for corner in corners)
+    uvs = b"".join(struct.pack("<2f", corner[0] + 0.5, corner[1]) for corner in corners)
+    indices = b"".join(struct.pack("<3H", *face) for face in ((0, 1, 2), (0, 2, 3)))
+    binary = positions + uvs + indices
+    binary += b"\x00" * ((4 - len(binary) % 4) % 4)
+
+    document = {
+        "asset": {"version": "2.0", "generator": "BAF external texture fixture"},
+        "buffers": [
+            {
+                "byteLength": len(binary),
+                "uri": "data:application/octet-stream;base64,"
+                + base64.b64encode(binary).decode("ascii"),
+            }
+        ],
+        "bufferViews": [
+            {"buffer": 0, "byteOffset": 0, "byteLength": len(positions), "target": 34962},
+            {"buffer": 0, "byteOffset": len(positions), "byteLength": len(uvs), "target": 34962},
+            {"buffer": 0, "byteOffset": len(positions) + len(uvs), "byteLength": len(indices), "target": 34963},
+        ],
+        "accessors": [
+            {"bufferView": 0, "componentType": 5126, "count": 4, "type": "VEC3", "min": [-0.5, 0, 0], "max": [0.5, 1, 0]},
+            {"bufferView": 1, "componentType": 5126, "count": 4, "type": "VEC2", "min": [0, 0], "max": [1, 1]},
+            {"bufferView": 2, "componentType": 5123, "count": 6, "type": "SCALAR", "min": [0], "max": [3]},
+        ],
+        "images": [{"name": "ExternalBaseColor", "uri": texture_uri}],
+        "samplers": [{"magFilter": 9728, "minFilter": 9728, "wrapS": 33071, "wrapT": 33071}],
+        "textures": [{"sampler": 0, "source": 0}],
+        "materials": [
+            {
+                "name": "ExternalMaterial",
+                "doubleSided": True,
+                "pbrMetallicRoughness": {
+                    "baseColorFactor": [1, 1, 1, 1],
+                    "baseColorTexture": {"index": 0},
+                    "metallicFactor": 0.0,
+                    "roughnessFactor": 0.9,
+                },
+            }
+        ],
+        "meshes": [
+            {
+                "name": "ExternalPlane",
+                "primitives": [
+                    {"attributes": {"POSITION": 0, "TEXCOORD_0": 1}, "indices": 2, "material": 0}
+                ],
+            }
+        ],
+        "nodes": [{"mesh": 0}],
+        "scenes": [{"nodes": [0]}],
+        "scene": 0,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(document, indent=1), encoding="utf-8")
+    return path
+
+
+def write_solid_png(path: Path, colour: tuple[int, int, int], size: int = 8) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_solid_png(size, size, colour))
+    return path
+
+
 def write_thin_plane_glb(path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(thin_plane_glb_bytes())

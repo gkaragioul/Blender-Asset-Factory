@@ -508,6 +508,103 @@ def _image_loaded(image) -> bool:
     return image.size[0] > 0 and image.size[1] > 0
 
 
+# Directory names that conventionally CONTAIN a mesh inside an asset folder
+# rather than BEING the asset folder. See _search_roots.
+MESH_CONTAINER_DIRECTORIES = frozenset(
+    {"source", "sources", "src", "mesh", "meshes", "model", "models",
+     "fbx", "obj", "gltf", "glb"}
+)
+
+
+def _search_roots(source: Path) -> tuple:
+    """The directories a missing texture may be looked for in, narrow first.
+
+    The boundary that matters is THE ASSET'S OWN FOLDER, and nothing wider.
+    Texture search binds by filename, and the level above an asset holds every
+    other asset in the pack -- `BaseColor.png` and `diffuse.png` collide
+    across assets constantly, so a search one level too wide binds asset A's
+    material to asset B's albedo. That is a correctness defect and, because
+    the winner depends on directory walk order, a determinism hazard too.
+
+    But the asset folder is not always `source.parent`. Both layouts are real:
+
+      raw/<asset_id>/model.glb              -> the asset folder IS source.parent
+      <asset_id>/source/mesh.fbx            -> maps live in a SIBLING
+                                               <asset_id>/textures/
+
+    The second is how authored archives ship (the trenchgun fixture is exactly
+    this), so hard-restricting to `source.parent` resolves nothing for them.
+    The discriminator is the mesh directory's NAME: a conventional container
+    like `source/` or `models/` is part of the asset, not the asset itself, so
+    the asset folder is one level up. Anything else is taken to be the asset
+    folder and the search stops there.
+
+    Pinned as an explicit set rather than inferred, so the boundary is a
+    reviewable list and not a heuristic that drifts.
+    """
+    if source.parent.name.lower() in MESH_CONTAINER_DIRECTORIES:
+        return (source.parent, source.parent.parent)
+    return (source.parent,)
+
+
+def _image_basename(image) -> str:
+    """The filename an image is asking for, whatever separators it carries.
+
+    Authored FBX files store absolute paths from the exporting machine
+    ("D:\\Program Files\\BlenderProjects\\..."), and Blender additionally uses
+    its own "//" relative prefix, so neither os.path nor pathlib can be
+    trusted to split these correctly on an arbitrary host.
+    """
+    text = image.filepath_raw or image.filepath or image.name
+    return text.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1]
+
+
+def _relink_missing_images(images: dict, directory: str) -> list:
+    """Bind unresolved images to same-named files, REFUSING any ambiguity.
+
+    Replaces `bpy.ops.file.find_missing_files`, which was the direct cause of
+    a cross-asset contamination hazard: it walks the given directory
+    RECURSIVELY and binds purely by FILENAME, taking whichever match the walk
+    reaches first. In the pack layout (`raw/<asset_id>/model.glb`) the level
+    above an asset holds every other asset in the pack, and names like
+    `BaseColor.png` and `diffuse.png` collide constantly -- so asset A baked
+    asset B's albedo, with the winner decided by directory walk order. That is
+    a determinism hazard as well as a correctness one, and determinism is the
+    property the packs are sold on.
+
+    _search_roots bounds WHERE this looks (the asset's own folder, never
+    wider). This function bounds WHAT it will accept inside that folder: a
+    name matching MORE THAN ONE file is refused outright rather than resolved
+    by walk order. Refusing is safe -- an unresolved image is unlinked by the
+    caller and the bake falls back to the material's flat base colour, which
+    is a visible, reported degradation rather than a silent wrong one.
+
+    Returns the basenames that were refused as ambiguous. Iteration is sorted
+    throughout, so the result does not depend on filesystem ordering.
+    """
+    index: dict = {}
+    for path in sorted(Path(directory).rglob("*")):
+        if path.is_file():
+            index.setdefault(path.name.lower(), []).append(path)
+
+    ambiguous = []
+    for _name, image in sorted(images.items()):
+        if _image_loaded(image):
+            continue
+        matches = index.get(_image_basename(image).lower(), [])
+        if len(matches) > 1:
+            ambiguous.append(_image_basename(image))
+            continue
+        if not matches:
+            continue
+        image.filepath = str(matches[0])
+        try:
+            image.reload()
+        except RuntimeError:
+            pass
+    return ambiguous
+
+
 def _resolve_source_maps(meshes: list, source: Path) -> dict:
     """Relink the source's texture files, and unlink the ones still missing.
 
@@ -525,8 +622,9 @@ def _resolve_source_maps(meshes: list, source: Path) -> dict:
     available here, so this stage exists to make the bake see real data.
 
     Two steps, in order:
-      1. bpy.ops.file.find_missing_files re-points missing images at
-         same-named files found under the source's own directory tree.
+      1. Re-point missing images at same-named files found under the asset's
+         own directory tree, refusing any name that matches MORE THAN ONE
+         file (see _relink_missing_images).
       2. Anything STILL unresolved is unlinked from the shader graph, so the
          bake falls back to the material's flat base colour instead of
          black. (The fixture's Cartridge maps land here: the FBX asks for
@@ -549,27 +647,13 @@ def _resolve_source_maps(meshes: list, source: Path) -> dict:
         name for name, image in sorted(images.items()) if not _image_loaded(image)
     ]
 
-    # EXACTLY the source file's own directory, and never its parent.
-    #
-    # find_missing_files walks the directory RECURSIVELY and binds purely by
-    # FILENAME. The pack layout is raw/<asset_id>/model.glb, so source.parent
-    # is asset A's own folder while source.parent.parent is the folder holding
-    # every asset in the pack. Names like BaseColor.png and diffuse.png repeat
-    # across assets constantly, so searching the parent binds asset A's
-    # material to asset B's albedo -- and which one it finds depends on
-    # directory walk order, making it a determinism hazard on top of a
-    # correctness one. Determinism is the property the packs are sold on.
-    #
-    # Nothing is lost by narrowing: the recursive walk still reaches a
-    # `textures/` (or any other) subdirectory beside the mesh, which is where
-    # authored sources actually keep their maps. Anything genuinely outside
-    # the asset's own folder is not this asset's texture.
-    if any(not _image_loaded(image) for image in images.values()):
-        if source.parent.is_dir():
-            try:
-                bpy.ops.file.find_missing_files(directory=str(source.parent))
-            except RuntimeError:
-                pass
+    ambiguous: list[str] = []
+    for directory in _search_roots(source):
+        if not any(not _image_loaded(image) for image in images.values()):
+            break
+        if not directory.is_dir():
+            continue
+        ambiguous.extend(_relink_missing_images(images, directory))
 
     unresolved = []
     for name, image in sorted(images.items()):
@@ -594,6 +678,11 @@ def _resolve_source_maps(meshes: list, source: Path) -> dict:
         "missing_before": len(missing_before),
         "unresolved": unresolved,
         "unlinked_nodes": unlinked,
+        # Names deliberately NOT bound because more than one file under the
+        # searched tree carried them. Reported rather than swallowed: this is
+        # the cross-asset contamination case, and an operator needs to see
+        # that a map was refused rather than merely missing.
+        "ambiguous": sorted(set(ambiguous)),
     }
 
 
