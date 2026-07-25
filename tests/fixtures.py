@@ -4,7 +4,17 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from factory.png import encode_rgba
 from tests.temp_paths import temporary_root
+
+# A small, deliberately PS1-ish ramp: two four-step ramps (warm wood, cool
+# steel) which is the whole vocabulary a trenchgun needs. Shared by every
+# test that runs retro_pass.py so the geometry and texture suites quantize
+# against the same palette.
+RETRO_PALETTE_COLOURS = (
+    (20, 18, 16), (60, 52, 42), (104, 82, 56), (146, 118, 82),
+    (44, 46, 44), (86, 92, 86), (132, 138, 130), (188, 192, 186),
+)
 
 ARCHIVE_CANDIDATES = (
     Path(__file__).resolve().parents[2] / ".hermes" / "desktop-attachments" / "m1897-trenchgun.zip",
@@ -14,6 +24,18 @@ ARCHIVE_CANDIDATES = (
 
 class FixtureUnavailable(unittest.SkipTest):
     pass
+
+
+def retro_palette_png(directory: Path) -> Path:
+    """Write the shared test palette into `directory` and return its path."""
+    rgba = bytearray()
+    for colour in RETRO_PALETTE_COLOURS:
+        rgba.extend((*colour, 255))
+    path = directory / "palette.png"
+    path.write_bytes(
+        encode_rgba(len(RETRO_PALETTE_COLOURS), 1, bytes(rgba))
+    )
+    return path
 
 
 def trenchgun_fbx() -> Path:

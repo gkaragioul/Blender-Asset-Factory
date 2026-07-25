@@ -5,7 +5,7 @@ from pathlib import Path
 from factory.blender import discover_blender, run_blender_script
 from factory.config import FactoryConfig
 from factory.style_contract import StyleContract
-from tests.fixtures import FixtureUnavailable, trenchgun_fbx
+from tests.fixtures import FixtureUnavailable, retro_palette_png, trenchgun_fbx
 from tests.temp_paths import temporary_root
 
 SCRIPT = Path(__file__).resolve().parents[1] / "factory" / "scripts" / "retro_pass.py"
@@ -73,6 +73,11 @@ class RetroGeometryTest(unittest.TestCase):
                 "source": str(self.source),
                 "output": str(output),
                 "role": role,
+                # retro_pass.py is one pipeline, not two: the texture stages
+                # (Task 7) always run, so `palette` is always required. The
+                # geometry assertions below do not care what the palette is,
+                # only that a valid one is supplied.
+                "palette": str(retro_palette_png(temp)),
                 "contract": contract,
             },
             report_path,
