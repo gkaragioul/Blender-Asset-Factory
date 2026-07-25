@@ -6,6 +6,9 @@ from collections.abc import Callable
 from pathlib import Path
 
 from . import __version__
+from .catalog import Catalog
+from .pack import build_pack
+from .style_contract import StyleContract
 
 
 Handler = Callable[[list[str]], tuple[int, dict]]
@@ -365,6 +368,50 @@ def _art(args: list[str]) -> tuple[int, dict]:
     return 0, envelope("art", True, summary, data)
 
 
+def _pack(args: list[str]) -> tuple[int, dict]:
+    from .config import FactoryConfig
+
+    config = FactoryConfig.load()
+    catalog_path = Path(_option(args, "--catalog")).resolve(strict=False)
+    sources_path = Path(_option(args, "--sources")).resolve(strict=False)
+    output_root = Path(_option(args, "--out")).resolve(strict=False)
+    validate = "--skip-validate" not in args
+    try:
+        if not catalog_path.is_file():
+            raise FileNotFoundError(f"catalog does not exist: {catalog_path}")
+        if not sources_path.is_file():
+            raise FileNotFoundError(f"sources map does not exist: {sources_path}")
+        contract_hint = json.loads(catalog_path.read_text(encoding="utf-8-sig"))
+        contract = StyleContract.load(
+            config, catalog_path.parent / contract_hint["style_contract"]
+        )
+        catalog = Catalog.load(config, catalog_path, contract)
+        sources = {
+            key: Path(value)
+            for key, value in json.loads(
+                sources_path.read_text(encoding="utf-8-sig")
+            ).items()
+        }
+        report = build_pack(
+            config, catalog, contract, sources, output_root, validate=validate
+        )
+    except Exception as error:
+        return 1, envelope(
+            "pack",
+            False,
+            "Pack build could not start",
+            errors=[{"type": type(error).__name__, "detail": str(error)}],
+        )
+    counts = report["counts"]
+    summary = (
+        f"{catalog.pack_id}: {counts['pass']} pass, {counts['reject']} reject"
+    )
+    return (
+        0 if report["ok"] else 2,
+        envelope("pack", report["ok"], summary, data=report),
+    )
+
+
 def _verify(args: list[str]) -> tuple[int, dict]:
     from .config import FactoryConfig
     from .verification import verify
@@ -405,6 +452,7 @@ def _handlers() -> dict[str, Handler]:
         "index-models": _index_models,
         "learn": _learn,
         "optimize": _optimize,
+        "pack": _pack,
         "preview": _preview,
         "report": _report,
         "release": _release,
