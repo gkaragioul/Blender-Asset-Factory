@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Factory style contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "palette",
+    "texture_size",
+    "filtering",
+    "polycount_bands",
+    "grid_unit",
+    "up_axis",
+    "drop_maps",
+    "vertex_light_bake"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "palette": { "type": "string", "minLength": 1 },
+    "texture_size": { "enum": [64, 128, 256, 512] },
+    "filtering": { "const": "nearest" },
+    "polycount_bands": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "grid_unit": { "type": "number", "exclusiveMinimum": 0 },
+    "up_axis": { "enum": ["Y", "Z"] },
+    "drop_maps": {
+      "type": "array",
+      "items": {
+        "enum": ["normal", "roughness", "metallic", "emissive", "occlusion"]
+      },
+      "uniqueItems": true
+    },
+    "vertex_light_bake": { "type": "boolean" }
+  }
+}
