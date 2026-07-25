@@ -1,3 +1,5 @@
+import json
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -38,6 +40,29 @@ UNREACHABLE_CONTRACT_PAYLOAD = {
 # are the horizontal axes that get grid-centred.
 UP_AXIS = "y"
 HORIZONTAL_AXES = ("x", "z")
+
+
+def _glb_triangles(path: Path) -> int:
+    """Triangles actually present in the exported GLB.
+
+    Counted from the file rather than trusted from the report, because the
+    whole point of the export-time validation is that the number the report
+    carries and the number that ships are the same number.
+    """
+    data = path.read_bytes()
+    json_length = struct.unpack_from("<I", data, 12)[0]
+    document = json.loads(data[20 : 20 + json_length].decode("utf-8"))
+    total = 0
+    for mesh in document.get("meshes", []):
+        for primitive in mesh["primitives"]:
+            # glTF mode 4 is TRIANGLES and is the default when absent.
+            if primitive.get("mode", 4) != 4:
+                raise AssertionError(
+                    f"unexpected primitive mode {primitive.get('mode')}"
+                )
+            accessor = document["accessors"][primitive["indices"]]
+            total += accessor["count"] // 3
+    return total
 
 
 class RetroGeometryTest(unittest.TestCase):
@@ -90,6 +115,38 @@ class RetroGeometryTest(unittest.TestCase):
         self.assertGreater(report["triangles_in"], 2500)
         self.assertLessEqual(report["triangles_out"], 2500)
         self.assertTrue(output.is_file())
+
+    def test_exported_meshes_pass_blender_validation(self):
+        # The glTF exporter used to log "Mesh <name> is not valid, and may be
+        # exported wrongly" for every part. Two stages caused it: the bmesh
+        # carve in _split_by_material carried the skinned source's deform
+        # weights onto parts that have no vertex groups at all, and the
+        # DECIMATE collapse modifier emitted duplicate faces. "May be exported
+        # wrongly" makes the exported geometry a different thing from the
+        # geometry measured in-process, which is exactly what Gate 2's
+        # silhouette IoU compares -- so it has to be zero, not small.
+        #
+        # export_validation is the pass's own final check, run immediately
+        # before the export call: it re-validates every mesh and reports what
+        # it still had to repair. Empty means nothing reached the exporter in
+        # a broken state.
+        report, _output = self._run("large")
+        self.assertTrue(report["ok"], report.get("error"))
+        self.assertEqual(
+            report["stages"]["export_validation"],
+            {},
+            "meshes were still being repaired at export time",
+        )
+
+    def test_reported_triangle_count_matches_export(self):
+        # Independent of the report: validate() DELETES degenerate geometry,
+        # so a validation step placed after the count is taken would leave
+        # triangles_out describing a mesh that was never exported. Counting
+        # from the GLB itself is what proves the two agree.
+        report, output = self._run("large")
+        self.assertTrue(report["ok"], report.get("error"))
+        self.assertTrue(output.is_file())
+        self.assertEqual(_glb_triangles(output), report["triangles_out"])
 
     def test_preserves_semantic_parts(self):
         report, _output = self._run("large")

@@ -52,7 +52,38 @@ UV_PACK_MARGIN = 0.02
 # change with a preferences default (Task 8 wants byte-identical exports).
 BAKE_MARGIN_TEXELS = 2
 BAKE_NODE_NAME = "RetroBakeTarget"
+ALPHA_BAKE_NODE_NAME = "RetroAlphaBakeTarget"
 ALBEDO_NODE_NAME = "RetroAlbedo"
+CUTOUT_NODE_NAME = "RetroCutout"
+
+# Cutout is BINARY (glTF alphaMode MASK), not graded (BLEND).
+#
+# PS1 hardware had no per-texel alpha blending for this idiom. Barbed wire,
+# chain-link, foliage and grates were 1-bit stencils: a texel was drawn or it
+# was not. Graded alpha is also actively worse in an engine -- BLEND geometry
+# has to be depth-sorted per draw and self-sorting fails on exactly the
+# interpenetrating shapes (a wire coil, a chain-link fence) this is for,
+# producing the very artefacts the PS1 idiom avoids.
+#
+# So the mask is thresholded IN THE SHADER during the alpha bake rather than
+# baked as a gradient and thresholded afterwards, which also removes a colour
+# management question: a bake of a graded value lands in the byte buffer
+# sRGB-encoded, so "0.5" would read back as 188 rather than 128 and the
+# effective cutoff would silently drift. A LESS_THAN node outputs exactly 0.0
+# or 1.0, and 0.0 and 1.0 are fixed points of any transfer function.
+#
+# 0.5 is also glTF's DEFAULT alphaCutoff, which is why the exported material
+# carries no alphaCutoff field: absent means 0.5. Blender's exporter detects
+# the cutoff from the node setup feeding the Alpha socket (a Math:ROUND node
+# means 0.5), not from any material property -- see _wire_cutout.
+ALPHA_CUTOFF = 0.5
+# Scalar alpha is deliberately NOT a cutout source. A material whose Alpha is
+# an unlinked default_value carries a uniform translucency, which is a BLEND
+# property of the whole surface and is preserved by _restore_pbr_after_bake
+# writing it out as a factor. Feeding it into the mask instead would punch
+# the part's entire atlas region out at any value below the cutoff -- the
+# multi-texture cube's 0.45 TranslucentMaterial would vanish completely.
+ALPHA_OPAQUE = 1.0
 # The bake READS the source maps through the source's own UVs and WRITES
 # through the new atlas UVs. Those are different layouts, so they cannot be
 # the same layer -- see _prepare_uv_layers.
@@ -138,6 +169,22 @@ def _split_by_material(meshes: list) -> list:
             for face in bm.faces:
                 face.material_index = 0
 
+            # The source is a SKINNED mesh, so its vertices carry deform
+            # weights indexed against the source object's vertex groups. The
+            # parts built here are standalone and unparented, and the loop
+            # below removes the armature outright, so they own no vertex
+            # groups at all -- every one of those indices dangles. Blender's
+            # own validator rejects the result ("Vertex N has invalid deform
+            # group 7", measured on all 7 trenchgun parts) and the glTF
+            # exporter then logs "Mesh <name> is not valid, and may be
+            # exported wrongly" for each one. Nothing downstream of the split
+            # reads weights, so the layer is dropped here, at the point it
+            # stops meaning anything, rather than left for _validate_meshes
+            # to null out after the fact.
+            deform = bm.verts.layers.deform.active
+            if deform is not None:
+                bm.verts.layers.deform.remove(deform)
+
             new_mesh = bpy.data.meshes.new(f"{mesh.name}_{name}")
             bm.to_mesh(new_mesh)
             bm.free()
@@ -163,6 +210,46 @@ def _triangle_count(meshes: list) -> int:
         obj.data.calc_loop_triangles()
         total += len(obj.data.loop_triangles)
     return total
+
+
+def _validate_meshes(meshes: list) -> dict:
+    """Bring every mesh into a state Blender's own validator accepts.
+
+    Returns {object_name: polygons_removed} for each mesh that needed
+    repairing, so a repair is a reported fact rather than a silent one. A
+    mesh can appear here with a count of 0: `mesh.validate()` also fixes
+    custom-data damage (dangling deform-group indices, out-of-range material
+    indices) that deletes no geometry at all, and that damage is just as
+    fatal to the export as a broken face.
+
+    Why this is not optional bookkeeping: an invalid mesh makes the glTF
+    exporter log "Mesh <name> is not valid, and may be exported wrongly" and
+    then export SOMETHING ANYWAY -- the exporter runs its own repair on the
+    way out. Measured on the trenchgun: the pass reported 2479 triangles
+    while the GLB it wrote contained 2470. Nine triangles existed in every
+    in-process measurement and in no exported file.
+
+    That gap is precisely what makes Gate 2 (silhouette IoU, Task 9)
+    untrustworthy: the IoU compares a render of the exported asset against
+    measurements taken here, and if the exporter is quietly repairing
+    geometry on its way out then the two sides are not the same mesh. The
+    repair has to happen HERE, where the result is measurable, not there,
+    where it is only a warning line.
+
+    `clean_customdata=False` is deliberate. The default (True) strips custom
+    data layers it judges invalid, and by the time this runs the meshes carry
+    the two named UV layers the bake depends on (SOURCE_UV_NAME and
+    ATLAS_UV_NAME, see _prepare_uv_layers). Losing one of those silently
+    would break the bake far more thoroughly than the invalidity being fixed.
+    """
+    repaired = {}
+    for obj in sorted(meshes, key=lambda item: item.name):
+        mesh = obj.data
+        before = len(mesh.polygons)
+        if mesh.validate(verbose=False, clean_customdata=False):
+            mesh.update()
+            repaired[obj.name] = before - len(mesh.polygons)
+    return repaired
 
 
 def _world_bounds(meshes: list):
@@ -230,6 +317,11 @@ def _normalize(meshes: list, grid_unit: float, up_axis: str) -> dict:
     # moves the "up" extent of the mesh from world Z onto world Y. So the
     # axis that is actually "up" in the world-space bounds we measure below
     # tracks contract up_axis, not the raw Blender convention.
+    #
+    # This rotation is the ONE and ONLY axis conversion in the pass. main()
+    # therefore exports with export_yup=False -- see the comment there; the
+    # exporter's own conversion would compound with this one and ship every
+    # asset misoriented.
     up_index = 1 if up_axis == "Y" else 2
     horizontal_indices = tuple(index for index in range(3) if index != up_index)
 
@@ -267,7 +359,7 @@ def _normalize(meshes: list, grid_unit: float, up_axis: str) -> dict:
     }
 
 
-def _decimate(meshes: list, budget: int) -> tuple[int, int]:
+def _decimate(meshes: list, budget: int) -> tuple[int, int, dict]:
     current = _triangle_count(meshes)
     attempts = 0
     # A single collapse pass at ratio=budget/current typically overshoots the
@@ -305,7 +397,31 @@ def _decimate(meshes: list, budget: int) -> tuple[int, int]:
             bpy.ops.object.modifier_apply(modifier="RetroDecimate")
         current = _triangle_count(meshes)
         attempts += 1
-    return current, attempts
+
+    # The COLLAPSE modifier emits DUPLICATE FACES -- measured on the
+    # trenchgun, 9 of them across 4 of the 7 parts ("Face N is a duplicate of
+    # N"). They have to go: an invalid mesh makes the glTF exporter repair it
+    # on the way out, so triangles_out would describe geometry that never
+    # shipped. See _validate_meshes.
+    #
+    # AFTER the loop, not inside it, and this is measured rather than
+    # stylistic. Validating each pass changes what the NEXT pass's ratio is
+    # computed from, which changes the whole collapse trajectory and lands on
+    # different final geometry -- not merely the same geometry minus its
+    # duplicates. On the trenchgun that cost real silhouette fidelity: Gate 2
+    # (Task 9) measures IoU per view against the unconverted source, and
+    # per-pass validation dropped the worst view from 0.49/0.47-passing
+    # margins to 0.4707, under the 0.5 threshold. Cleaning up once at the end
+    # leaves the decimation the loop actually tuned for exactly as it was and
+    # only removes the degenerate faces from it.
+    #
+    # Recounting afterwards is what keeps triangles_out honest: validation
+    # only ever DELETES geometry, so the count can only fall, and a count
+    # that was already under budget stays under it.
+    repaired = _validate_meshes(meshes)
+    if repaired:
+        current = _triangle_count(meshes)
+    return current, attempts, repaired
 
 
 def _principled(material):
@@ -805,7 +921,7 @@ def _bake_target(meshes: list, size: int):
     return image
 
 
-def _bake(meshes: list) -> None:
+def _prepare_bake(meshes: list) -> None:
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     # Pinned explicitly rather than left at whatever --factory-startup
@@ -824,9 +940,168 @@ def _bake(meshes: list) -> None:
     for obj in ordered:
         obj.select_set(True)
     bpy.context.view_layer.objects.active = ordered[0]
+
+
+def _bake(meshes: list) -> None:
+    _prepare_bake(meshes)
     bpy.ops.object.bake(
         type="DIFFUSE", pass_filter={"COLOR"}, use_selected_to_active=False
     )
+
+
+def _alpha_sources(restore: list) -> dict:
+    """material name -> the socket feeding its Alpha, as it was BEFORE the bake.
+
+    _neutralize_pbr_for_bake forces every Alpha socket to 1.0 and unlinks it,
+    because alpha below 1 attenuates a DIFFUSE bake toward black. It records
+    what it broke so _restore_pbr_after_bake can put it back; the same record
+    is the only surviving description of where the cutout mask came from, so
+    the alpha bake reads it rather than re-deriving anything.
+
+    Only the LINK matters here, never the scalar default_value -- see
+    ALPHA_OPAQUE.
+    """
+    sources = {}
+    for material_name, socket_name, _original, links in restore:
+        if socket_name != "Alpha" or not links:
+            continue
+        sources[material_name] = links[0][0]
+    return sources
+
+
+def _output_node(tree):
+    for node in tree.nodes:
+        if node.type == "OUTPUT_MATERIAL" and node.is_active_output:
+            return node
+    for node in tree.nodes:
+        if node.type == "OUTPUT_MATERIAL":
+            return node
+    return None
+
+
+def _bake_alpha(meshes: list, size: int, sources: dict):
+    """Bake the source cutout masks into their own image, through the atlas.
+
+    Cycles has NO alpha bake pass, so the mask is smuggled through the one
+    pass that transports an arbitrary value untouched: EMIT. Each material's
+    surface is temporarily replaced with an Emission shader whose colour is
+    the mask, the EMIT pass is baked into a second image, and the surface is
+    put back. The objects, their selection and their UV layers are unchanged
+    from the colour bake, so this lands in the SAME shared atlas layout --
+    which it must, because the two images are merged texel for texel.
+
+    The emitted value is `alpha < ALPHA_CUTOFF`, i.e. 1.0 means CUT AWAY.
+    That inversion is not a matter of taste. Cycles clears the target to zero
+    and only writes texels the geometry actually covers, so under the natural
+    "1.0 means opaque" reading every texel the bake never reached -- the whole
+    atlas background, and any part whose material has no output node -- would
+    read back as fully transparent and be punched out of the export. With the
+    inversion, "not baked" and "solid" are the same value, and only a texel
+    the bake positively decided was transparent becomes a hole.
+
+    Materials with no recorded alpha link emit a constant 0: their surface is
+    solid as far as the MASK is concerned, whatever their scalar alpha says.
+    """
+    image = bpy.data.images.new(
+        "RetroBakeAlpha", width=size, height=size, alpha=True
+    )
+    undo = []
+    for material in _slot_materials(meshes):
+        tree = material.node_tree
+        if tree is None:
+            continue
+        output = _output_node(tree)
+        if output is None:
+            continue
+        surface = output.inputs["Surface"]
+
+        # LESS_THAN outputs exactly 0.0 or 1.0, so the mask is binary before
+        # it ever reaches the byte buffer and no transfer function can move
+        # it. See ALPHA_CUTOFF.
+        threshold = tree.nodes.new("ShaderNodeMath")
+        threshold.operation = "LESS_THAN"
+        threshold.inputs[1].default_value = ALPHA_CUTOFF
+        source = sources.get(material.name)
+        if source is None:
+            threshold.inputs[0].default_value = ALPHA_OPAQUE
+        else:
+            tree.links.new(source, threshold.inputs[0])
+
+        emission = tree.nodes.new("ShaderNodeEmission")
+        tree.links.new(threshold.outputs["Value"], emission.inputs["Color"])
+
+        previous = [(link.from_socket, link.to_socket) for link in surface.links]
+        for link in list(surface.links):
+            tree.links.remove(link)
+        tree.links.new(emission.outputs["Emission"], surface)
+
+        target = tree.nodes.new("ShaderNodeTexImage")
+        target.name = ALPHA_BAKE_NODE_NAME
+        target.label = ALPHA_BAKE_NODE_NAME
+        target.image = image
+        # Same active-and-selected dance as _bake_target, and the same silent
+        # failure if it is skipped: the colour bake's target node is still in
+        # this tree and would otherwise stay active, so the alpha bake would
+        # overwrite the albedo with the mask.
+        for other in tree.nodes:
+            other.select = False
+        tree.nodes.active = target
+        target.select = True
+
+        undo.append((tree, surface, previous, (threshold, emission, target)))
+
+    try:
+        _prepare_bake(meshes)
+        bpy.ops.object.bake(type="EMIT", use_selected_to_active=False)
+    finally:
+        for tree, surface, previous, temporary in undo:
+            for link in list(surface.links):
+                tree.links.remove(link)
+            for from_socket, to_socket in previous:
+                try:
+                    tree.links.new(from_socket, to_socket)
+                except (ReferenceError, RuntimeError):
+                    pass
+            for node in temporary:
+                tree.nodes.remove(node)
+    return image
+
+
+def _cut_mask(image):
+    """Texels the alpha bake marked as cut away, as a [y][x] boolean grid.
+
+    Row order matches image.pixels (bottom row first), which is also the row
+    order _rasterize_uvs indexes by, so the two can be intersected directly.
+    """
+    import numpy
+
+    width, height = image.size[0], image.size[1]
+    raw = numpy.array(image.pixels[:], dtype=numpy.float32).reshape(height, width, 4)
+    return raw[:, :, 0] > 0.5
+
+
+def _cut_texels_per_material(meshes: list, cut, resolution: int) -> dict:
+    """material name -> how many of ITS atlas texels the mask cuts away.
+
+    Attributed per material rather than counted globally because glTF's
+    alphaMode is a per-MATERIAL declaration. A pack part that carries no
+    cutout must not be declared MASK just because a part it shares the atlas
+    with does: MASK makes an engine discard texels below the cutoff, so a
+    wrongly-declared material is a new way to lose geometry.
+    """
+    import numpy
+
+    counts = {}
+    for obj in sorted(meshes, key=lambda item: item.name):
+        material = obj.material_slots[0].material if obj.material_slots else None
+        if material is None:
+            continue
+        # _rasterize_uvs is indexed [x][y]; cut is [y][x].
+        claimed = _rasterize_uvs(obj, resolution).T
+        counts[material.name] = counts.get(material.name, 0) + int(
+            numpy.count_nonzero(claimed & cut)
+        )
+    return counts
 
 
 PIXEL_SEMANTICS = "byte-passthrough"
@@ -895,10 +1170,18 @@ def _bake_wrote_nothing(image) -> bool:
     return not bool(numpy.any(pixels[:, :3] > 0.0))
 
 
-def _quantize_to_png(image, palette_path: Path) -> tuple[bytes, int, int]:
+def _quantize_to_png(image, palette_path: Path, cut=None) -> tuple[bytes, int, int]:
     """Snap every texel of the baked image to the pack palette.
 
-    Returns (png_bytes, palette_size).
+    Returns (png_bytes, palette_size, distinct_colours).
+
+    Quantization applies to RGB ONLY. `cut` (from _cut_mask) is written
+    straight into the alpha channel as 0 or 255 with no snapping and no
+    dithering, and that separation is load-bearing in both directions: Gate 1
+    asserts every exported texel's RGB is an exact palette member, so an
+    alpha-aware nearest-colour search would break every asset in the pack;
+    and a dithered alpha would turn a 1-bit stencil into speckle, which is
+    the one thing a MASK material cannot represent.
 
     Colour management, empirically established inside Blender 5.2 rather
     than assumed:
@@ -942,11 +1225,16 @@ def _quantize_to_png(image, palette_path: Path) -> tuple[bytes, int, int]:
 
     out = numpy.empty((size[1], size[0], 4), dtype=numpy.uint8)
     out[:, :, :3] = snapped.astype(numpy.uint8)
-    # Fully opaque: unbaked background texels come out of the bake at alpha
-    # 0, and conformance checks RGB on every pixel regardless of alpha, so
-    # they are palette-snapped like any other texel. Leaving them
-    # transparent would only invite an exporter alpha mode we do not want.
+    # Opaque by default, cut only where the alpha bake positively said so.
+    #
+    # The colour bake's OWN alpha channel is not consulted and never was: it
+    # is 0 across the whole atlas background, so honouring it would punch out
+    # every unbaked texel. Conformance checks RGB on every pixel regardless
+    # of alpha, so background texels are palette-snapped like any other and
+    # stay opaque.
     out[:, :, 3] = 255
+    if cut is not None:
+        out[:, :, 3] = numpy.where(cut, 0, 255).astype(numpy.uint8)
     # image.pixels is bottom-row-first; PNG is top-row-first.
     out = out[::-1, :, :]
     distinct = len(numpy.unique(snapped.reshape(-1, 3), axis=0))
@@ -1035,6 +1323,66 @@ def _drop_foreign_textures(meshes: list) -> list:
     return sorted(set(removed))
 
 
+def _wire_cutout(meshes: list, cutout: set, textured: set) -> list:
+    """Point every cutout material's Alpha socket at the baked atlas alpha.
+
+    Baking the mask into the exported PNG is only half the job. glTF's
+    default alphaMode is OPAQUE, and an OPAQUE material ignores the alpha
+    channel entirely -- so a perfect mask that no material declares renders
+    as a solid slab in every engine, which is the failure this whole path
+    exists to prevent, reached by a different route.
+
+    Blender's glTF exporter does not read alphaMode from any material
+    property. It infers it from the node setup feeding the Alpha socket, and
+    a `Math:ROUND` node is the shape it recognises as alpha clipping with a
+    cutoff of 0.5 (see `detect_alpha_clip` in the exporter's
+    search_node_tree). That is exactly the cutoff the mask was thresholded
+    at, and it is also glTF's default, so the exporter omits the alphaCutoff
+    field -- absent means 0.5.
+
+    Sourcing the alpha from the ALBEDO node, which the exporter also uses for
+    Base Color, is what keeps the export to ONE image: the exporter's
+    "happy path" copies a packed PNG's bytes verbatim when every channel it
+    needs comes from a single image with no channel remapping, and RGB+A from
+    one node is precisely that. Wiring alpha from anywhere else would make it
+    composite a new PNG, and the palette exactness Gate 1 checks would be
+    lost on the way out.
+
+    `textured` names every material whose Alpha socket was linked in the
+    SOURCE; those not in `cutout` had a link whose mask turned out to cut
+    nothing. Their restored link is cleared rather than left alone, because
+    _drop_foreign_textures has by now deleted the image it read from and what
+    remains is a stranded node chain the exporter would still interpret.
+    """
+    wired = []
+    for material in _slot_materials(meshes):
+        tree = material.node_tree
+        bsdf = _principled(material)
+        if tree is None or bsdf is None:
+            continue
+        socket = bsdf.inputs.get("Alpha")
+        if socket is None:
+            continue
+        if material.name in cutout:
+            albedo = tree.nodes.get(ALBEDO_NODE_NAME)
+            if albedo is None:
+                continue
+            for link in list(socket.links):
+                tree.links.remove(link)
+            clip = tree.nodes.new("ShaderNodeMath")
+            clip.operation = "ROUND"
+            clip.name = CUTOUT_NODE_NAME
+            clip.label = CUTOUT_NODE_NAME
+            tree.links.new(albedo.outputs["Alpha"], clip.inputs[0])
+            tree.links.new(clip.outputs["Value"], socket)
+            wired.append(material.name)
+        elif material.name in textured:
+            for link in list(socket.links):
+                tree.links.remove(link)
+            socket.default_value = ALPHA_OPAQUE
+    return sorted(wired)
+
+
 def _strip_maps(meshes: list, drop_maps: list) -> list:
     removed = set()
     for material in _slot_materials(meshes):
@@ -1072,6 +1420,9 @@ def main() -> int:
             "palette_colours": 0,
             "distinct_colours": 0,
             "atlas_coverage": 0.0,
+            "alpha_mode": "OPAQUE",
+            "alpha_cutoff": ALPHA_CUTOFF,
+            "cutout_texels": 0,
         },
         "dropped_maps": [],
         "vertex_light_bake": False,
@@ -1106,9 +1457,14 @@ def main() -> int:
         report["bounds"] = _normalize(meshes, contract["grid_unit"], contract["up_axis"])
         report["stages"]["normalize"] = True
 
-        triangles_out, decimate_passes = _decimate(meshes, budget)
+        triangles_out, decimate_passes, decimate_repairs = _decimate(meshes, budget)
         report["triangles_out"] = triangles_out
         report["stages"]["decimate"] = budget
+        # {part: polygons the collapse modifier left invalid}. Reported
+        # rather than merely fixed: this is the pass silently losing geometry
+        # it asked for, and an operator comparing triangles_in to
+        # triangles_out deserves to see where the shortfall came from.
+        report["stages"]["decimate_validation"] = decimate_repairs
 
         if triangles_out > budget:
             # Non-convergence must never be silent: Gate 1 (Task 10) rejects
@@ -1162,8 +1518,30 @@ def main() -> int:
                 "written. Quantizing this would yield a flat texture that "
                 "passes palette conformance while carrying no detail."
             )
+        # The cutout mask, baked SECOND and into its own image. Cycles has no
+        # alpha pass, and the source base colour image the mask lives in is
+        # about to be deleted by _drop_foreign_textures, so this is the only
+        # window in which the mask can be captured at all. Skipped entirely
+        # when no material's Alpha socket was linked in the source: that is
+        # the common case (every solid asset in the pack) and it costs a
+        # whole second Cycles bake.
+        textured_alpha = _alpha_sources(restore_plan)
+        cut = None
+        cut_per_material = {}
+        if textured_alpha:
+            alpha_baked = _bake_alpha(meshes, size, textured_alpha)
+            cut = _cut_mask(alpha_baked)
+            cut_per_material = _cut_texels_per_material(meshes, cut, size)
+            bpy.data.images.remove(alpha_baked)
+        # A material is only declared MASK if its OWN atlas region actually
+        # loses texels. A source can carry an alpha map that turns out to be
+        # solid, and declaring MASK on it would hand an engine a licence to
+        # discard geometry for no reason.
+        cutout_materials = {
+            name for name, texels in cut_per_material.items() if texels > 0
+        }
         png_bytes, palette_colours, distinct = _quantize_to_png(
-            baked, Path(payload["palette"])
+            baked, Path(payload["palette"]), cut if cutout_materials else None
         )
         _apply_albedo(meshes, png_bytes, contract.get("filtering", "nearest"))
         bpy.data.images.remove(baked)
@@ -1177,7 +1555,21 @@ def main() -> int:
             # pass/fail number -- it is here so a pack whose textures are
             # mostly empty is visible rather than merely disappointing.
             "atlas_coverage": round(covered / float(size * size), 4),
+            "alpha_mode": "MASK" if cutout_materials else "OPAQUE",
+            "alpha_cutoff": ALPHA_CUTOFF,
+            # Texels of the EXPORTED atlas that are cut. Counted from the
+            # mask, so it matches the PNG exactly; it is therefore larger
+            # than the per-material figures below, which are attributed by
+            # rasterizing UV triangles and so miss the BAKE_MARGIN_TEXELS of
+            # bleed the bake writes around every island.
+            "cutout_texels": int(cut.sum()) if cutout_materials else 0,
         }
+        # Per-material, because alphaMode is a per-material declaration and
+        # "the atlas has holes in it" is not the same question as "which part
+        # they belong to". A source that declared an alpha map and scored 0
+        # here is visible rather than silently downgraded to opaque.
+        report["stages"]["alpha_sources"] = sorted(textured_alpha)
+        report["stages"]["cutout_texels_per_material"] = cut_per_material
 
         # Undo the bake-only mutations BEFORE export, and before
         # _drop_foreign_textures removes the nodes their links point at.
@@ -1191,10 +1583,33 @@ def main() -> int:
         # that is still not the baked albedo, so the export cannot carry a
         # second, unquantized texture regardless of what the source had.
         report["stages"]["foreign_textures_removed"] = _drop_foreign_textures(meshes)
+        # Wired LAST, after the source image nodes are gone, so nothing else
+        # can be left holding the Alpha socket. A mask in the texture that no
+        # material declares is invisible: glTF's default alphaMode is OPAQUE.
+        report["stages"]["cutout_materials"] = _wire_cutout(
+            meshes, cutout_materials, set(textured_alpha)
+        )
         # The style contract validates a vertex_light_bake flag, but this
         # plan does not implement vertex-colour lighting. Reported as False
         # so no downstream stage can assume it took effect.
         report["vertex_light_bake"] = False
+
+        # Last word before the export call, and the only guarantee that what
+        # ships is what was measured. _split_by_material and _decimate are
+        # both fixed at source, so the expected result here is an EMPTY dict;
+        # a non-empty one means some stage after them started corrupting
+        # geometry, and it is reported rather than swallowed.
+        #
+        # triangles_out is recomputed when it is not empty, because
+        # mesh.validate() DELETES degenerate geometry. Leaving the earlier
+        # count in place would hand Gate 2 (Task 9) a silhouette IoU measured
+        # against a triangle count the exported file does not have. The
+        # budget needs no re-check: validation only ever removes geometry, so
+        # a count that was under budget stays under it.
+        export_repairs = _validate_meshes(meshes)
+        report["stages"]["export_validation"] = export_repairs
+        if export_repairs:
+            report["triangles_out"] = _triangle_count(meshes)
 
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.export_scene.gltf(
@@ -1202,7 +1617,27 @@ def main() -> int:
             export_format="GLB",
             use_selection=True,
             export_apply=True,
-            export_yup=(contract["up_axis"] == "Y"),
+            # export_yup=False ALWAYS, and that is not a bug -- it is the
+            # counterpart of the manual rotation in _normalize.
+            #
+            # The exporter's export_yup=True performs its OWN Z-up-to-Y-up
+            # conversion on the whole scene, unconditionally, independent of
+            # any rotation already sitting on the objects. _normalize has
+            # already put the scene into the contract's declared frame (it
+            # rotates every top-level mesh -90deg about X for up_axis == "Y"),
+            # because the grid snapping, the bounds and the origin it reports
+            # are all measured in that frame. Asking the exporter to convert
+            # on top of that applied the conversion TWICE and shipped every
+            # up_axis == "Y" asset rotated ~180deg about X from the
+            # artist-authored orientation -- silent, baked into the vertex
+            # data, and visible to any spec-compliant glTF consumer.
+            # Measured on a probe box with Blender dims (1, 2, 4): manual
+            # rotation + export_yup=True exports dims (1, 2, 4), where a
+            # correct Y-up glTF is (1, 4, 2).
+            #
+            # So the scene is written out verbatim, and the frame the report
+            # describes is exactly the frame the GLB carries.
+            export_yup=False,
             export_image_format="AUTO",
         )
         report["ok"] = True
