@@ -676,14 +676,30 @@ def _shared_uv_atlas(meshes: list) -> bool:
     # own sizing already distributes better.
     #
     # shape_method is pinned rather than left to the version default because
-    # it changes the packed layout, and Task 8 asserts byte-identical
-    # exports.
+    # it changes the packed layout, and Task 8 asserts byte-identical exports.
+    #
+    # AABB, not CONCAVE. This was CONCAVE ("uses exact geometry") until a
+    # determinism regression traced here: CONCAVE solves the packing with an
+    # iterative, wall-clock-bounded search, so it can -- and, measured on this
+    # fixture, does -- return a different (still valid, still non-overlapping)
+    # layout for byte-identical input geometry depending on how much real time
+    # the search gets before its internal budget runs out. That budget is
+    # sensitive to whatever else is happening on the machine at the moment the
+    # operator runs, not merely to the mesh: two back-to-back retro_pass
+    # invocations agreed every time in isolation, but started disagreeing as
+    # soon as a pack build's Cycles renders ran immediately beforehand, and the
+    # disagreement was confirmed (see determinism-fix-report.md) to start
+    # exactly here -- every stage through decimate byte-hashed identically
+    # between the two runs, and only the post-atlas UV texel counts differed.
+    # AABB packs bounding boxes with a direct, non-iterative placement, so it
+    # has no time budget to be sensitive to and returns the same layout for
+    # the same input regardless of what the rest of the machine is doing.
     bpy.ops.uv.pack_islands(
         margin=UV_PACK_MARGIN,
         rotate=True,
         scale=True,
         merge_overlap=False,
-        shape_method="CONCAVE",
+        shape_method="AABB",
     )
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
@@ -932,6 +948,11 @@ def _prepare_bake(meshes: list) -> None:
     scene.cycles.device = "CPU"
     scene.cycles.samples = 1
     scene.cycles.use_denoising = False
+    scene.cycles.use_adaptive_sampling = False
+    scene.cycles.seed = 0
+    scene.cycles.sample_offset = 0
+    scene.render.threads_mode = "FIXED"
+    scene.render.threads = 1
     scene.render.bake.margin = BAKE_MARGIN_TEXELS
     scene.render.bake.margin_type = "ADJACENT_FACES"
     scene.render.bake.use_clear = True
