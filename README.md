@@ -1,80 +1,66 @@
 # Blender Asset Factory
 
-Blender Asset Factory is a local-first, style-neutral production system for optimized Three.js game assets. Blender is authoritative for geometry and source exports; the factory adds durable knowledge, validation, runtime previews, provenance, and reproducible tooling.
+**Private development workspace · 0.5.0**
 
-The first production profile is premium PS1-era WWII art. Profiles are data, so the core remains suitable for realistic, stylized, fantasy, science-fiction, mobile, hand-painted, and future asset packs.
+A local-first toolchain for creating and checking Blender assets for Three.js projects. Blender is the editable source of truth; the factory adds specifications, validation, separate optimized exports, runtime previews, and durable production knowledge.
 
-## Canonical storage
+[Project home](docs/index.md) · [Getting started](docs/GETTING_STARTED.md) · [KHEPRI rover](examples/khepri/README.md) · [Release notes](docs/releases/0.5.0.md)
 
-- Factory: `G:\DevWork\GameDev\BlenderAssetFactory`
-- Model weights: `G:\LLMs`
-- Local environments: `.tooling` beneath the active trusted checkout
-- Blender: discovered explicitly; currently Blender 5.2 LTS
-- Blender bridge: loopback only at `127.0.0.1:9876`
+![KHEPRI planetary explorer](examples/khepri/renders/hero.png)
 
-Canonical content directories:
+## Included
 
-- Projects: `G:\DevWork\GameDev\BlenderAssetFactory\projects`
-- Generated assets: `G:\DevWork\GameDev\BlenderAssetFactory\assets`
-- Specifications: `G:\DevWork\GameDev\BlenderAssetFactory\specs`
-- Generators: `G:\DevWork\GameDev\BlenderAssetFactory\scripts`
-- Standalone renders: `G:\DevWork\GameDev\BlenderAssetFactory\renders`
+| Area | Contents |
+| --- | --- |
+| Factory | Python CLI, PowerShell entry point, bootstrap scripts, specifications, profiles, and tests |
+| Pipeline | glTF inspection, validation, optimization, Three.js previews, QA reports, and transactional publication |
+| Knowledge | Research, provenance, design documents, lessons, and active project state |
+| KHEPRI explorer | Blender source, GLB, concept blueprint, five renders, and repeatable geometry checks |
 
-Specifications control output paths and normally publish beneath `assets`.
+The factory originated with PS1-era WWII profiles. KHEPRI is a separate science-fiction example; its design decisions do not replace the factory's general rules.
 
-## First-time setup
+## Quick start
+
+Open [khepri-explorer.blend](examples/khepri/source/khepri-explorer.blend) in **Blender 5.2 LTS** to inspect the rover. Its concept blueprint is packed into the file.
+
+For the factory on Windows, run from the repository root:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\bootstrap\setup.ps1
-```
-
-The bootstrap pins uv, Python, portable Node.js, Khronos glTF Validator, native gltfpack, Three.js, and Playwright Core beneath `.tooling` on `G:`. It uses an installed Chrome or Edge executable for loopback-only runtime QA and does not modify the user `PATH`.
-
-## Generate the original reference crate
-
-```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.2\blender.exe' `
-  --background --factory-startup `
-  --python 'G:\DevWork\GameDev\BlenderAssetFactory\scripts\generate_asset.py' `
-  -- --spec 'G:\DevWork\GameDev\BlenderAssetFactory\specs\ps1_crate.json'
-```
-
-## Daily entry points
-
-If the machine permits local PowerShell scripts directly:
-
-```powershell
-.\factory.ps1 doctor --json
-.\factory.ps1 resume --json
-.\factory.ps1 verify --json
-```
-
-On systems with a restrictive execution policy:
-
-```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 doctor --json
 powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 resume --json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 verify --json
 ```
 
-## Release pipeline
+Bootstrap downloads local tooling. Model weights and optional creative applications are separate installations. Read [Getting started](docs/GETTING_STARTED.md) before production work.
 
-The authoritative GLB is never optimized in place. These commands validate it, create a separate derivative, render runtime evidence, and assemble QA reporting:
+## Release status
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 validate --input <authoritative.glb> --report <validation.json> --json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 optimize --input <authoritative.glb> --output <optimized.glb> --report <optimization.json> --pixel-atlas --json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 preview --input <asset.glb> --output <engine.png> --report <preview.json> --json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 report --manifest <views.json> --output <contact-sheet.png> --qa-report <report.json> --json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 release --job <release-job.json> --json
+**0.5.0 is a development release.** KHEPRI revision 4 includes connected tow fittings, seated rollers, rear axle clearance, attached roof equipment, and a simpler airlock.
+
+Verified in Blender 5.2 LTS:
+
+- 142 hull-attachment checks.
+- All 16 lower rollers contacting their belts, plus rear track clearance checks.
+- GLB reimport matching source mesh count, triangle count, and bounds.
+- Visual inspection of five vehicle and detail renders.
+
+The export contains **451 meshes and 262,776 triangles**, with an approximate envelope of **6.856 × 3.519 × 3.251 m**. Three.js runtime acceptance, LODs, texture baking, and animation-rig validation remain outstanding.
+
+## Repository map
+
+```text
+factory/             Core commands and pipeline
+bootstrap/           Local dependency setup
+scripts/             Generation and supporting tools
+profiles/            Style contracts
+specs/               Asset specifications
+tests/               Factory tests
+tools/               Three.js viewer and release utilities
+knowledge/           Durable project state and lessons
+docs/                Main page, setup, research, release notes
+examples/khepri/     Rover source, export, reference, renders, QA
 ```
 
-`release` publishes to `assets/releases/<asset-id>/<version>` only after every mandatory gate succeeds. Published versions are immutable; failed runs retain structured evidence beneath `reports/runs` and publish nothing.
+Keep source files separate from optimized derivatives. The factory HTTP bridge and the separate Blender MCP add-on use different protocols; see the setup guide.
 
-## Durable memory
-
-Start new conversations with [knowledge/START_HERE.md](knowledge/START_HERE.md). Machine-readable active state is in [knowledge/active-project.json](knowledge/active-project.json). The repository—not chat history—is authoritative.
-
-## Architecture
-
-See [the approved factory design](docs/superpowers/specs/2026-07-18-style-neutral-self-improving-asset-factory-design.md), [the Phase 1 plan](docs/superpowers/plans/2026-07-18-foundation-and-memory.md), and [the Phase 2 release-pipeline plan](docs/superpowers/plans/2026-07-19-release-pipeline.md).
+Local runtimes, credentials, model weights, backups, and generated job directories are excluded from publication. This repository is private; this release grants no open-source license.

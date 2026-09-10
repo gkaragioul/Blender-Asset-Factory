@@ -1,8 +1,8 @@
 # Blender Asset Factory - Verified State
 
-- Repository root: `/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0`
-- Model root: `/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0/models`
-- Last doctor check: `2026-07-21T23:31:41.044924+00:00`
+- Repository root: `<factory-root>`
+- Model root: `<factory-root>\models`
+- Last doctor check: `2026-09-10T09:17:14.051558+00:00`
 - Last verification passed: `none`
 - Last verification commit: `none`
 - Last verification report: `none`
@@ -14,13 +14,13 @@
 - bridge: `unavailable`
 - browser: `available`
 - comfyui: `unavailable`
-- gltf_validator: `available`
-- gltfpack: `available`
+- gltf_validator: `unavailable`
+- gltfpack: `unavailable`
 - material_maker: `unavailable`
-- model_root: `available`
-- node: `available`
-- playwright_core: `available`
+- model_root: `unavailable`
+- node: `unavailable`
+- playwright_core: `unavailable`
 - python: `available`
-- three: `available`
+- three: `unavailable`
 - threejs_viewer: `available`
 - uv: `available`

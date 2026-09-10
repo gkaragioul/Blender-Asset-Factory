@@ -6,10 +6,10 @@ Run `factory.ps1 doctor` before mutations.
 
 ## Active project
 
-- Project: `ww2_lowpoly_frontline_pack`
-- Status: `art_generation_redesign_required_research_complete`
-- Working directory: `/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0`
-- Next action: `replace primitive-based shape generation with the reference-first multi-view and image-to-3D candidate pipeline in docs/IDEAL_AI_GAME_ASSET_PIPELINE.md; prove the architecture on one benchmark asset before any pack expansion`
+- Project: `blender_asset_factory_0_5_0`
+- Status: `release_candidate_verified`
+- Working directory: `.`
+- Next action: `Review KHEPRI revision 4 in Blender, then run a separately configured Three.js runtime acceptance and optimization pass before declaring the rover production-ready.`
 
 ## Verified capabilities
 
@@ -18,25 +18,23 @@ Run `factory.ps1 doctor` before mutations.
 - bridge: `unavailable`
 - browser: `available`
 - comfyui: `unavailable`
-- gltf_validator: `available`
-- gltfpack: `available`
+- gltf_validator: `unavailable`
+- gltfpack: `unavailable`
 - material_maker: `unavailable`
-- model_root: `available`
-- node: `available`
-- playwright_core: `available`
+- model_root: `unavailable`
+- node: `unavailable`
+- playwright_core: `unavailable`
 - python: `available`
-- three: `available`
+- three: `unavailable`
 - threejs_viewer: `available`
 - uv: `available`
 
 ## Required reading
 
-- `docs/IDEAL_AI_GAME_ASSET_PIPELINE.md`
-- `docs/research/AI_3D_MODEL_SHORTLIST_2026-07-22.md`
-- `docs/research/PRODUCTION_CLEANUP_TOOLCHAIN_2026-07-22.md`
-- `docs/research/AUTONOMOUS_ART_DIRECTION_QA_2026-07-22.md`
-- `reports/runs/ww2-polish-pass-2/contact-sheet.png`
-- `products/ww2_lowpoly_frontline_pack/clean-sheet-shotgun-v3/ww2_double_barrel_shotgun_clean_sheet_01_preview_side.png`
+- `README.md`
+- `docs/releases/0.5.0.md`
+- `examples/khepri/README.md`
+- `knowledge/project-summaries/pre-0.5.0-active-project.json`
 
 ## Completion discipline
 

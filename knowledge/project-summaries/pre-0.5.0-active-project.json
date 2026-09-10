@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "project_id": "ww2_lowpoly_frontline_pack",
+  "status": "local_concept_backend_operational_tournament_running",
+  "working_directory": "/media/<user>/Work/Dev_Work/GameDev/Blender Asset Factory/v1.0",
+  "next_action": "complete and independently review the FLUX.2 Klein concept tournament; present the surviving concept contact sheet for explicit user approval before any image-to-3D generation",
+  "required_reads": [
+    "docs/IDEAL_AI_GAME_ASSET_PIPELINE.md",
+    "docs/research/AI_3D_MODEL_SHORTLIST_2026-07-22.md",
+    "docs/research/PRODUCTION_CLEANUP_TOOLCHAIN_2026-07-22.md",
+    "docs/research/AUTONOMOUS_ART_DIRECTION_QA_2026-07-22.md",
+    "reports/runs/ww2-polish-pass-2/contact-sheet.png",
+    "products/ww2_lowpoly_frontline_pack/clean-sheet-shotgun-v3/ww2_double_barrel_shotgun_clean_sheet_01_preview_side.png"
+  ],
+  "blocked_by": [
+    "primitive-based generators are technically valid but artistically rejected",
+    "benchmark concept sheet requires user approval before 3D generation"
+  ]
+}

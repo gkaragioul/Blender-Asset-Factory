@@ -1,0 +1,13 @@
+{
+  "project_id": "blender_asset_factory_0_5_0",
+  "status": "release_candidate_verified",
+  "next_action": "Review KHEPRI revision 4 in Blender, then run a separately configured Three.js runtime acceptance and optimization pass before declaring the rover production-ready.",
+  "candidate_lessons": [],
+  "summary": "Private 0.5.0 release packages the existing factory history and KHEPRI revision 4. Blender fitting checks and GLB round-trip verification pass; the full factory regression suite and KHEPRI runtime acceptance were not run for this packaging release.",
+  "evidence": [
+    "examples/khepri/qa/hull-attachment-check.json",
+    "examples/khepri/qa/geometry-verification.json",
+    "examples/khepri/qa/export-check.json"
+  ],
+  "prior_project_state": "knowledge/project-summaries/pre-0.5.0-active-project.json"
+}

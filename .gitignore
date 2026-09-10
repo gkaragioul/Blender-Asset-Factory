@@ -13,3 +13,19 @@ products/
 reports/
 dist/
 tmp/
+
+# Local-only dependencies, credentials, models, and recovery files
+node_modules/
+models/
+logs/
+recovery/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.blend1
+*.blend2
+*.log
+.DS_Store
+Thumbs.db
