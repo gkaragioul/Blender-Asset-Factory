@@ -278,6 +278,41 @@ def _preview(args: list[str]) -> tuple[int, dict]:
     )
 
 
+def _review(args: list[str]) -> tuple[int, dict]:
+    from datetime import datetime, timezone
+
+    from .config import FactoryConfig
+    from .review_sheet import DEFAULT_VIEWS, review_glb
+
+    config = FactoryConfig.load()
+    source = Path(_option(args, "--input"))
+    output = Path(_option(args, "--output"))
+    if "--report" in args:
+        report_path = Path(_option(args, "--report"))
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+        report_path = config.reports_root / "runs" / run_id / "threejs-review.json"
+    views = tuple(_option(args, "--views").split(",")) if "--views" in args else DEFAULT_VIEWS
+    expectations = _json_input(config, args, "--expect") if "--expect" in args else {}
+    for option, key in (("--profile", "profile"), ("--category", "category")):
+        if option in args:
+            expectations[key] = _option(args, option)
+    report = review_glb(config, source, output, report_path, views=views, scale_figure="--scale-figure" in args, expectations=expectations)
+    passed = report["checks"]["passed"]
+    return (0 if passed else 1), envelope(
+        "review",
+        passed,
+        "Review sheet rendered; placement and budget checks passed" if passed else "Review sheet rendered; placement or budget checks failed",
+        {
+            "output": report["output"],
+            "measured": report["measured"],
+            "checks": report["checks"],
+            "report_path": str(report_path.resolve(strict=False)),
+        },
+        [] if passed else [{"code": failure, "message": failure} for failure in report["checks"]["failures"]],
+    )
+
+
 def _report(args: list[str]) -> tuple[int, dict]:
     from datetime import datetime, timezone
 
@@ -455,6 +490,7 @@ def _handlers() -> dict[str, Handler]:
         "pack": _pack,
         "preview": _preview,
         "report": _report,
+        "review": _review,
         "release": _release,
         "refresh-memory": _refresh_memory,
         "resume": _resume,

@@ -1,0 +1,3811 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "https://github.com/Kenton-GMI/muster-ww2",
+    "commit": "7d2fa86ebc3b999eaf085831cdcd5dccefea63d4",
+    "retrieved": "2026-09-24",
+    "license": "MIT (see THIRD_PARTY_NOTICES.md in this folder)",
+    "extracted_fields": "catalog metadata only (name, facts, footprint, reference URLs, modelling notes); no model code"
+  },
+  "status": "secondary_unverified",
+  "use": [
+    "Scale and proportion targets for asset briefs and review --expect dimensions.",
+    "Starting points for research: re-check every figure against the listed references before relying on it.",
+    "footprint_m is plan size at heading 0: w along X, l along Z, in metres, as measured on Muster's display models (weapon and gear footprints may include the display stand).",
+    "The ps1_ww2_frontline profile requires fictionalized designs without exact branding; use this data for scale, not for replicating a specific real product."
+  ],
+  "entries": [
+    {
+      "id": "de-bf109-g6",
+      "name": "Messerschmitt Bf 109 G-6",
+      "subtitle": "Single-seat fighter, 1943",
+      "faction": "germany",
+      "category": "Aircraft",
+      "footprint_m": {
+        "w": 9.93,
+        "l": 8.97
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "1"
+        },
+        {
+          "label": "Introduced",
+          "value": "February 1943"
+        },
+        {
+          "label": "Engine",
+          "value": "Daimler-Benz DB 605A-1 inverted V12, 1,475 PS"
+        },
+        {
+          "label": "Armament (as modelled)",
+          "value": "1 x 20 mm MG 151/20 engine cannon, 2 x 13 mm MG 131"
+        },
+        {
+          "label": "Propeller",
+          "value": "VDM 9-12087, three blades, 3.0 m diameter"
+        },
+        {
+          "label": "Span",
+          "value": "9.925 m"
+        },
+        {
+          "label": "Length",
+          "value": "8.95-9.02 m"
+        },
+        {
+          "label": "Wing area",
+          "value": "16.05 sq m"
+        },
+        {
+          "label": "Canopy (as modelled)",
+          "value": "Framed hood with armoured-glass head rest (Galland-Panzer)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Messerschmitt_Bf_109",
+        "https://en.wikipedia.org/wiki/Messerschmitt_Bf_109_variants",
+        "https://airandspace.si.edu/collection-objects/messerschmitt-bf-109-g-6-r3/nasm_A19600327000",
+        "https://www.warbirdsresourcegroup.org/LRG/luftwaffe_messerschmitt_bf109_design_features.html",
+        "https://www.vintagewings.ca/stories/bouncing-clouds"
+      ],
+      "modelling_notes": "Represents a mid-1943 production G-6 with the standard framed canopy (starboard-hinged hood plus fixed rear glazing) fitted with the armoured-glass head rest known as the Galland-Panzer, the fixed 350 x 135 mm tail wheel and the VDM 9-12087 propeller; no underwing cannon gondolas, drop tank or rack. The swastika normally carried on the fin is deliberately omitted; unit markings, individual numbers, Werknummer and stencils are also left off, so only the Balkenkreuz national markings are shown. Span, length, wing area, propeller diameter and wheel sizes follow the published figures; fuselage sections, MG 131 blisters, supercharger intake, oil cooler, radiators and undercarriage geometry are proportioned from photographs and general drawings rather than factory drawings, and the NACA 2R1 wing sections are approximated by a cambered NACA 4-digit profile. The three-point ground angle is modelled at 12 degrees. The automatic slats are shown dropped open, as commonly seen on parked 109s. The RLM 74/75/76 splinter and side mottle are procedural; panel lines and fasteners are painted rather than modelled, ailerons and flaps are not separated, the engine is not modelled inside the cowling, and the cockpit is simplified (instrument faces are a painted panel; rudder pedals, gun breeches and wiring are omitted).",
+      "muster_source": "src/assets/germany/bf-109-g6.asset.ts"
+    },
+    {
+      "id": "de-feldflasche-31",
+      "name": "Feldflasche 31",
+      "subtitle": "M31 canteen with drinking cup",
+      "faction": "germany",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.2,
+        "l": 0.14
+      },
+      "facts": [
+        {
+          "label": "Introduced",
+          "value": "1931"
+        },
+        {
+          "label": "Capacity",
+          "value": "approx. 0.8 l"
+        },
+        {
+          "label": "Bottle",
+          "value": "Aluminium (later enamelled steel)"
+        },
+        {
+          "label": "Cover",
+          "value": "Wool felt with press studs"
+        }
+      ],
+      "references": [
+        "https://www.ima-usa.com/products/original-german-wwii-1943-m31-field-canteen-with-cfl-43-steel-cup-felt-cover-leather-harness",
+        "https://www.warrelics.eu/forum/field-equipment-accessories-third-reich/m31-canteen-its-variants-800249/"
+      ],
+      "modelling_notes": "Bottle and cup maker markings omitted; the screw cap is modelled but hidden under the cup. Harness simplified to one band and one vertical strap with buckle and hook.",
+      "muster_source": "src/assets/germany/canteen.asset.ts"
+    },
+    {
+      "id": "de-entrenching-tool",
+      "name": "Entrenching Tool with Bayonet",
+      "subtitle": "Kleines Schanzzeug and S84/98 III bayonet",
+      "faction": "germany",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.24,
+        "l": 0.64
+      },
+      "facts": [
+        {
+          "label": "Length",
+          "value": "approx. 55 cm (shovel)"
+        },
+        {
+          "label": "Blade",
+          "value": "approx. 14.5 x 18.5 cm"
+        },
+        {
+          "label": "Carrier",
+          "value": "Presstoff (pressed board), leather loops and strap"
+        },
+        {
+          "label": "Bayonet",
+          "value": "S84/98 III, blade approx. 25 cm"
+        }
+      ],
+      "references": [
+        "https://www.mp44.nl/equipment/entrenching_tool.htm",
+        "https://www.ima-usa.com/products/original-german-wwii-square-head-entrenching-tool-with-pressstoff-carrier-by-cottbusser-lederwarenwerk-curt-vogel-dated-1943-schanzzeug",
+        "https://www.ima-usa.com/products/german-wwii-square-head-entrenching-tool-schanzzeug"
+      ],
+      "modelling_notes": "Carrier maker stampings omitted; the bayonet blade is not modelled (it stays in the scabbard). Frog simplified to sleeve, belt tab and hilt strap.",
+      "muster_source": "src/assets/germany/entrenching-tool.asset.ts"
+    },
+    {
+      "id": "de-flak-36",
+      "name": "8.8 cm Flak 36",
+      "subtitle": "88 mm heavy anti-aircraft gun",
+      "faction": "germany",
+      "category": "Artillery",
+      "footprint_m": {
+        "w": 5,
+        "l": 6.4
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "88 mm (L/56 barrel, 4.93 m)"
+        },
+        {
+          "label": "Elevation",
+          "value": "-3 to +85 degrees"
+        },
+        {
+          "label": "Traverse",
+          "value": "360 degrees"
+        },
+        {
+          "label": "Weight",
+          "value": "5,000 kg in action (published figures vary)"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "15-20 rounds per minute"
+        },
+        {
+          "label": "Muzzle velocity",
+          "value": "820 m/s (HE)"
+        },
+        {
+          "label": "Crew",
+          "value": "10"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/8.8_cm_Flak_18/36/37/41",
+        "https://de.wikipedia.org/wiki/Acht-Acht",
+        "https://www.ww2technik.de/sites/dflak/8,8%20cm%20flak%2036.htm",
+        "https://www.ulrichwrede.de/wehrmacht/artillerie/8-8-cm-flak/",
+        "https://tanks-encyclopedia.com/88-flak-18-flak-36-and-flak-37/"
+      ],
+      "modelling_notes": "Represents a Flak 36 in the emplaced firing position in the 1943-44 factory Dunkelgelb finish with moderate wear and no markings: both side outriggers lowered, the four levelling jacks down on their round pads and the two Sonderanhaenger 202 bogies removed. Key numbers: barrel 4.93 m, bore height 1.60 m at 0 degrees, shield 1.95 x 1.75 m with swept 6 mm side plates. The platform arm lengths (about 5.2 x 5.0 m over the pads), the shape of the pedestal, upper carriage, equilibrator cylinders, cradle, fuze-setting machine, data receivers, seats and handwheels are approximated from photographs rather than factory drawings; the barrel section joint is shown as a single collar. Internal mechanisms (recoil brake, recuperator internals, equilibrator springs, gearing, firing gear), the loading tray, cables to the predictor, the travel lock detail, ammunition and crew kit are not modelled.",
+      "muster_source": "src/assets/germany/flak-36.asset.ts"
+    },
+    {
+      "id": "de-fw190-a8",
+      "name": "Focke-Wulf Fw 190 A-8",
+      "subtitle": "Single-seat fighter, 1944",
+      "faction": "germany",
+      "category": "Aircraft",
+      "footprint_m": {
+        "w": 10.51,
+        "l": 9
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "1"
+        },
+        {
+          "label": "Production",
+          "value": "From February/March 1944 to May 1945"
+        },
+        {
+          "label": "Engine",
+          "value": "BMW 801 D-2 14-cylinder two-row radial, 1,730 PS for take-off"
+        },
+        {
+          "label": "Armament (as modelled)",
+          "value": "2 x 13 mm MG 131, 4 x 20 mm MG 151/20"
+        },
+        {
+          "label": "Propeller",
+          "value": "VDM 9-12176 A, three blades, 3.3 m diameter"
+        },
+        {
+          "label": "Span",
+          "value": "10.506 m"
+        },
+        {
+          "label": "Length",
+          "value": "9.00 m"
+        },
+        {
+          "label": "Wing area",
+          "value": "18.3 sq m"
+        },
+        {
+          "label": "Main undercarriage track",
+          "value": "3.5 m"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Focke-Wulf_Fw_190",
+        "https://en.wikipedia.org/wiki/List_of_Focke-Wulf_Fw_190_variants",
+        "https://www.warbirdsresourcegroup.org/LRG/luftwaffe_focke_wulf_fw190_specifications_fw190a.html",
+        "https://www.ipmsstockholm.se/home/modellers-guide-to-focke-wulf-fw-190-variants-part-i/"
+      ],
+      "modelling_notes": "Represents a 1944 production Fw 190 A-8 with the standard flat-topped sliding hood (the bulged \"blown\" hood was only introduced on the line in the last production batches), the pilot head armour inside the hood, four MG 151/20 wing cannon with their wing-root and outer overwing blisters, and the pitot head on the starboard wing tip. The swastika normally carried on the fin is deliberately omitted; unit markings, individual numbers, Werknummer, fuselage bands and stencils are also left off, so only the Balkenkreuz national markings are shown. Span, length, wing area, propeller diameter and track follow the published figures; fuselage sections, cowling, canopy, tail surfaces and undercarriage geometry are proportioned from photographs and general drawings rather than factory drawings, the NACA 230-series sections are approximated by a cambered NACA 4-digit profile and the three-point ground angle (12.5 deg) is an estimate. Simplifications: the ETC 501 fuselage rack, FuG 16ZY and FuG 25a aerials under the fuselage and wing are not fitted; the inner wheel-well doors are shown closed; the engine is represented only by the cooling fan and a dark engine face behind it; flaps and ailerons are not separated; panel lines and fasteners are painted; the RLM 74/75 splinter, RLM 76 undersides and the side mottle are procedural patterns, not the official scheme template; the cockpit is simplified (instrument faces are a painted panel).",
+      "muster_source": "src/assets/germany/fw190-a8.asset.ts"
+    },
+    {
+      "id": "de-kar98k",
+      "name": "Kar98k",
+      "subtitle": "Bolt-action rifle, 7.92 x 57 mm",
+      "faction": "germany",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 1.14
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1935"
+        },
+        {
+          "label": "Calibre",
+          "value": "7.92 x 57 mm Mauser"
+        },
+        {
+          "label": "Length",
+          "value": "1,110 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "600 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "3.7-4.1 kg"
+        },
+        {
+          "label": "Magazine",
+          "value": "5-round internal, stripper-clip loaded"
+        },
+        {
+          "label": "Produced",
+          "value": "1934-1945"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Karabiner_98k",
+        "https://en.wikipedia.org/wiki/Mauser_M_98",
+        "https://www.k98kforum.com/threads/when-did-the-laminates-start.44593/",
+        "https://www.gunboards.com/threads/k98k-stock-wood-question.184048/",
+        "https://www.imfdb.org/wiki/Karabiner_98k"
+      ],
+      "modelling_notes": "Represents a 1940s-production rifle with a solid walnut stock (laminated stocks, introduced from 1937, were more common in mid-war production; walnut continued to be fitted), cupped butt plate, hooded front sight and a leather sling on the left side. Overall and barrel length follow the published figures; stock contours, sight and band positions are proportioned from photographs. Manufacturer codes, proof and acceptance stamps and serial numbers are omitted; the internal mechanism is modelled only where visible.",
+      "muster_source": "src/assets/germany/kar98k.asset.ts"
+    },
+    {
+      "id": "de-kubelwagen",
+      "name": "Kubelwagen (Type 82)",
+      "subtitle": "Light personnel car (4x2)",
+      "faction": "germany",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 1.6,
+        "l": 3.74
+      },
+      "facts": [
+        {
+          "label": "Built",
+          "value": "50,435 for the Wehrmacht and Waffen-SS (1940-1945)"
+        },
+        {
+          "label": "Crew",
+          "value": "4"
+        },
+        {
+          "label": "Engine",
+          "value": "1,131 cc air-cooled flat-four, 25 PS (from March 1943)"
+        },
+        {
+          "label": "Length",
+          "value": "3.74 m"
+        },
+        {
+          "label": "Width",
+          "value": "1.60 m"
+        },
+        {
+          "label": "Height",
+          "value": "1.65 m (top up), 1.11 m (top down)"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "2.40 m"
+        },
+        {
+          "label": "Weight",
+          "value": "725 kg empty"
+        },
+        {
+          "label": "Tyres",
+          "value": "5.25-16"
+        },
+        {
+          "label": "Top speed",
+          "value": "80 km/h"
+        }
+      ],
+      "references": [
+        "https://archive.org/details/TechnicalManualTmE9-803GermanVolkswagen",
+        "https://www.ibiblio.org/hyperwar/USA/ref/TM/pdfs/TME9-803.pdf",
+        "https://en.wikipedia.org/wiki/Volkswagen_K%C3%BCbelwagen",
+        "https://silodrome.com/volkswagen-kubelwagen-car/",
+        "https://www.skfk-gmbh.de/fahrzeugteile/wehrmachts-oldtimer/vw-82-k%C3%BCbelwagen/"
+      ],
+      "modelling_notes": "Dimensions, tyre size, control layout, door hinging, windscreen, floor gratings and the rear hub reduction follow the US technical manual TM E9-803 (1944); panel curvature, swage positions, lamp and seat details are estimated from photographs. The engine compartment is closed: only the underside of the engine, transaxle, exhaust and suspension is modelled. Generic cross-country tread without sidewall lettering; seat covers shown as cloth (wartime coverings varied); floor pan and running gear shown in dark grey. No registration plates or unit markings; the only markings are the tyre-pressure stencils (1,4 / 1,8 atu). Battery, fuel tank, wiring, cables and side curtains are not modelled.",
+      "muster_source": "src/assets/germany/kubelwagen.asset.ts"
+    },
+    {
+      "id": "de-m40-helmet",
+      "name": "M40 Steel Helmet",
+      "subtitle": "Stahlhelm M1940 with M31 liner",
+      "faction": "germany",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.32,
+        "l": 0.36
+      },
+      "facts": [
+        {
+          "label": "Introduced",
+          "value": "1940 (replacing M1935 production)"
+        },
+        {
+          "label": "Shell",
+          "value": "Pressed steel, rolled edge, stamped vents"
+        },
+        {
+          "label": "Liner",
+          "value": "M31, leather on a metal band"
+        },
+        {
+          "label": "Succeeded by",
+          "value": "M1942 (unrolled edge)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Stahlhelm",
+        "https://ww2depot.com/blog/m35-vs-m40-vs-m42-german-helmets/",
+        "https://fjm44.com/articles/helmet-m40-q64/"
+      ],
+      "modelling_notes": "Shell proportions approximated for a size 64 shell fitting a ~56-57 cm head; liner simplified to band, sweatband, nine fingers and drawstring. Maker and size stampings omitted. No decals are shown.",
+      "muster_source": "src/assets/germany/m40-helmet.asset.ts"
+    },
+    {
+      "id": "de-machine-gunner",
+      "name": "MG 42 Gunner (1943-44)",
+      "subtitle": "German Army infantry, MG 42",
+      "faction": "germany",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.7,
+        "l": 0.9
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "MG 42 machine gun"
+        },
+        {
+          "label": "Uniform",
+          "value": "M40 field tunic, marching boots"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Uniforms_of_the_German_Army_(1935%E2%80%931945)",
+        "https://www.iwm.org.uk/collections/item/object/30016126",
+        "https://www.mp44.nl/equipment/a_frame.htm",
+        "https://smallarmsreview.com/german-mg-34-gunners-kit-werkzeugtasche-34/",
+        "https://hessenantique.com/m40-field-grey-wool-jacket-feldbluse/",
+        "https://en.wikipedia.org/wiki/MG_42"
+      ],
+      "modelling_notes": "One body type and face, one static pose; cloth folds are procedural. The tool pouch and holster are simplified external shapes (contents not modelled). Weapon and gear pieces are the project's own models (germany/weapons, germany/gear). The national eagle is not depicted.",
+      "muster_source": "src/assets/germany/machine-gunner.asset.ts"
+    },
+    {
+      "id": "de-mg42",
+      "name": "MG 42",
+      "subtitle": "General-purpose machine gun, 7.92 x 57 mm",
+      "faction": "germany",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.3,
+        "l": 1.26
+      },
+      "facts": [
+        {
+          "label": "Service",
+          "value": "1942-1945 (Wehrmacht)"
+        },
+        {
+          "label": "Calibre",
+          "value": "7.92 x 57 mm Mauser"
+        },
+        {
+          "label": "Length",
+          "value": "1,220 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "530 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "11.6 kg"
+        },
+        {
+          "label": "Feed",
+          "value": "50-round belts or 50-round belt drum"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "1,200 rounds/min (approx.)"
+        },
+        {
+          "label": "Produced",
+          "value": "1942-1945, approx. 423,600"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/MG_42",
+        "https://www.dday-overlord.com/en/material/weaponry/mg-42",
+        "https://www.brpguns.com/content/mg42semimanual.pdf",
+        "https://www.bergflak.com/Mgrem.html",
+        "https://www.bergflak.com/Mgrem2.html",
+        "https://www.mg42.us/viewtopic.php?t=14049",
+        "https://forum.axishistory.com/viewtopic.php?t=65071"
+      ],
+      "modelling_notes": "Represents a mid-war MG 42 with a Bakelite butt stock, bipod on the front holder and a 50-round belt drum. Overall and barrel length follow the published figures; receiver, jacket perforations, sights and bipod are proportioned from photographs. The carrying sling is simplified to a single leather strap (the issue sling had two straps and a padded middle section). Markings and the internal mechanism are omitted; the barrel and bolt are modelled only where visible.",
+      "muster_source": "src/assets/germany/mg42.asset.ts"
+    },
+    {
+      "id": "de-mp40",
+      "name": "MP 40",
+      "subtitle": "Submachine gun, 9 x 19 mm",
+      "faction": "germany",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 0.86
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "1940-1945"
+        },
+        {
+          "label": "Number built",
+          "value": "approx. 1.1 million"
+        },
+        {
+          "label": "Manufacturers",
+          "value": "Erma, Haenel, Steyr"
+        },
+        {
+          "label": "Calibre",
+          "value": "9 x 19 mm Parabellum"
+        },
+        {
+          "label": "Action",
+          "value": "Straight blowback, open bolt"
+        },
+        {
+          "label": "Length",
+          "value": "833 mm (stock extended), 630 mm (folded)"
+        },
+        {
+          "label": "Barrel",
+          "value": "251 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "3.97 kg"
+        },
+        {
+          "label": "Magazine",
+          "value": "32-round box"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "500-550 rounds/min"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/MP_40",
+        "https://www.weaponsystems.net/system/1567-MP%2040",
+        "https://www.lonesentry.com/blog/schmeisser-mp40-submachine-gun.html",
+        "https://www.mp40.nl/the-models/mp40",
+        "https://www.mp40.nl/data-info/part-list",
+        "https://mp40.nl/the-accessories/trageriemen-carrying-sling",
+        "https://www.bergflak.com/mp40.html",
+        "http://www.historyarms.com/fore_grip.html",
+        "https://www.forgottenweapons.com/mp-40i-the-dual-magazine-experimental-mp-40/"
+      ],
+      "modelling_notes": "Represents a mid-war MP 40: smooth receiver tube, ribbed magazine housing and magazine, two-part bolt handle, hex barrel-collar nut with the strap loop on the right, phenolic resting bar and folded-back 200 m rear-sight leaf. Proportions follow the published overall, folded and barrel lengths; the grip rake, rear-sight and ejection-port positions, slot sizes and sling hardware are close approximations from descriptions, not measured drawings. Grip plates are shown smooth. Maker codes, serial numbers and acceptance stamps are omitted. The internal mechanism is modelled only where visible (bolt, extractor, recoil-spring tube). Shown on the shared display stand.",
+      "muster_source": "src/assets/germany/mp40.asset.ts"
+    },
+    {
+      "id": "de-opel-blitz",
+      "name": "Opel Blitz 3.6-36S",
+      "subtitle": "3-tonne cargo truck (4x2)",
+      "faction": "germany",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 2.27,
+        "l": 6.1
+      },
+      "facts": [
+        {
+          "label": "Built",
+          "value": "82,356 (April 1937 - August 1944)"
+        },
+        {
+          "label": "Drive",
+          "value": "4x2, rear-wheel drive"
+        },
+        {
+          "label": "Payload",
+          "value": "3 t"
+        },
+        {
+          "label": "Engine",
+          "value": "3,626 cc six-cylinder OHV petrol, 68 hp (military rating)"
+        },
+        {
+          "label": "Length",
+          "value": "6.05-6.11 m (cargo body)"
+        },
+        {
+          "label": "Width",
+          "value": "2.265 m"
+        },
+        {
+          "label": "Height",
+          "value": "2.56 m over the tarpaulin"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "3.60 m"
+        },
+        {
+          "label": "Track",
+          "value": "1.54 m front, 1.62 m rear"
+        },
+        {
+          "label": "Weight",
+          "value": "2.5 t empty, 5.8 t gross"
+        },
+        {
+          "label": "Tyres",
+          "value": "190-20"
+        },
+        {
+          "label": "Top speed",
+          "value": "85 km/h"
+        }
+      ],
+      "references": [
+        "http://www.autogallery.org.ru/blitz36.htm (data after W. Oswald, Kraftfahrzeuge und Panzer der Reichswehr, Wehrmacht und Bundeswehr)",
+        "https://de.wikipedia.org/wiki/Opel_Blitz_3,6",
+        "https://de.wikipedia.org/wiki/Opel_Blitz",
+        "https://en.wikipedia.org/wiki/Opel_Blitz",
+        "http://www.kfzderwehrmacht.de/Homepage_english/Motor_Vehicles/Germany/Opel/Opel_Blitz_3-5-36_-_3-6-36/Opel_Blitz_3-5-36-_3-6-36_-_3-/opel_blitz_3-5-36-_3-6-36_-_3-6-36_s.html",
+        "https://www.materielsterrestres39-45.fr/fr/index.php/camions/226-allemagne-camions/allemagne-camions-legers/909-opel-blitz-einheitsfahrerhaus",
+        "https://www.media.stellantis.com/em-en/opel/press/a-name-becomes-a-trademark-90-years-of-the-opel-blitz"
+      ],
+      "modelling_notes": "Length, width, heights, wheelbase, track, ground clearance, platform size and tyre size follow published data; overhangs, cab, bonnet and wing shapes, the bonnet louvre pattern and fitting positions are estimated from photographs of preserved trucks and scale-model references. The all-steel Opel cab is modelled, not the wooden Einheitsfahrerhaus fitted to the Daimler-Benz-built L 701 from late 1944; late details shown are the Notek lamp and the grille without maker's badge. Dunkelgelb applies from the 1943 colour order; the frame and running gear are shown in black-grey (factory practice varied). The spare wheel is shown carried under the rear frame overhang and the fuel tank under the seat; exact positions varied with body type and are simplified. The engine is represented by its underside masses only; wiring, brake lines and cables are omitted. Generic cross-country tread; olive-khaki tarpaulin. No registration plates, unit or tactical markings.",
+      "muster_source": "src/assets/germany/opel-blitz.asset.ts"
+    },
+    {
+      "id": "de-pak40",
+      "name": "7.5 cm PaK 40",
+      "subtitle": "75 mm anti-tank gun",
+      "faction": "germany",
+      "category": "Artillery",
+      "footprint_m": {
+        "w": 3.6,
+        "l": 5.9
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "75 mm (L/46 barrel, 3.45 m)"
+        },
+        {
+          "label": "Weight",
+          "value": "1,425 kg in action"
+        },
+        {
+          "label": "Elevation",
+          "value": "-5 to +22 degrees"
+        },
+        {
+          "label": "Traverse",
+          "value": "65 degrees"
+        },
+        {
+          "label": "Crew",
+          "value": "5 (some sources give 6)"
+        },
+        {
+          "label": "Produced",
+          "value": "1942-1945 (pre-series from late 1941)"
+        },
+        {
+          "label": "Number built",
+          "value": "about 23,300"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/7.5_cm_Pak_40",
+        "https://de.wikipedia.org/wiki/7,5-cm-PaK_40",
+        "https://www.ulrichwrede.de/wehrmacht/panzerj%C3%A4ger/7-5-cm-pak-40/",
+        "https://www.ibiblio.org/hyperwar/Germany/HB/HB-7.html",
+        "https://tanks-encyclopedia.com/ww2/germany/at-guns/7-5-cm-pak-40/"
+      ],
+      "modelling_notes": "Represents a 1943-44 gun in factory Dunkelgelb with moderate wear and no markings, fitted with the early full-disc pressed-steel wheels with an impressed spoke pattern (the later spoked wheels are not modelled). Key numbers: barrel 3.45 m, firing height 0.96 m, wheel diameter ~0.9 m, track ~1.6 m, trail spread ~3.6 m. Hand-wheel, gearbox, sight-bracket, shutter and spade shapes are approximated from photographs rather than factory drawings; internal mechanisms (buffer, recuperator, torsion bars, semi-automatic and firing gear) are not modelled. The barrel is shown at 0 degrees elevation and traverse. Closed shows the unhitched travel layout: trails brought together with the towing eye between their ends, spades folded and the lower-shield flap raised, the trail ends resting on the ground (the gun tips back slightly). The barrel travel lock, the third wheel for manhandling, ammunition and crew kit are omitted.",
+      "muster_source": "src/assets/germany/pak-40.asset.ts"
+    },
+    {
+      "id": "de-panther-g",
+      "name": "Panther Ausf. G",
+      "subtitle": "Medium tank (Pz.Kpfw. V, Sd.Kfz. 171)",
+      "faction": "germany",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.42,
+        "l": 6.87
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "March 1944 - April 1945"
+        },
+        {
+          "label": "Built",
+          "value": "about 2,960 (Ausf. G)"
+        },
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "7.5 cm KwK 42 L/70"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.92 mm MG 34"
+        },
+        {
+          "label": "Weight",
+          "value": "44.8 t"
+        },
+        {
+          "label": "Length",
+          "value": "8.66 m with gun (hull 6.87 m)"
+        },
+        {
+          "label": "Width",
+          "value": "3.27 m (3.42 m with Schuerzen)"
+        },
+        {
+          "label": "Height",
+          "value": "2.99 m"
+        },
+        {
+          "label": "Engine",
+          "value": "Maybach HL 230 P 30 (petrol)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Panther_tank",
+        "https://tanks-encyclopedia.com/ww2/germany/panzer-v_panther.php"
+      ],
+      "modelling_notes": "Depicts a late Ausf. G (autumn 1944 onwards) with the chin mantlet, the rotating driver's periscope, the bow MG ball mount, rubber-tyred 860 mm road wheels and plain exhaust pipes in cast guards (no flame dampers), no Zimmerit. Plate layout, heights, the station spacing and fitting positions were derived from published overall dimensions, armour data and photographs, not from factory drawings; the drive sprocket and idler are shown narrower than the real parts so that they run clear of the interleaved wheels. Left and right wheel stations are symmetric (the real torsion bars stagger them). Hatches are closed and no interior is modelled; tool stowage is representative and simplified, the cupola AA MG and the antenna rods are not fitted. Markings are limited to Balkenkreuze (no unit or turret numbers). The optional three-tone scheme is a generic sprayed Olivgruen / Rotbraun pattern over Dunkelgelb, not the pattern of one documented vehicle.",
+      "muster_source": "src/assets/germany/panther-g.asset.ts"
+    },
+    {
+      "id": "de-panzer-iv-h",
+      "name": "Panzer IV Ausf. H",
+      "subtitle": "Medium tank (Pz.Kpfw. IV, Sd.Kfz. 161/2)",
+      "faction": "germany",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.29,
+        "l": 5.89
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "1943-1944"
+        },
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "7.5 cm KwK 40 L/48"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.92 mm MG 34"
+        },
+        {
+          "label": "Weight",
+          "value": "25 t"
+        },
+        {
+          "label": "Length",
+          "value": "7.02 m with gun"
+        },
+        {
+          "label": "Width",
+          "value": "2.88 m (without Schuerzen)"
+        },
+        {
+          "label": "Height",
+          "value": "2.68 m"
+        },
+        {
+          "label": "Engine",
+          "value": "Maybach HL 120 TRM (petrol)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Panzer_IV",
+        "https://tanks-encyclopedia.com/ww2/nazi_germany/panzer_iv_ausf_h/",
+        "https://en.wikipedia.org/wiki/7.5_cm_KwK_40",
+        "https://vdoc.pub/documents/modelling-the-late-panzerkampfwagen-iv-1li73bg68110",
+        "https://www.amps-armor.org/SiteReviews/ShowReview.aspx?id=4170",
+        "https://www.afvmodeller.com/product/16172-panzer-iv-tool-stowage-ausf-h-j/"
+      ],
+      "modelling_notes": "Depicts early (mid-1943) production: rubber-tyred return rollers, tubular idler, no Zimmerit, no turret smoke dischargers, single Bosch headlight on the left track guard, antenna base on the rear deck with the rod antenna not fitted, deflector rod under the gun. Plate layout was derived from published overall dimensions and photographs, not factory drawings. Hatches are closed and no interior is modelled. Tool stowage, belly covers, bin and bracket details are representative and simplified; the cupola MG ring is shown without its MG 34. Markings are limited to Balkenkreuze (no unit or turret numbers).",
+      "muster_source": "src/assets/germany/panzer-iv-h.asset.ts"
+    },
+    {
+      "id": "de-rifleman",
+      "name": "Rifleman (1943-44)",
+      "subtitle": "German Army infantry, Kar98k",
+      "faction": "germany",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Kar98k rifle"
+        },
+        {
+          "label": "Uniform",
+          "value": "M40 field tunic, marching boots"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Uniforms_of_the_German_Army_(1935%E2%80%931945)",
+        "https://www.iwm.org.uk/collections/item/object/30016126",
+        "https://www.mp44.nl/equipment/a_frame.htm",
+        "https://smallarmsreview.com/german-mg-34-gunners-kit-werkzeugtasche-34/",
+        "https://hessenantique.com/m40-field-grey-wool-jacket-feldbluse/",
+        "https://en.wikipedia.org/wiki/Karabiner_98k"
+      ],
+      "modelling_notes": "One body type and face, one static pose; cloth folds are procedural. The belt kit follows the standard 1939 arrangement in simplified form (e.g. the gas-mask sling routing and the assault-pack bag contents are generalised). The Y-straps pass under the tunic shoulder straps. Weapon and gear pieces are the project's own models (germany/weapons, germany/gear). The national eagle is not depicted on the cap or tunic.",
+      "muster_source": "src/assets/germany/rifleman.asset.ts"
+    },
+    {
+      "id": "de-squad-leader",
+      "name": "Squad Leader (1943-44)",
+      "subtitle": "German Army infantry, MP 40",
+      "faction": "germany",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.6
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "MP 40 submachine gun"
+        },
+        {
+          "label": "Uniform",
+          "value": "M40 field tunic, marching boots"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Uniforms_of_the_German_Army_(1935%E2%80%931945)",
+        "https://www.iwm.org.uk/collections/item/object/30016126",
+        "https://www.mp44.nl/equipment/a_frame.htm",
+        "https://smallarmsreview.com/german-mg-34-gunners-kit-werkzeugtasche-34/",
+        "https://hessenantique.com/m40-field-grey-wool-jacket-feldbluse/",
+        "https://en.wikipedia.org/wiki/MP_40"
+      ],
+      "modelling_notes": "One body type and face, one static pose; cloth folds are procedural. The belt kit follows the standard 1939 arrangement in simplified form; items often carried by NCOs (binoculars, map case, whistle) are omitted. Weapon and gear pieces are the project's own models (germany/weapons, germany/gear). The national eagle is not depicted.",
+      "muster_source": "src/assets/germany/squad-leader.asset.ts"
+    },
+    {
+      "id": "de-stielhandgranate-24",
+      "name": "Stielhandgranate 24",
+      "subtitle": "Model 24 stick grenade",
+      "faction": "germany",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 0.42
+      },
+      "facts": [
+        {
+          "label": "Service",
+          "value": "1924-1945"
+        },
+        {
+          "label": "Length",
+          "value": "approx. 36 cm"
+        },
+        {
+          "label": "Head diameter",
+          "value": "70 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "595 g"
+        },
+        {
+          "label": "Filling",
+          "value": "170 g TNT"
+        },
+        {
+          "label": "Delay",
+          "value": "4-5 s friction igniter"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Stielhandgranate_24",
+        "https://en.wikipedia.org/wiki/Stielhandgranate",
+        "https://ww2db.com/weapon.php?q=153"
+      ],
+      "modelling_notes": "Exterior only; stencilled instructions and maker stampings are omitted. No fragmentation sleeve fitted.",
+      "muster_source": "src/assets/germany/stick-grenade.asset.ts"
+    },
+    {
+      "id": "de-stug-iii-g",
+      "name": "StuG III Ausf. G",
+      "subtitle": "Assault gun (Sturmgeschuetz III, Sd.Kfz. 142/1)",
+      "faction": "germany",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.12,
+        "l": 5.5
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "December 1942 - April 1945"
+        },
+        {
+          "label": "Crew",
+          "value": "4"
+        },
+        {
+          "label": "Main gun",
+          "value": "7.5 cm StuK 40 L/48"
+        },
+        {
+          "label": "Machine gun",
+          "value": "7.92 mm MG 34 (loader)"
+        },
+        {
+          "label": "Weight",
+          "value": "23.9 t"
+        },
+        {
+          "label": "Length",
+          "value": "6.85 m with gun"
+        },
+        {
+          "label": "Width",
+          "value": "2.95 m (without Schuerzen)"
+        },
+        {
+          "label": "Height",
+          "value": "2.16 m"
+        },
+        {
+          "label": "Engine",
+          "value": "Maybach HL 120 TRM (petrol)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Sturmgesch%C3%BCtz_III",
+        "https://tanks-encyclopedia.com/ww2/nazi_germany/stugiiig",
+        "https://www.historyofwar.org/articles/weapons_StuG_III_Ausf_G.html",
+        "https://en.wikipedia.org/wiki/Panzer_III",
+        "https://en.wikipedia.org/wiki/7.5_cm_KwK_40"
+      ],
+      "modelling_notes": "Depicts mid-1943 production: welded box mantlet (Kastenblende; the cast Topfblende or \"Saukopf\" mantlet followed from November 1943), single-piece 80 mm nose plate, no smoke dischargers and no Zimmerit. Plate layout and component positions were derived from published overall dimensions and photographs, not factory drawings; the casemate is simplified (no bolted add-on plates, simplified pannier construction). Hatches are closed and no interior is modelled. The loader's MG 34 is simplified; the stated 2.16 m height excludes the raised MG shield. Tool stowage, spare wheel and spare link positions are representative. Antenna base only, rod not fitted. Markings are limited to Balkenkreuze (no unit numbers).",
+      "muster_source": "src/assets/germany/stug-iii-g.asset.ts"
+    },
+    {
+      "id": "de-tiger-i",
+      "name": "Tiger I Ausf. E",
+      "subtitle": "Heavy tank (Pz.Kpfw. VI, Sd.Kfz. 181)",
+      "faction": "germany",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.56,
+        "l": 6.32
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "August 1942 - August 1944"
+        },
+        {
+          "label": "Built",
+          "value": "1,347"
+        },
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "8.8 cm KwK 36 L/56"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.92 mm MG 34"
+        },
+        {
+          "label": "Weight",
+          "value": "57 t"
+        },
+        {
+          "label": "Length",
+          "value": "8.45 m with gun (hull 6.32 m)"
+        },
+        {
+          "label": "Width",
+          "value": "3.55 m on combat tracks (3.14 m on transport tracks)"
+        },
+        {
+          "label": "Engine",
+          "value": "Maybach HL 230 P 45 (petrol)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Tiger_I",
+        "https://tanks-encyclopedia.com/ww2/germany/panzer-vi_tiger.php",
+        "https://www.historyofwar.org/articles/weapons_tiger_I.html",
+        "https://tankmuseum.org/article/two-widths-track",
+        "https://tankmuseum.org/tiger-wheels/",
+        "https://www.alanhamby.com/suspension.shtml",
+        "http://www.alanhamby.com/changes.shtml",
+        "https://tiger1.info/EN/RoadWheelSpacing.html",
+        "https://tiger1.info/EN/New-turret-external.html",
+        "https://tiger1.info/EN/Headlights.html",
+        "https://tiger1.info/EN/Feifel-air-precleaners.html",
+        "https://tiger1.info/EN/S-mine-brackets.html",
+        "https://panzerworld.com/pz-kpfw-tiger-ausf-e"
+      ],
+      "modelling_notes": "Depicts a mid-production Tiger I as completed in about July 1943: second-pattern turret with the low cast cupola (seven periscopes, AA MG ring), escape hatch for the loader, simplified pistol-port plug and the loader periscope, twin Bosch headlights (the right one was deleted from August 1943), five S-mine launchers, oval Feifel air pre-cleaners, guarded exhaust mufflers, rubber-tyred road wheels with 12-bolt rims, no smoke dischargers (deleted June 1943) and no Zimmerit (factory application began in the late summer of 1943; sources give dates from July to September). Plate layout, turret proportions and fitting positions were derived from published overall dimensions, armour data and photographs, not from factory drawings. The wheel interleaving follows published descriptions (three wheels per arm, the outermost wheel on the outer track extension); left and right stations are shown symmetric, whereas the real torsion bars stagger them slightly. Hatches are closed and no interior is modelled. Tool and cable stowage, the spare links on the turret sides and the engine-deck details are representative of 1943 vehicles rather than one specific tank; the deep-wading equipment, the antenna rod and the cupola MG 34 are not fitted. Markings are limited to Balkenkreuze (no unit or turret numbers).",
+      "muster_source": "src/assets/germany/tiger-i.asset.ts"
+    },
+    {
+      "id": "it-m13-40",
+      "name": "Carro Armato M13/40",
+      "subtitle": "Medium tank",
+      "faction": "italy",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.28,
+        "l": 4.92
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4"
+        },
+        {
+          "label": "Main gun",
+          "value": "47 mm 47/32 Mod. 35"
+        },
+        {
+          "label": "Machine guns",
+          "value": "8 mm Breda Mod. 38: co-axial, twin hull mount, plus one anti-aircraft"
+        },
+        {
+          "label": "Engine",
+          "value": "SPA 8 T V-8 diesel, 125 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "About 13-14 t combat loaded (sources differ)"
+        },
+        {
+          "label": "Length / width / height",
+          "value": "4.92 m / 2.28 m / 2.37 m"
+        },
+        {
+          "label": "Armour",
+          "value": "30 mm hull front, 25 mm sides, 42 mm gun mantlet"
+        },
+        {
+          "label": "Suspension",
+          "value": "Leaf-sprung bogies, 8 double road wheels per side; 26 cm tracks"
+        },
+        {
+          "label": "Produced",
+          "value": "Ansaldo-Fossati, 1940-41; 710 per Italian sources (other totals up to about 780)"
+        }
+      ],
+      "references": [
+        "https://tanks-encyclopedia.com/ww2/italy/carro-armato-m13-40/",
+        "https://en.wikipedia.org/wiki/M13/40_tank",
+        "https://www.regioesercito.it/pages/m13-40.html",
+        "https://tanks-encyclopedia.com/ww2/italy/"
+      ],
+      "modelling_notes": "Depicts a III serie tank (short front mudguards, tool boxes and silencers on the rear mudguards, one spare road wheel and the jack on the rear plate, roof bulge over the breech). Overall dimensions follow the published 4.915 x 2.28 x 2.37 m; plate junction heights, bogie spacing and fitting positions are proportioned from photographs, not factory drawings. The track has 80 links per side (regioesercito.it; other sources give 84). Hatches are closed and no interior is modelled; the radio mast is shown lowered and the anti-aircraft Breda is not fitted. Markings follow the 1940 Regio Esercito tactical system (company rectangle, platoon bars, vehicle number); the number plate is left blank.",
+      "muster_source": "src/assets/italy/m13-40.asset.ts"
+    },
+    {
+      "id": "jp-type99-rifle",
+      "name": "Arisaka Type 99",
+      "subtitle": "Bolt-action short rifle, 7.7x58mm",
+      "faction": "japan",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 1.15
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1939"
+        },
+        {
+          "label": "Calibre",
+          "value": "7.7x58mm Arisaka"
+        },
+        {
+          "label": "Action",
+          "value": "Bolt action"
+        },
+        {
+          "label": "Length",
+          "value": "1,118 mm (short rifle)"
+        },
+        {
+          "label": "Barrel",
+          "value": "657 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "3.79 kg"
+        },
+        {
+          "label": "Feed",
+          "value": "5-round internal magazine, stripper-clip loaded"
+        },
+        {
+          "label": "Produced",
+          "value": "1939-1945, about 3.5 million"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Type_99_rifle",
+        "https://www.militarytrader.com/militaria-collectibles/type99-rifle",
+        "https://www.thefirearmblog.com/blog/2015/10/16/a-brief-history-of-the-japanese-type-99/",
+        "https://www.hearmyselftalkhistory.com/featured-firearm/type-99-arisaka",
+        "https://www.ima-usa.com/products/original-imperial-japanese-arisaka-type-99-short-rifle-stock-with-handguard"
+      ],
+      "modelling_notes": "Represents an early / mid-war Type 99 short rifle: blued metal, two-piece stock with the lower butt piece spliced on horizontally, cupped steel butt plate, side-mounted (left) sling swivels, reinforced upper band with the bayonet lug, front sight protectors, ladder rear sight with the anti-aircraft lead arms shown folded, straight bolt handle with the plum-shaped knob, knurled safety knob, optional sliding dust cover and a brown leather sling. Overall and barrel length follow published figures; the stock sections, receiver, sights, bands and swivels are proportioned from photographs, not measured. The folding monopod of early rifles is not fitted (it was frequently removed). The receiver ring is shown plain: the imperial chrysanthemum and all other markings are deliberately omitted. Bolt shown closed; internal mechanism, the Type 30 bayonet and the sling stitching / buckle tongue are not modelled; the sling adjustment is a simplification.",
+      "muster_source": "src/assets/japan/arisaka-type99.asset.ts"
+    },
+    {
+      "id": "jp-chi-ha",
+      "name": "Type 97 Chi-Ha",
+      "subtitle": "Medium tank (57 mm gun)",
+      "faction": "japan",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.33,
+        "l": 5.5
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4"
+        },
+        {
+          "label": "Main gun",
+          "value": "Type 97 57 mm tank gun (semi-flexible mount)"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.7 mm Type 97 (hull front left, turret rear)"
+        },
+        {
+          "label": "Engine",
+          "value": "Mitsubishi SA12200VD air-cooled V-12 diesel, 170 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "14.3 - 15.2 t"
+        },
+        {
+          "label": "Length / width / height",
+          "value": "5.50 m / 2.33 m / 2.21 m"
+        },
+        {
+          "label": "Armour",
+          "value": "8 - 25 mm, riveted"
+        },
+        {
+          "label": "Suspension",
+          "value": "Bell crank, 6 road wheels per side; 96 links per track"
+        },
+        {
+          "label": "Produced",
+          "value": "1938 - 1942 (57 mm gun version)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Type_97_Chi-Ha_medium_tank",
+        "https://www.globalsecurity.org/military/world/japan/type-97-chi-ha-design.htm",
+        "https://miniordnancerev.blogspot.com/2016/03/japanese-tank-painting-guide.html"
+      ],
+      "modelling_notes": "Overall dimensions, crew, armament, suspension layout (six double road wheels, the centre four in two bogies, three return rollers, front sprocket, rear idler, 96 single-horn links) follow the references; the nose plates are modelled a little steeper than the published 80 / 62 degrees so the nose closes over the final drives; plate junction heights, the turret plan, fitting positions and the tool stowage are proportioned from photographs and published drawings, not factory drawings. The layout of the exhaust silencers and tools follows common photographs rather than one specific vehicle. Paint is the 1942 three-colour scheme (parched-grass khaki base with dark green and mahogany brown patches, no yellow stripe); unit markings are omitted. Hatches are closed and no interior is modelled.",
+      "muster_source": "src/assets/japan/chi-ha.asset.ts"
+    },
+    {
+      "id": "jp-type99-lmg",
+      "name": "Type 99 Light Machine Gun",
+      "subtitle": "Light machine gun, 7.7x58mm",
+      "faction": "japan",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.3,
+        "l": 1.22
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "7.7x58mm Arisaka"
+        },
+        {
+          "label": "Action",
+          "value": "Gas-operated"
+        },
+        {
+          "label": "Length",
+          "value": "1,181 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "550 mm, finned, quick-change"
+        },
+        {
+          "label": "Weight",
+          "value": "10.4 kg"
+        },
+        {
+          "label": "Feed",
+          "value": "30-round detachable box magazine, top-mounted"
+        },
+        {
+          "label": "Muzzle velocity",
+          "value": "About 715 m/s"
+        },
+        {
+          "label": "Produced",
+          "value": "1939-1945, about 53,000"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Type_99_light_machine_gun",
+        "https://en.wikipedia.org/wiki/Type_96_light_machine_gun",
+        "https://modernfirearms.net/en/machineguns/japan-machineguns/type-96-type-99-eng/",
+        "https://www.forgottenweapons.com/ria-nambu-type-96-type-99-lmgs/",
+        "https://www.militaryfactory.com/smallarms/detail.php?smallarms_id=372",
+        "https://www.poulinauctions.com/2026/08/25/imperial-japanese-kokura-arsenal-type-99-light-machine-gun-with-scarce-4-cell-magazine-pouch-canvas-carrier/"
+      ],
+      "modelling_notes": "Represents an early-production gun with the folding monopod under the butt (shown folded), blued metal, a wooden butt with a black-finished steel butt plate, a grooved wooden pistol grip, a canvas sling and open sights offset to the left of the magazine. Overall and barrel length follow published figures; receiver, butt, grip, magazine curvature, barrel fins, carrying handle, gas system, bipod and sight positions are proportioned from photographs and descriptions, not measured. The carrying handle is shown folded to the right; the side-opening magazine-well cover is shown open. Sling swivel positions and hardware, bipod leg length and foot shape are approximations. Receiver markings (arsenal insignia, dates, serials), the telescopic sight rail and the internal mechanism are not depicted; the bayonet is not modelled.",
+      "muster_source": "src/assets/japan/type99-lmg.asset.ts"
+    },
+    {
+      "id": "su-glass-flask",
+      "name": "Glass Water Flask",
+      "subtitle": "0.75 l flask in cloth cover",
+      "faction": "soviet",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.32,
+        "l": 0.3
+      },
+      "facts": [
+        {
+          "label": "Capacity",
+          "value": "0.75 l (1.0 l version also made)"
+        },
+        {
+          "label": "Weight",
+          "value": "approx. 450 g (glass flask only)"
+        },
+        {
+          "label": "Closure",
+          "value": "Rubber plug tied to the neck with a cord"
+        },
+        {
+          "label": "Cover",
+          "value": "Cloth bag with drawstring and shoulder strap"
+        }
+      ],
+      "references": [
+        "https://sovietuniform.com/red-army-uniform-equipment-1941-1945/",
+        "https://www.13thguardspoltavaskaya.com/equipment.html",
+        "https://flyagi.livejournal.com/56754.html",
+        "https://www.westwal.ru/flyazhka-steklyannaya-rkka"
+      ],
+      "modelling_notes": "Exact flask dimensions were not found; body size (about 131 x 67 x 190 mm with the neck) is estimated from the 0.75 l capacity and period photographs. Cover patterns varied widely; a simple two-panel drawstring bag with a sewn-on cotton strap is shown. The glass body itself is hidden by the cover; only the neck and plug are modelled in detail.",
+      "muster_source": "src/assets/soviet/canteen.asset.ts"
+    },
+    {
+      "id": "su-dp27",
+      "name": "DP-27",
+      "subtitle": "Light machine gun, 7.62 x 54 mmR",
+      "faction": "soviet",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.3,
+        "l": 1.3
+      },
+      "facts": [
+        {
+          "label": "In service",
+          "value": "From 1928 (Red Army)"
+        },
+        {
+          "label": "Calibre",
+          "value": "7.62 x 54 mmR"
+        },
+        {
+          "label": "Action",
+          "value": "Gas-operated, automatic fire only, open bolt"
+        },
+        {
+          "label": "Length",
+          "value": "1,270 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "605 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "9.12 kg (without magazine)"
+        },
+        {
+          "label": "Feed",
+          "value": "47-round pan magazine"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "500-600 rounds/min"
+        },
+        {
+          "label": "Sights",
+          "value": "Sector rear sight to 1,500 m; post front sight with protective ears"
+        },
+        {
+          "label": "Produced",
+          "value": "Kovrov, approx. 795,000"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Degtyaryov_machine_gun",
+        "https://ru.wikipedia.org/wiki/%D0%94%D0%9F-27",
+        "https://military.wikireading.ru/40469",
+        "https://arsenal-info.ru/pub/pulemety/ruchnoy-pulemet-degtyareva-dp-27-patron-kalibr-7-62-mm-ustroystvo",
+        "https://istochnik.us/the-dp-27/",
+        "https://commons.wikimedia.org/wiki/File:DEGTYAREV_DP_28.jpg",
+        "https://commons.wikimedia.org/wiki/File:Machine_gun_DP_MON.jpg",
+        "https://commons.wikimedia.org/wiki/File:DP_disk_up.jpg",
+        "https://commons.wikimedia.org/wiki/File:DP_disk_down.jpg"
+      ],
+      "modelling_notes": "Proportions from the published overall and barrel lengths and scaled side-view photographs (265 mm pan). Layout after the manual: casing of two joined tubes (barrel tube with windows, guide tube below), front sight with protective ears on the casing front, sector rear sight on the receiver behind the pan, bipod collar with wing screw, sling swivels on the casing and on the left of the butt. Internal mechanism (bolt, locking flaps, recoil spring) is not modelled; the stamped pattern of the pan cover, the sling hardware and the rear-sight scale are approximations. No factory markings or serial numbers.",
+      "muster_source": "src/assets/soviet/dp27.asset.ts"
+    },
+    {
+      "id": "su-f1-grenade",
+      "name": "F-1 Hand Grenade",
+      "subtitle": "Defensive fragmentation grenade",
+      "faction": "soviet",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.13,
+        "l": 0.13
+      },
+      "facts": [
+        {
+          "label": "Weight",
+          "value": "600 g"
+        },
+        {
+          "label": "Length",
+          "value": "117 mm (with fuze)"
+        },
+        {
+          "label": "Diameter",
+          "value": "55 mm"
+        },
+        {
+          "label": "Filling",
+          "value": "60 g TNT"
+        },
+        {
+          "label": "Fuze",
+          "value": "UZRG, 3.2-4.2 s delay"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/F-1_grenade_(Russia)",
+        "https://ru.wikipedia.org/wiki/%D0%A4-1_(%D0%B3%D1%80%D0%B0%D0%BD%D0%B0%D1%82%D0%B0)",
+        "https://bulletpicker.com/grenade_-hand_-defensive_-f-1.html"
+      ],
+      "modelling_notes": "Fuze internals are not modelled; the lever, pin and ring follow the UZRG layout in simplified form. Block count of the body grooving is approximate.",
+      "muster_source": "src/assets/soviet/f-1-grenade.asset.ts"
+    },
+    {
+      "id": "su-gaz67b",
+      "name": "GAZ-67B",
+      "subtitle": "Light 4x4 field car",
+      "faction": "soviet",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 1.69,
+        "l": 3.35
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "January 1944 - 1953 (GAZ-67 from September 1943)"
+        },
+        {
+          "label": "Built",
+          "value": "92,843 GAZ-67 and GAZ-67B"
+        },
+        {
+          "label": "Drive",
+          "value": "4x4"
+        },
+        {
+          "label": "Engine",
+          "value": "Four-cylinder petrol, 3.28 L, 54 hp"
+        },
+        {
+          "label": "Seats",
+          "value": "4"
+        },
+        {
+          "label": "Length",
+          "value": "3.345 m"
+        },
+        {
+          "label": "Width",
+          "value": "1.685 m"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "2.10 m"
+        },
+        {
+          "label": "Track",
+          "value": "1.446 m"
+        },
+        {
+          "label": "Weight",
+          "value": "1,320 kg"
+        },
+        {
+          "label": "Top speed",
+          "value": "90 km/h"
+        },
+        {
+          "label": "Tyres",
+          "value": "6.50-16"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/GAZ-67",
+        "https://ru.wikipedia.org/wiki/%D0%93%D0%90%D0%97-67",
+        "https://ru.wikipedia.org/wiki/%D0%93%D0%90%D0%97-67%D0%91",
+        "https://victorymuseum.ru/encyclopedia/technic/avtomobilnaya-tekhnika/komandirskiy-avtomobil-povyshennoy-prokhodimosti-gaz-67b-sssr/",
+        "https://avtoclassika.com/e/specifications-gaz-67/",
+        "https://commons.wikimedia.org/wiki/Category:GAZ-67 (photographs of preserved vehicles)"
+      ],
+      "modelling_notes": "Length, width, wheelbase (2.10 m, confirmed by several sources), track, overhangs and tyre size follow published data; body heights, panel shapes and fitting positions are estimated from photographs of preserved vehicles. Engine, gearbox and transfer case are simplified blocks under the bonnet and floor; the differentials are shown on the centre line and the exhaust routing is simplified. Wiring, brake cables and fuel lines are omitted. Seat pads are shown as dark leatherette; the canvas top is shown folded and strapped at the rear. No markings are applied.",
+      "muster_source": "src/assets/soviet/gaz-67b.asset.ts"
+    },
+    {
+      "id": "su-il2",
+      "name": "Ilyushin Il-2",
+      "subtitle": "Two-seat ground-attack aircraft, 1943-44",
+      "faction": "soviet",
+      "category": "Aircraft",
+      "footprint_m": {
+        "w": 14.6,
+        "l": 11.6
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "2 (pilot, rear gunner)"
+        },
+        {
+          "label": "Engine",
+          "value": "Mikulin AM-38F liquid-cooled V12, 1,720 hp (take-off)"
+        },
+        {
+          "label": "Armament (as fitted)",
+          "value": "2 x 23 mm VYa-23 cannon, 2 x 7.62 mm ShKAS (wings); 1 x 12.7 mm UBT (rear)"
+        },
+        {
+          "label": "Span",
+          "value": "14.60 m"
+        },
+        {
+          "label": "Length",
+          "value": "11.65 m"
+        },
+        {
+          "label": "Produced",
+          "value": "1941-1945, about 36,000 of all versions"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Ilyushin_Il-2",
+        "https://ru.wikipedia.org/wiki/%D0%98%D0%BB-2",
+        "https://military.wikireading.ru/27298",
+        "https://massimotessitori.altervista.org/sovietwarplanes/pages/colors/1941-43/1941-43.html",
+        "http://wio.ru/simbols/simbols.htm"
+      ],
+      "modelling_notes": "Span, length, wing area, centre-section chord, tailplane span, 15 deg outer-panel sweep, wheel sizes and the 3.6 m propeller follow the sources; fuselage cross-sections, wing thickness, gear track (~3.4 m) and the three-point ground angle (~10 deg) are estimates from photographs, not measured drawings. Shown as a 1943-44 aircraft with wooden rear fuselage, VYa-23 cannon, UBT on its pivot mount and no external stores; RS-82 rails, antenna, pitot, trim tabs and most rivet/fastener detail are omitted. Radiator and oil-cooler intake shapes are simplified. The camouflage is a generic sprayed AMT-4/AMT-6 pattern over AMT-7, not a copy of a specific factory template; markings are red stars with white border and thin red outline, no unit numbers. Cockpit interior is simplified (panel, sight, seat, stick, head armour, gunner strap seat).",
+      "muster_source": "src/assets/soviet/il-2.asset.ts"
+    },
+    {
+      "id": "su-is-2",
+      "name": "IS-2 Model 1944",
+      "subtitle": "Heavy tank",
+      "faction": "soviet",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.2,
+        "l": 9.83
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4 (commander, gunner, loader, driver)"
+        },
+        {
+          "label": "Main gun",
+          "value": "122 mm D-25T (48 calibres), 28 separate-loading rounds"
+        },
+        {
+          "label": "Machine guns",
+          "value": "3 x 7.62 mm DT (coaxial, fixed bow, turret rear); 12.7 mm DShK AA from 1945"
+        },
+        {
+          "label": "Weight",
+          "value": "46 t"
+        },
+        {
+          "label": "Engine",
+          "value": "V-2-IS (V-2-10) V-12 diesel, 520 hp"
+        },
+        {
+          "label": "Length",
+          "value": "9.83 m with gun forward (hull 6.77 m)"
+        },
+        {
+          "label": "Width / height",
+          "value": "3.07 m / 2.63-2.73 m (sources differ)"
+        },
+        {
+          "label": "Armour",
+          "value": "Upper glacis 120 mm at 60 deg; turret front 100 mm"
+        },
+        {
+          "label": "Produced",
+          "value": "1943-1945"
+        }
+      ],
+      "references": [
+        "https://ru.wikipedia.org/wiki/%D0%98%D0%A1-2",
+        "https://en.wikipedia.org/wiki/IS-2",
+        "https://armor.photos/Tanks/WWII/IS2/is2_2.php",
+        "https://tanks-encyclopedia.com/ww2/soviet/soviet_is-ii.php",
+        "https://nuou.org.ua/en/is-2.html",
+        "https://commons.wikimedia.org/wiki/File:IS-2_scheme.jpg",
+        "https://commons.wikimedia.org/wiki/Category:IS-2_at_the_American_Heritage_Museum"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. The cast turret is a smooth signed-distance approximation proportioned from a scale drawing and photographs; casting numbers and foundry marks are omitted, and the gun embrasure behind the bent-plate mantlet is simplified. Weld beads and plate joints are idealised and the belly seams are not modelled. Running gear follows the published figures (six dual 550 mm road wheels, three return rollers, rear sprocket with two 14-tooth rings, 86 single-horn 650 mm links per side), with simplified castings. Stowage (ZIP box, tow cable, shovel, crowbar, spare links, four 90-litre external tanks) follows late-war photographs; exact positions are estimated. The fixed bow DT port is shown (the bow gun was later deleted; sources give no date), and the DShK mount is simplified. No markings, since tactical numbers and slogans varied by unit. Model length is 9.83 m; the top of the cupola hatch is at 2.77 m (2.63-2.73 m quoted).",
+      "muster_source": "src/assets/soviet/is-2.asset.ts"
+    },
+    {
+      "id": "su-kv-1",
+      "name": "KV-1 Model 1941",
+      "subtitle": "Heavy tank, welded turret",
+      "faction": "soviet",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.5,
+        "l": 7.4
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "76.2 mm ZiS-5 (41.6 calibres), fitted from autumn 1941"
+        },
+        {
+          "label": "Machine guns",
+          "value": "3 x 7.62 mm DT (coaxial, bow, turret rear)"
+        },
+        {
+          "label": "Weight",
+          "value": "47.5 t"
+        },
+        {
+          "label": "Engine",
+          "value": "V-2K V-12 diesel, 600 hp"
+        },
+        {
+          "label": "Length / width / height",
+          "value": "6.68 m hull / 3.32 m / 2.71 m"
+        },
+        {
+          "label": "Armour",
+          "value": "Hull front 75 mm; 25-35 mm applique plates added in 1941"
+        },
+        {
+          "label": "Suspension",
+          "value": "Torsion bars, six road wheels and three return rollers per side; 700 mm tracks"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/KV-1",
+        "https://ru.wikipedia.org/wiki/%D0%9A%D0%92-1",
+        "https://kv1ehkranami.narod.ru/kv1_z41.html",
+        "https://www.o5m6.de/redarmy/kv_1m1941late.php",
+        "https://tanks-encyclopedia.com/ww2/soviet/soviet_kv-1.php"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. Overall dimensions (hull 6.675 m, width 3.32 m, height 2.71 m, 0.45 m clearance), the running-gear layout (six dual 600 mm road wheels, three rubber-tyred return rollers, rear sprocket, 700 mm single-horn links on a 160 mm pitch) and the ZiS-5 barrel length follow published figures; plate angles and junction heights, the turret plan and all fitting positions are estimated from photographs. The length with the gun forward (about 7.2 m) follows from the barrel length and is not a published figure. The welded turret is idealised (flat plates, simplified mantlet and vision devices); the road wheels are the 1941 ribbed rubber-tyred pattern, simplified. Stowage (five 160-litre tanks, ZIP boxes, tow cable, shovel, crowbar) follows descriptions of late-1941 Chelyabinsk tanks; exact positions are estimated. No markings, since tactical numbers and slogans varied by unit.",
+      "muster_source": "src/assets/soviet/kv-1.asset.ts"
+    },
+    {
+      "id": "su-machine-gunner",
+      "name": "DP-27 Gunner (1943-44)",
+      "subtitle": "Red Army infantry, DP-27 light machine gun",
+      "faction": "soviet",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.9
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "DP-27 light machine gun"
+        },
+        {
+          "label": "Uniform",
+          "value": "M43 gymnastyorka, sharovary breeches"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Gymnastyorka",
+        "https://sovietuniform.com/soviet-military-uniform-history-ww2/",
+        "https://www.13thguardspoltavaskaya.com/equipment.html",
+        "https://en.wikipedia.org/wiki/SSh-40",
+        "https://en.wikipedia.org/wiki/MPL-50",
+        "https://en.wikipedia.org/wiki/Degtyaryov_machine_gun"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose; cloth folds are procedural. Weapon and gear pieces are the project's own models (soviet/weapons, soviet/gear).",
+      "muster_source": "src/assets/soviet/machine-gunner.asset.ts"
+    },
+    {
+      "id": "su-mosin-9130",
+      "name": "Mosin-Nagant M1891/30",
+      "subtitle": "Bolt-action rifle, 7.62 x 54 mmR",
+      "faction": "soviet",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 1.26
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "7.62 x 54 mmR"
+        },
+        {
+          "label": "Action",
+          "value": "Bolt action"
+        },
+        {
+          "label": "Magazine",
+          "value": "5-round integral box"
+        },
+        {
+          "label": "Length",
+          "value": "1,232 mm (without bayonet)"
+        },
+        {
+          "label": "Barrel",
+          "value": "730 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "approx. 4.0 kg"
+        },
+        {
+          "label": "Sights",
+          "value": "Hooded post; tangent rear sight, 100-2,000 m"
+        },
+        {
+          "label": "Produced",
+          "value": "1930-1945"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Mosin%E2%80%93Nagant",
+        "https://www.globalsecurity.org/military/world/russia/mosin-nagant.htm",
+        "https://www.keepshooting.com/mosin-nagant-bayonet-m91-30.html",
+        "https://www.sarcoinc.com/mosin-nagant-91-30-bayonet/",
+        "https://oldsteelguns.com/store/mosin-nagant-91-30-sling-escutcheon/"
+      ],
+      "modelling_notes": "Represents a wartime round-receiver M1891/30 with a birch stock, straight bolt handle and canvas sling on leather dog collars. Overall, barrel and bayonet lengths follow the references; stock profile heights and the exact sight, band and slot geometry are close approximations from photographs. The sling slots are shown as escutcheon-lined openings rather than fully cut through the stock. Arsenal stamps, serial numbers and the internal mechanism (firing pin, interrupter, extractor) are omitted.",
+      "muster_source": "src/assets/soviet/mosin-9130.asset.ts"
+    },
+    {
+      "id": "su-mpl50-shovel",
+      "name": "MPL-50 Infantry Shovel",
+      "subtitle": "Small entrenching tool with canvas cover",
+      "faction": "soviet",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.28,
+        "l": 0.58
+      },
+      "facts": [
+        {
+          "label": "Length",
+          "value": "500 mm overall"
+        },
+        {
+          "label": "Blade",
+          "value": "approx. 150 x 180 mm"
+        },
+        {
+          "label": "Handle",
+          "value": "Unpainted hardwood"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/MPL-50",
+        "https://en.topwar.ru/179180-samaja-znamenitaja-sapernaja-lopatka.html"
+      ],
+      "modelling_notes": "Blade outline, socket straps and cover are simplified from photographs; cover closure is shown as a strap with a wire buckle. Weight is not stated because published figures vary between variants.",
+      "muster_source": "src/assets/soviet/mpl-50-shovel.asset.ts"
+    },
+    {
+      "id": "su-ppsh41",
+      "name": "PPSh-41",
+      "subtitle": "Submachine gun, 7.62 x 25 mm Tokarev",
+      "faction": "soviet",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 0.86
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "7.62 x 25 mm Tokarev"
+        },
+        {
+          "label": "Action",
+          "value": "Blowback, open bolt, selective fire"
+        },
+        {
+          "label": "Length",
+          "value": "843 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "269 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "3.63 kg empty; 5.45 kg with a loaded drum"
+        },
+        {
+          "label": "Magazine",
+          "value": "71-round drum or 35-round box"
+        },
+        {
+          "label": "Sights",
+          "value": "Hooded post; L-type flip rear sight, 100 / 200 m"
+        },
+        {
+          "label": "Produced",
+          "value": "1941-1947, approx. 6 million"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/PPSh-41",
+        "https://modernfirearms.net/en/submachine-guns/russia-submachine-guns/ppsh-41-eng/",
+        "https://www.historicalfirearms.info/post/101038117079/what-is-the-proper-way-to-hold-a-ppsh-41-when"
+      ],
+      "modelling_notes": "Represents a later-production PPSh-41 with the L-type flip rear sight. Overall and barrel lengths follow the references; receiver and jacket diameters, the jacket slot pattern, drum size and stock profile are close approximations from photographs. The drum and box magazine are shown closed (no internal spiral or cartridges); the bolt is visible through the ejection port and handle slot, other internals are omitted. Markings are omitted.",
+      "muster_source": "src/assets/soviet/ppsh41.asset.ts"
+    },
+    {
+      "id": "su-rifleman",
+      "name": "Rifleman (1943-44)",
+      "subtitle": "Red Army infantry, Mosin-Nagant M1891/30",
+      "faction": "soviet",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Mosin-Nagant M1891/30 rifle"
+        },
+        {
+          "label": "Uniform",
+          "value": "M43 gymnastyorka, sharovary breeches"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Gymnastyorka",
+        "https://sovietuniform.com/soviet-military-uniform-history-ww2/",
+        "https://www.13thguardspoltavaskaya.com/equipment.html",
+        "https://en.wikipedia.org/wiki/SSh-40",
+        "https://en.wikipedia.org/wiki/MPL-50",
+        "https://en.wikipedia.org/wiki/Mosin%E2%80%93Nagant"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose; cloth folds are procedural. Weapon and gear pieces are the project's own models (soviet/weapons, soviet/gear).",
+      "muster_source": "src/assets/soviet/rifleman.asset.ts"
+    },
+    {
+      "id": "su-ssh40-helmet",
+      "name": "SSh-40 Steel Helmet",
+      "subtitle": "Infantry steel helmet",
+      "faction": "soviet",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.32,
+        "l": 0.4
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1940"
+        },
+        {
+          "label": "Weight",
+          "value": "approx. 1.3 kg"
+        },
+        {
+          "label": "Liner",
+          "value": "Three pads, six rivets, drawstring adjustment"
+        },
+        {
+          "label": "Sizes",
+          "value": "Three shell sizes"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/SSh-39_and_SSh-40",
+        "https://legendreturnsvintage.com/blogs/news/soviet-steel-helmets-ussr-ssh-39-ssh-40-ssh-60-ssh-68-complete-history-engineering-evolution-and-collectors-guide",
+        "https://en.wikipedia.org/wiki/He%C5%82m_wz._50 (post-war Polish copy, used for shell proportions ~271 x 248 x 166 mm)"
+      ],
+      "modelling_notes": "Shell proportions follow the published dimensions of the closely derived Polish wz. 50; exact SSh-40 size-2 dimensions were not found. Liner pads are simplified (no internal felt or size markings).",
+      "muster_source": "src/assets/soviet/ssh-40-helmet.asset.ts"
+    },
+    {
+      "id": "su-su-76m",
+      "name": "SU-76M",
+      "subtitle": "Light self-propelled gun",
+      "faction": "soviet",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.75,
+        "l": 5.05
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4"
+        },
+        {
+          "label": "Main gun",
+          "value": "76.2 mm ZiS-3Sh (ZiS-3 ordnance), 60 rounds"
+        },
+        {
+          "label": "Engines",
+          "value": "Two GAZ-202 six-cylinder petrol engines, 2 x 70 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "10.5-11.2 t (sources differ)"
+        },
+        {
+          "label": "Length / width / height",
+          "value": "About 5.0 m / 2.72 m / 2.1-2.2 m"
+        },
+        {
+          "label": "Armour",
+          "value": "25-35 mm front, 10-15 mm sides; open-topped casemate"
+        },
+        {
+          "label": "Suspension",
+          "value": "Torsion bars, six road wheels and three return rollers per side"
+        },
+        {
+          "label": "Produced",
+          "value": "13,732 SU-76M (1943-1945)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/SU-76",
+        "https://ru.wikipedia.org/wiki/%D0%A1%D0%A3-76",
+        "https://www.ospreypublishing.com/us/discover/osprey-publishing/machine-of-the-month/su-76m/",
+        "https://www.o5m6.de/redarmy/su_76m.php",
+        "https://tanks-encyclopedia.com/su-76m-in-yugoslav-service/",
+        "http://www.missing-lynx.com/reviews/russia/tamiya35348reviewcs_1.html"
+      ],
+      "modelling_notes": "Overall dimensions (about 5.0 x 2.74 x 2.14 m, 0.30 m clearance), the plate angles (upper front 60 deg, lower front 30 deg, casemate front 25 deg, casemate sides about 20 deg), the running-gear layout (six 550 mm road wheels on torsion bars, three return rollers, front sprocket, rear idler of the road-wheel pattern, 300 mm small-link tracks) and the ZiS-3 ordnance follow published figures; plate junction heights, the casemate plan and all fitting positions are estimated from photographs. The engines and fuel tanks are internal and not modelled; their layout (engines in line on the right, fuel tanks on the left of the driver) is shown only through the roof fittings (engine hatch, radiator grille and outlet louvre on the right, filler caps on the left) and the twin exhaust mufflers on the right track guard, whose exact positions are approximate. The late-production higher rear plate with a door and two pistol ports is shown. The gun mount, moving shield and armoured recoil-gear cover are simplified; the interior is simplified (pedestal, hand wheels, sight, seats, part of the 60-round load in racks, stowed DT machine gun) and the driver's compartment is not modelled. No markings, since tactical numbers and slogans varied by unit.",
+      "muster_source": "src/assets/soviet/su-76m.asset.ts"
+    },
+    {
+      "id": "su-submachine-gunner",
+      "name": "Submachine Gunner (1943-44)",
+      "subtitle": "Red Army infantry, PPSh-41",
+      "faction": "soviet",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.6
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "1943-44"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "PPSh-41 submachine gun"
+        },
+        {
+          "label": "Uniform",
+          "value": "M43 gymnastyorka, sharovary breeches"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Gymnastyorka",
+        "https://sovietuniform.com/soviet-military-uniform-history-ww2/",
+        "https://www.13thguardspoltavaskaya.com/equipment.html",
+        "https://en.wikipedia.org/wiki/SSh-40",
+        "https://en.wikipedia.org/wiki/MPL-50",
+        "https://en.wikipedia.org/wiki/PPSh-41"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose; cloth folds are procedural. Weapon and gear pieces are the project's own models (soviet/weapons, soviet/gear).",
+      "muster_source": "src/assets/soviet/submachine-gunner.asset.ts"
+    },
+    {
+      "id": "su-t34-85",
+      "name": "T-34-85",
+      "subtitle": "Medium tank",
+      "faction": "soviet",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3,
+        "l": 8.15
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "85 mm ZiS-S-53 (54.6 calibres)"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.62 mm DT (coaxial and hull)"
+        },
+        {
+          "label": "Weight",
+          "value": "32 t"
+        },
+        {
+          "label": "Engine",
+          "value": "V-2-34 V-12 diesel, 500 hp"
+        },
+        {
+          "label": "Length",
+          "value": "8.1 m with gun forward (hull 6.1 m)"
+        },
+        {
+          "label": "Width / height",
+          "value": "3.0 m / 2.7 m"
+        },
+        {
+          "label": "Armour",
+          "value": "45 mm glacis at 60 deg; 90 mm turret front"
+        },
+        {
+          "label": "Produced",
+          "value": "1944-1946, 25,899 built"
+        }
+      ],
+      "references": [
+        "https://ru.wikipedia.org/wiki/T-34-85",
+        "https://victorymuseum.ru/encyclopedia/technic/bronetankovaya-tekhnika/sredniy-tank-t-34-85-obraztsa-1944-goda-sssr/",
+        "https://riaslov.livejournal.com/2423.html",
+        "https://www.onthewaymodels.com/articles/T-34-85turrets/Identification.htm",
+        "https://tanks-encyclopedia.com/ww2/soviet/soviet_t34-85/"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. The cast turret is approximated by lofted plan sections from photographs and published figures; casting numbers and foundry marks are omitted, and the ZiS-S-53 mantlet is simplified to a rounded cylindrical casting. Weld beads and plate joints are idealised. Stowage follows the 1944 Factory No. 183 layout described in the references (one 90-litre tank on the left and two on the right at the stern, large ZIP box, tow-cable lugs, headlight and horn on the left, small ZIP box and spare-link bosses on the right), but exact positions are estimated; the two-man saw, tarpaulin and smoke canisters are omitted and the tow cable is shown as a single length. Road wheels are the partially ribbed rubber-tyred type; tracks are 72 cast 500 mm links per side, alternating horned and flat. No markings, since tactical numbers and slogans varied by unit. Overall model length is 8.16 m against the 8.1-8.15 m quoted in sources.",
+      "muster_source": "src/assets/soviet/t-34-85.asset.ts"
+    },
+    {
+      "id": "su-zis3",
+      "name": "ZiS-3",
+      "subtitle": "76 mm divisional gun M1942",
+      "faction": "soviet",
+      "category": "Artillery",
+      "footprint_m": {
+        "w": 3.6,
+        "l": 5.8
+      },
+      "facts": [
+        {
+          "label": "In service",
+          "value": "From 1942 (Red Army)"
+        },
+        {
+          "label": "Calibre",
+          "value": "76.2 mm"
+        },
+        {
+          "label": "Breech",
+          "value": "Semi-automatic vertical sliding wedge"
+        },
+        {
+          "label": "Weight in action",
+          "value": "1,116 kg"
+        },
+        {
+          "label": "Length (travelling)",
+          "value": "6,095 mm"
+        },
+        {
+          "label": "Width (travelling)",
+          "value": "1,645 mm"
+        },
+        {
+          "label": "Elevation / traverse",
+          "value": "-5 to +37 deg / 54 deg"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "Up to 25 rounds per minute"
+        },
+        {
+          "label": "Shield",
+          "value": "5 mm steel"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/76_mm_divisional_gun_M1942_(ZiS-3)",
+        "https://ru.wikipedia.org/wiki/76-%D0%BC%D0%BC_%D0%B4%D0%B8%D0%B2%D0%B8%D0%B7%D0%B8%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D0%BF%D1%83%D1%88%D0%BA%D0%B0_%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D1%86%D0%B0_1942_%D0%B3%D0%BE%D0%B4%D0%B0_(%D0%97%D0%98%D0%A1-3)",
+        "https://broneboy.ru/%D0%BF%D1%80%D0%BE%D1%82%D0%B8%D0%B2%D0%BE%D1%82%D0%B0%D0%BD%D0%BA%D0%BE%D0%B2%D0%BE%D0%B5-%D0%BE%D1%80%D1%83%D0%B6%D0%B8%D0%B5/%D0%BF%D1%83%D1%88%D0%BA%D0%B8-%D0%B2-%D1%87%D0%B0%D1%81%D1%82%D1%8F%D1%85-%D0%B8%D0%BF%D1%82%D0%B0/76-%D0%BC%D0%BC-%D0%BF%D1%83%D1%88%D0%BA%D0%B0-%D0%B7%D0%B8%D1%81-3/"
+      ],
+      "modelling_notes": "Travelling length and width match the published 6,095 x 1,645 mm; height about 1.37 m. Shown at 0 deg elevation. Simplified: internal breech, recoil and sight mechanisms are not modelled beyond their visible housings; the equilibrator columns, traversing gear and shield bracing follow the general arrangement rather than factory drawings; spades rest on the display surface instead of being dug in; no markings or serial plates.",
+      "muster_source": "src/assets/soviet/zis-3.asset.ts"
+    },
+    {
+      "id": "su-zis-5",
+      "name": "ZiS-5V",
+      "subtitle": "3-tonne cargo truck (4x2), wartime version",
+      "faction": "soviet",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 2.24,
+        "l": 6.06
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "ZiS-5 from October 1933; simplified ZiS-5V from 1942"
+        },
+        {
+          "label": "Built",
+          "value": "About 83,000 ZiS-5 and ZiS-5V in 1941-45"
+        },
+        {
+          "label": "Drive",
+          "value": "4x2"
+        },
+        {
+          "label": "Payload",
+          "value": "3 t"
+        },
+        {
+          "label": "Engine",
+          "value": "5,555 cc six-cylinder side-valve petrol, 73 hp (76 hp from 1944)"
+        },
+        {
+          "label": "Length",
+          "value": "6.06 m (ZiS-5 with bumper)"
+        },
+        {
+          "label": "Width",
+          "value": "2.235 m"
+        },
+        {
+          "label": "Height",
+          "value": "2.16 m"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "3.81 m"
+        },
+        {
+          "label": "Track",
+          "value": "1.53 m front, 1.675 m rear"
+        },
+        {
+          "label": "Weight",
+          "value": "3.1 t empty"
+        },
+        {
+          "label": "Tyres",
+          "value": "34 x 7 in"
+        },
+        {
+          "label": "Top speed",
+          "value": "60 km/h"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/ZIS-5_(truck)",
+        "https://ru.wikipedia.org/wiki/%D0%97%D0%98%D0%A1-5_(%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C)",
+        "http://www.autogallery.org.ru/zis5.htm",
+        "http://www.autogallery.org.ru/y/yzis5.htm",
+        "https://www.kolesa.ru/test-drive/ego-zovut-zahar-ivanovich-test-drajv-zis-5",
+        "https://truck-encyclopedia.com/ww2/ussr/zis-5-truck.php"
+      ],
+      "modelling_notes": "Length, width, height, wheelbase, track, clearance, platform size and loading height, spring lengths and leaf counts and tyre size follow published data; overhangs, cab, bonnet and wing shapes and fitting positions are estimated from photographs of preserved trucks. Wartime features shown: wooden cab with plank boarding and a dermatin-covered roof without visor, flat bent wings, wooden running boards, single left headlamp, no bumper, no front brakes, only the tailgate hinged, canvas seat cushions and a wooden steering-wheel rim. Wartime trucks reportedly carried the spare wheel beside the cab; its exact mounting could not be confirmed, so it is shown in the carrier under the rear overhang used on later trucks. The engine is represented by its underside masses only; wiring, brake rods and cables are omitted. Generic herringbone tread; five-hole wheel discs (one of several patterns fitted). No registration plates, unit markings or factory badge.",
+      "muster_source": "src/assets/soviet/zis-5.asset.ts"
+    },
+    {
+      "id": "uk-bren-gunner",
+      "name": "Bren Gunner (1944)",
+      "subtitle": "British infantry, Bren Mk II",
+      "faction": "uk",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "NW Europe, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Bren Mk II (.303)"
+        },
+        {
+          "label": "Uniform",
+          "value": "Battledress, 1937 pattern"
+        },
+        {
+          "label": "Equipment",
+          "value": "Web Equipment, 1937 pattern"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Battledress",
+        "https://en.wikipedia.org/wiki/1937_Pattern_Web_Equipment",
+        "https://en.wikipedia.org/wiki/Brodie_helmet",
+        "https://en.wikipedia.org/wiki/Bren_light_machine_gun"
+      ],
+      "modelling_notes": "Figure, uniform and web equipment are simplified: one body type and a simple face, one static pose per weapon; cloth folds are procedural. Insignia, formation signs and the entrenching tool are not shown. Weapon and gear pieces are the project's own models (uk/weapons, uk/gear).",
+      "muster_source": "src/assets/uk/bren-gunner.asset.ts"
+    },
+    {
+      "id": "uk-bren-mk2",
+      "name": "Bren Mk II",
+      "subtitle": "Light machine gun, .303 British",
+      "faction": "uk",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.3,
+        "l": 1.2
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": ".303 British"
+        },
+        {
+          "label": "Action",
+          "value": "Gas-operated, tilting breechblock; single shot or automatic"
+        },
+        {
+          "label": "Length",
+          "value": "1,156 mm (45.5 in)"
+        },
+        {
+          "label": "Barrel",
+          "value": "635 mm (25 in), quick-change"
+        },
+        {
+          "label": "Weight",
+          "value": "10.5 kg (23 lb 3 oz) unloaded"
+        },
+        {
+          "label": "Feed",
+          "value": "30-round detachable box magazine, top-mounted"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "About 500-520 rounds/min"
+        },
+        {
+          "label": "Muzzle velocity",
+          "value": "About 744 m/s (2,440 ft/s)"
+        },
+        {
+          "label": "Introduced",
+          "value": "1941 (Mk II)"
+        },
+        {
+          "label": "Makers (Mk II)",
+          "value": "John Inglis (Canada) and the Monotype group (UK)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Bren_light_machine_gun",
+        "https://www.forgottenweapons.com/wartime-changes-the-bren-mki-modified-and-bren-mkii/",
+        "https://www.milsurps.com/threads/bren-gun-history-and-development.60390/",
+        "https://www.milsurps.com/threads/bren-mk2-sling.38139/",
+        "https://www.ima-usa.com/products/original-british-wwii-1943-dated-bren-mkii-display-light-machine-gun-by-monotype-with-early-mki-tripod-magazine",
+        "https://commons.wikimedia.org/wiki/File:BREN_Mk_II_submachine_gun_at_Athens_War_Museum_on_November_22,_2022.jpg",
+        "https://commons.wikimedia.org/wiki/File:BREN_GM_MK_II_1971_Bangladesh_Liberation_War_Arms.jpg",
+        "https://commons.wikimedia.org/wiki/File:BREN_gun_(3848009518).jpg",
+        "https://commons.wikimedia.org/wiki/File:Mitrailleuse_Bren_-_Pegasus_Museum_-_B%C3%A9nouville.jpg"
+      ],
+      "modelling_notes": "Represents a wartime Mk II: leaf backsight (shown raised), fixed-height bipod, fixed cocking handle, simplified butt with a bent sheet-steel butt plate and no butt strap or rear grip / monopod, plain conical flash hider. Overall and barrel length follow the published figures; the body, butt, grip, magazine, barrel furniture and bipod positions were measured from a scaled side photograph of a museum Mk II, widths estimated from oblique views. The carrying handle is shown folded to the rear. Bipod leg length and foot shape, the regulator and the butt-loop hardware are approximations. The sling follows the described Mk II arrangement (hook on the butt loop, plain end round the bipod-sleeve cross-bar). Internal mechanism, markings and serial numbers are omitted.",
+      "muster_source": "src/assets/uk/bren-mk2.asset.ts"
+    },
+    {
+      "id": "uk-churchill-vii",
+      "name": "Churchill Mk VII",
+      "subtitle": "Infantry tank (Tank, Infantry, Mk IV, Churchill VII, A22F)",
+      "faction": "uk",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 3.25,
+        "l": 7.44
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5 (commander, gunner, loader/operator, driver, hull gunner)"
+        },
+        {
+          "label": "Main gun",
+          "value": "Ordnance QF 75 mm"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.92 mm Besa (co-axial and hull)"
+        },
+        {
+          "label": "Engine",
+          "value": "Bedford twin-six horizontally opposed petrol, 350 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "40 long tons (40.6 t)"
+        },
+        {
+          "label": "Length",
+          "value": "7.44 m (24 ft 5 in)"
+        },
+        {
+          "label": "Width",
+          "value": "3.25 m (10 ft 8 in)"
+        },
+        {
+          "label": "Armour",
+          "value": "152 mm hull and turret front, 95 mm sides"
+        },
+        {
+          "label": "Suspension",
+          "value": "Eleven coil-sprung bogies per side, two 10 in wheels each"
+        },
+        {
+          "label": "Built",
+          "value": "About 1,600 Mk VII and Mk VIII together"
+        },
+        {
+          "label": "First action",
+          "value": "June 1944 (Normandy)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Churchill_tank",
+        "https://www.historyofwar.org/articles/weapons_churchill_VII.html",
+        "https://milart.blog/2020/09/07/the-churchill-mark-iv-infantry-tank-in-service-with-the-canadian-army-overseas-december-1942-to-may-1943/",
+        "https://tankmuseum.org/tank-nuts/tank-collection/churchill-iv/"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. Plate layout, the turret plan, the bogie spacing and the idler/sprocket positions were proportioned from published overall dimensions and photographs, not factory drawings. The published 7.44 m length is matched by the hull and tracks; the 75 mm muzzle projects beyond the front horns. Published heights differ between sources (2.49 m is commonly quoted for the family); the model stands about 2.7 m to the top of the Mk VII commander's cupola. Tracks are simplified cast links at the published 7.96 in pitch, spaced evenly round the modelled path: 80 per side, against the 72 quoted for the real track, because the estimated idler, sprocket and bogie positions give a path about 10 per cent longer than the real one; bogies, mud chutes, air intakes, exhausts and tools are simplified representations. No markings: census numbers and unit signs varied from vehicle to vehicle.",
+      "muster_source": "src/assets/uk/churchill-vii.asset.ts"
+    },
+    {
+      "id": "uk-cromwell",
+      "name": "Cromwell Mk IV",
+      "subtitle": "Cruiser tank (Tank, Cruiser, Mk VIII, Cromwell, A27M)",
+      "faction": "uk",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.92,
+        "l": 6.35
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5 (commander, gunner, loader/operator, driver, hull gunner)"
+        },
+        {
+          "label": "Main gun",
+          "value": "Ordnance QF 75 mm (ROQF Mk V), L/40"
+        },
+        {
+          "label": "Machine guns",
+          "value": "2 x 7.92 mm Besa (co-axial and hull)"
+        },
+        {
+          "label": "Engine",
+          "value": "Rolls-Royce Meteor V12 petrol, 600 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "27.6 long tons (28 t)"
+        },
+        {
+          "label": "Length",
+          "value": "6.35 m (20 ft 10 in)"
+        },
+        {
+          "label": "Width / height",
+          "value": "2.91 m / 2.49 m"
+        },
+        {
+          "label": "Armour",
+          "value": "64 mm hull front, 76 mm turret front"
+        },
+        {
+          "label": "Suspension",
+          "value": "Christie, five road wheels per side"
+        },
+        {
+          "label": "Built",
+          "value": "3,066 Cromwells of all marks"
+        },
+        {
+          "label": "First action",
+          "value": "June 1944 (Normandy)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Cromwell_tank",
+        "https://en.wikipedia.org/wiki/Ordnance_QF_75_mm",
+        "https://en.wikipedia.org/wiki/Cruiser_Mk_VIII_Challenger",
+        "https://tankmuseum.org/tank-nuts/tank-collection/cromwell/",
+        "https://www.historyofwar.org/articles/weapons_cruiser_tank_mk_VIII_cromwell.html",
+        "https://www.dday-overlord.com/en/material/tank/mk-iv-cromwell",
+        "https://www.tapatalk.com/groups/missinglynx/how-many-track-links-on-cromwell-tank-t64250.html",
+        "https://www.britmodeller.com/forums/index.php?/topic/235137106-cromwell-all-round-vision-cupola-plus-tracks/",
+        "https://www.miniatures.de/colour-brown-scc-no-2.html"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. Plate layout, the turret plan and the wheel stations were proportioned from published overall dimensions and photographs, not factory drawings; the published 6.35 m length is matched by the hull and track guards, and the 75 mm muzzle projects about 0.33 m beyond them (6.70 m overall in the model). The hull follows the common 1944 pattern with a two-piece hatch over the driver and the early engine deck; the commander has the all-round vision cupola (eight episcopes, two-piece hatch). Bolt patterns, bins, the rear outlet cowl, the six spare links on the nose and the tow cable on the left hull side are representative crew fits, simplified. Not fitted: the Normandy exhaust cowl, hedgerow cutters, applique armour, wireless aerials (bases only), smoke-discharger bombs and personal stowage. Tracks are 125 dry-pin skeleton links per side with a centre guide on every link; the road wheel diameter (about 0.81 m) is estimated. No markings: census numbers and unit signs varied from vehicle to vehicle.",
+      "muster_source": "src/assets/uk/cromwell.asset.ts"
+    },
+    {
+      "id": "uk-entrenching-tool",
+      "name": "Entrenching Tool, 1937 Pattern",
+      "subtitle": "Pick-mattock head in web carrier, helve strapped on",
+      "faction": "uk",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.54,
+        "l": 0.24
+      },
+      "facts": [
+        {
+          "label": "Head",
+          "value": "Spade blade and pick, oval eye for the helve"
+        },
+        {
+          "label": "Helve",
+          "value": "Wood, steel collar; Mk II with bayonet fitting"
+        },
+        {
+          "label": "Carrier",
+          "value": "1937-pattern web, buckled to the brace ends"
+        },
+        {
+          "label": "Worn",
+          "value": "On the brace ends, usually at the rear"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Entrenching_tool",
+        "https://en.wikipedia.org/wiki/1937_pattern_web_equipment",
+        "http://sharky-fourbees.blogspot.com/2019/09/british-entrenching-tool-ww2-implement_21.html",
+        "https://www.milsurps.com/threads/article-1937-pattern-wwii-british-webbing-set.26131/",
+        "https://hatchfive.wordpress.com/2018/04/28/37-pattern-entrenching-tool-cover/"
+      ],
+      "modelling_notes": "Head (about 0.3 m long, 0.13 m blade) and helve (about 0.42 m) sizes are estimated from photographs and collector descriptions. The carrier outline is simplified (one fixed loop and one buckled securing strap for the helve). The head is inside the closed carrier; the separate review asset shows it assembled. No maker or date stamps are shown.",
+      "muster_source": "src/assets/uk/entrenching-tool.asset.ts"
+    },
+    {
+      "id": "uk-lee-enfield-no4",
+      "name": "Rifle No. 4 Mk I",
+      "subtitle": "Bolt-action rifle, .303 British",
+      "faction": "uk",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 1.16
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": ".303 British"
+        },
+        {
+          "label": "Action",
+          "value": "Bolt action (Lee)"
+        },
+        {
+          "label": "Length",
+          "value": "1,129 mm (44.45 in)"
+        },
+        {
+          "label": "Barrel",
+          "value": "640 mm (25.2 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "4.1 kg (9 lb 1 oz)"
+        },
+        {
+          "label": "Magazine",
+          "value": "10-round detachable box"
+        },
+        {
+          "label": "Sights",
+          "value": "Aperture battle sight (300 yd) and ladder aperture sight 200-1,300 yd"
+        },
+        {
+          "label": "Mass production",
+          "value": "From mid-1941"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield",
+        "https://militaria.british-classic-motorcycles.co.uk/index.php/lee-enfield-no-4/",
+        "https://www.americanrifleman.org/content/exploded-view-lee-enfield-no-4-mk-i/",
+        "https://athlonoutdoors.com/article/lee-enfield-no-4-mk-i/",
+        "https://en.wikipedia.org/wiki/No._4_bayonet",
+        "https://worldbayonets.com/Bayonet_Identification_Guide/Britian__No__4_Spike_Bayonet_/britain_spikes_2.html",
+        "https://www.milsurps.com/threads/lee-enfield-no-4-lower-band-installation-problem-a-tip-for-upper-band.51408/",
+        "https://www.ima-usa.com/products/original-wwii-dated-british-enfield-web-khaki-sling-with-brass-fittings",
+        "https://commons.wikimedia.org/wiki/File:Lee-Enfield_No_4_Mk_I_(1943)_-_AM.032027_noBG.jpg"
+      ],
+      "modelling_notes": "Represents a wartime British-made No. 4 Mk I with a beech stock (walnut, beech and birch were all used), black-finished steel, a brass butt plate with trap and the Mk I aperture backsight shown folded with the 300-yard battle aperture up (the simplified Mk II flip sight of later wartime rifles is not depicted). Overall and barrel length follow the published figures; butt depth and drop, band positions, magazine and trigger-guard proportions were measured from a scaled side photograph of a 1943 rifle. The web sling is the common khaki cotton rifle sling with brass claw tips; its exact pattern designation and length are not claimed. The optional bayonet is the No. 4 Mk II round spike. Internal mechanism, manufacturer codes, proof marks and serial numbers are omitted.",
+      "muster_source": "src/assets/uk/lee-enfield-no4.asset.ts"
+    },
+    {
+      "id": "uk-mk2-helmet",
+      "name": "Helmet, Steel, Mk II",
+      "subtitle": "Infantry steel helmet",
+      "faction": "uk",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.5,
+        "l": 0.53
+      },
+      "facts": [
+        {
+          "label": "Introduced",
+          "value": "1938"
+        },
+        {
+          "label": "Used by",
+          "value": "British and Commonwealth forces, WWII"
+        },
+        {
+          "label": "Material",
+          "value": "Pressed manganese steel"
+        },
+        {
+          "label": "Rim",
+          "value": "Separate non-magnetic edging"
+        },
+        {
+          "label": "Chinstrap",
+          "value": "Elasticated webbing with sprung ends"
+        },
+        {
+          "label": "Finish",
+          "value": "Matte khaki paint with a textured anti-glare coating"
+        },
+        {
+          "label": "Successor",
+          "value": "Supplemented from 1944 by the Mk III"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Brodie_helmet",
+        "https://www.militarytrader.com/militaria-collectibles/tommys-infantry-helmets-of-wwii",
+        "https://ww2helmets.com/guide-on-british-helmets-from-1900-to-1945/"
+      ],
+      "modelling_notes": "Shell proportions (about 0.28 x 0.31 m over the brim, 0.11 m high) are estimated from photographs of a medium-size shell; exact drawing dimensions were not available. The liner (oilcloth headband on rubber buffers, laced fingers, fibre cross and rubber crown pad, one crown bolt) is simplified. No unit markings are shown. The chinstrap is laid out on the plinth for display.",
+      "muster_source": "src/assets/uk/mk2-helmet.asset.ts"
+    },
+    {
+      "id": "uk-no36-grenade",
+      "name": "Grenade, No. 36M Mk I",
+      "subtitle": "Mills bomb, hand and rifle grenade",
+      "faction": "uk",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.13,
+        "l": 0.13
+      },
+      "facts": [
+        {
+          "label": "No. 36 introduced",
+          "value": "May 1918"
+        },
+        {
+          "label": "Weight",
+          "value": "765 g"
+        },
+        {
+          "label": "Size",
+          "value": "95 mm high, 61 mm diameter"
+        },
+        {
+          "label": "Filling",
+          "value": "Baratol"
+        },
+        {
+          "label": "Fuze",
+          "value": "Striker and time fuze, 4 s (originally 7 s)"
+        },
+        {
+          "label": "Marking",
+          "value": "Three red crosses each side (36M, waterproofed)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Mills_bomb"
+      ],
+      "modelling_notes": "Body segmentation, lever, ears, filler plug and base plug follow photographs of inert examples; groove depths and the exact lever profile are estimated. The dark shellacked body with a painted band round the middle and the red crosses follows period examples; paint shades are estimated. No stencilled lot markings are shown.",
+      "muster_source": "src/assets/uk/no36-grenade.asset.ts"
+    },
+    {
+      "id": "uk-qf-25pdr",
+      "name": "QF 25-pounder Mk II",
+      "subtitle": "87.6 mm gun-howitzer on Carriage Mk I",
+      "faction": "uk",
+      "category": "Artillery",
+      "footprint_m": {
+        "w": 2.3,
+        "l": 4.7
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "87.6 mm (3.45 in)"
+        },
+        {
+          "label": "Barrel",
+          "value": "28 calibres"
+        },
+        {
+          "label": "Breech",
+          "value": "Vertical sliding block"
+        },
+        {
+          "label": "Recoil",
+          "value": "Hydro-pneumatic"
+        },
+        {
+          "label": "Weight",
+          "value": "1,633 kg"
+        },
+        {
+          "label": "Elevation",
+          "value": "-5 to +45 degrees"
+        },
+        {
+          "label": "Traverse",
+          "value": "4 degrees left and right on the carriage; 360 degrees on the platform"
+        },
+        {
+          "label": "Maximum range",
+          "value": "12,253 m (HE shell)"
+        },
+        {
+          "label": "Crew",
+          "value": "6"
+        },
+        {
+          "label": "In service",
+          "value": "From 1940"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Ordnance_QF_25-pounder",
+        "https://www.historyofwar.org/articles/weapons_25pdr1.html",
+        "https://www.iwm.org.uk/collections/item/object/30025245",
+        "https://www.awm.gov.au/collection/C246529",
+        "https://www.tankarchives.com/2018/09/25-pounds-of-death.html",
+        "https://ukdefenceforum.net/viewtopic.php?t=123",
+        "https://paradata.org.uk/content/4663669-25-pounder-artillery"
+      ],
+      "modelling_notes": "Shown in action on the No. 9 firing platform with the barrel level; muzzle to towing eye about 4.64 m, 2.13 m over the hubs, track 1.79 m, trunnion height 1.16 m and shield top about 1.7 m above the ground (plus the platform). The platform diameter, tyre size (9.00-16 assumed) and the exact shape of the shield, saddle and trail plates follow photographs and the general arrangement rather than drawings. Internal breech, recoil and sight mechanisms are not modelled beyond their visible housings; the brake gear and the platform attachment gear are omitted; the spade rests on the display surface instead of being dug in; the travelling position of the platform (slung under the trail) is not offered. No markings.",
+      "muster_source": "src/assets/uk/qf-25pdr.asset.ts"
+    },
+    {
+      "id": "uk-rifleman",
+      "name": "Rifleman (1944)",
+      "subtitle": "British infantry, Rifle No. 4 Mk I",
+      "faction": "uk",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "NW Europe, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Rifle No. 4 Mk I (.303)"
+        },
+        {
+          "label": "Uniform",
+          "value": "Battledress, 1937 pattern"
+        },
+        {
+          "label": "Equipment",
+          "value": "Web Equipment, 1937 pattern"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Battledress",
+        "https://en.wikipedia.org/wiki/1937_Pattern_Web_Equipment",
+        "https://en.wikipedia.org/wiki/Brodie_helmet",
+        "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield"
+      ],
+      "modelling_notes": "Figure, uniform and web equipment are simplified: one body type and a simple face, one static pose per weapon; cloth folds are procedural. Insignia, formation signs and the entrenching tool are not shown. Weapon and gear pieces are the project's own models (uk/weapons, uk/gear).",
+      "muster_source": "src/assets/uk/rifleman.asset.ts"
+    },
+    {
+      "id": "uk-section-leader",
+      "name": "Section Leader (1944)",
+      "subtitle": "British infantry, Sten Mk II",
+      "faction": "uk",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "NW Europe, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Sten Mk II (9 mm)"
+        },
+        {
+          "label": "Uniform",
+          "value": "Battledress, 1937 pattern"
+        },
+        {
+          "label": "Equipment",
+          "value": "Web Equipment, 1937 pattern"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Battledress",
+        "https://en.wikipedia.org/wiki/1937_Pattern_Web_Equipment",
+        "https://en.wikipedia.org/wiki/Brodie_helmet",
+        "https://en.wikipedia.org/wiki/Sten",
+        "https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield"
+      ],
+      "modelling_notes": "Figure, uniform and web equipment are simplified: one body type and a simple face, one static pose per weapon; cloth folds are procedural. Rank chevrons, insignia and formation signs are not shown. Weapon and gear pieces are the project's own models (uk/weapons, uk/gear).",
+      "muster_source": "src/assets/uk/section-leader.asset.ts"
+    },
+    {
+      "id": "uk-sherman-firefly",
+      "name": "Sherman Firefly Vc",
+      "subtitle": "Medium tank (17-pounder conversion of the Sherman V)",
+      "faction": "uk",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.62,
+        "l": 6.1
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4 (commander, gunner, loader/operator, driver)"
+        },
+        {
+          "label": "Main gun",
+          "value": "OQF 17-pounder (76.2 mm), 77 rounds"
+        },
+        {
+          "label": "Machine gun",
+          "value": ".30 cal Browning M1919A4 (coaxial); hull MG port plated over"
+        },
+        {
+          "label": "Engine",
+          "value": "Chrysler A57 multibank, 30-cylinder petrol, 425 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "about 35 t (34.75 long tons)"
+        },
+        {
+          "label": "Hull (M4A4)",
+          "value": "6.06 m long, 2.62 m wide, 2.74 m high"
+        },
+        {
+          "label": "Armour",
+          "value": "51 mm glacis at 56 deg (welded small-hatch hull)"
+        },
+        {
+          "label": "Suspension",
+          "value": "VVSS, 3 widely spaced bogies per side; 83 track shoes per side"
+        },
+        {
+          "label": "Built",
+          "value": "about 2,100-2,200 Fireflies of all types, 1944-45"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Sherman_Firefly",
+        "https://www.historyofwar.org/articles/weapons_medium_tank_M4A4_sherman_V.html",
+        "https://www.theshermantank.com/the-sherman-tank-variant-page-pages-for-each-type-of-sherman-tank/the-sherman-m4a4-medium-tank-proof-americans-can-make-even-crazy-motors-reliable/",
+        "https://www.theshermantank.com/sherman/the-sherman-variants-the-design-matures/",
+        "https://en.wikipedia.org/wiki/M4_Sherman_variants",
+        "https://en.wikipedia.org/wiki/Lend-Lease_Sherman_tanks",
+        "https://www.warhistoryonline.com/war-articles/can-tell-difference-firefly-guide-sherman-firefly.html",
+        "https://archive.org/details/TM9-754"
+      ],
+      "modelling_notes": "Exterior only, hatches closed, no crew or interior. The common Sherman front end, VVSS bogies, T48 rubber chevron track, turret casting and many fittings are adapted from the M4A3(75)W model of this project; the M4A4 hull is lengthened at the rear, the bogie pitch widened to give the 160 in ground contact with 83 shoes per side, and the late M4A4 small-hatch front (56 deg glacis, drivers' hoods with applique plates and welded-over vision ports, three-piece bolted final drive housing) is modelled from photographs. The engine deck layout (grilled doors, the bulge behind the turret) and the rear plate follow photographs in general form, not factory drawings. The Firefly mantlet, radio box, loader's hatch (a square hatch hinged at its front edge on the left of the roof) and 17-pdr travel lock are proportioned from photographs; the 17-pdr muzzle is placed about 1.88 m ahead of the nose, the overhang implied by the published 7.77 m overall length on the 5.89 m Sherman I hull. The breech counterweight is inside the turret and not shown. Tools, spare shoes and tow cable are a representative crew fit; the only marking is the optional plain white Allied star (no unit signs or census numbers, which varied from vehicle to vehicle).",
+      "muster_source": "src/assets/uk/sherman-firefly.asset.ts"
+    },
+    {
+      "id": "uk-spitfire-ix",
+      "name": "Supermarine Spitfire LF Mk IXc",
+      "subtitle": "Single-seat fighter, 1944",
+      "faction": "uk",
+      "category": "Aircraft",
+      "footprint_m": {
+        "w": 11.23,
+        "l": 9.47
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "1"
+        },
+        {
+          "label": "Engine",
+          "value": "Rolls-Royce Merlin 66 V12, two-stage supercharger, 1,720 hp"
+        },
+        {
+          "label": "Armament (as modelled)",
+          "value": "2 x 20 mm Hispano Mk II cannon, 4 x .303 in Browning machine guns (\"C\" wing)"
+        },
+        {
+          "label": "Propeller",
+          "value": "Rotol, four blades, 10 ft 9 in (3.27 m) diameter"
+        },
+        {
+          "label": "Span",
+          "value": "11.23 m (36 ft 10 in, standard tips)"
+        },
+        {
+          "label": "Length",
+          "value": "9.47 m (31 ft 0.5 in)"
+        },
+        {
+          "label": "Produced",
+          "value": "5,656 Mk IX of all sub-types, until April 1945"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Supermarine_Spitfire",
+        "https://en.wikipedia.org/wiki/Supermarine_Spitfire_(late_Merlin-powered_variants)",
+        "https://en.wikipedia.org/wiki/Supermarine_Spitfire_(early_Merlin-powered_variants)",
+        "https://en.wikipedia.org/wiki/Supermarine_Spitfire_variants:_specifications,_performance_and_armament",
+        "https://www.historyofwar.org/articles/weapons_spitfire_mkIX.html",
+        "https://www.historyofwar.org/articles/weapons_spitfire_wings.html",
+        "https://dingeraviation.net/spitfire/spitmark.htm",
+        "https://commons.wikimedia.org/wiki/File:Supermarine_Spitfire_Mk_Vb_3-view.svg"
+      ],
+      "modelling_notes": "Represents a 1944 LF Mk IXc with the \"C\" wing: one Hispano in the inner cannon bay of each wing, the unused outer cannon position closed by a short plugged stub, two .303 Browning ports per wing and the small teardrop feed blisters; standard elliptical wing tips (not clipped), the standard rounded rudder (the later broad-chord pointed rudder is not fitted), the fixed tail wheel, six fishtail exhaust stacks per side and the temperate (non-Aero-Vee) carburettor intake. Span, length, wing area, dihedral, washout, propeller diameter and track follow the published figures; fuselage sections, canopy, radiator housings and gear geometry are proportioned from photographs and a Mk Vb general-arrangement drawing (nose lengthened for the Merlin 66), not from factory drawings, and the three-point ground angle (11.5 deg) is an estimate. Paint: Ocean Grey / Dark Green disruptive upper surfaces (a procedural pattern, not the official A/B scheme template), Medium Sea Grey lower surfaces, Sky spinner and 18 in fuselage band, yellow outer leading-edge strips; national markings only (Type C1 fuselage, Type B upper-wing and Type C under-wing roundels, fin flash; the fuselage roundel is drawn about 6 % under the 36 in C1 size to fit the modelled fuselage depth). No squadron codes, serial numbers, invasion stripes or stencils are applied. Panel lines are painted rather than modelled; ailerons, flaps, gun-bay doors and the cockpit access door are indicated by panel lines only; the engine is not modelled under the cowling; the cockpit is simplified (dials are rings on a plain panel; rudder pedals, oxygen and wiring are omitted); IFF aerials and landing lamps are omitted.",
+      "muster_source": "src/assets/uk/spitfire-ix.asset.ts"
+    },
+    {
+      "id": "uk-sten-mk2",
+      "name": "Sten Mk II",
+      "subtitle": "Submachine gun, 9 x 19 mm",
+      "faction": "uk",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.26,
+        "l": 0.8
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "9 x 19 mm Parabellum"
+        },
+        {
+          "label": "Action",
+          "value": "Blowback, open bolt; single shot or automatic"
+        },
+        {
+          "label": "Length",
+          "value": "762 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "197 mm"
+        },
+        {
+          "label": "Weight",
+          "value": "3.2 kg"
+        },
+        {
+          "label": "Magazine",
+          "value": "32-round detachable box, side-mounted (left)"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "About 500-600 rounds/min"
+        },
+        {
+          "label": "Produced",
+          "value": "About 2 million (Mk II)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Sten",
+        "https://weaponsystems.net/system/1334-Sten",
+        "https://www.machinegunboards.com/forums/index.php?%2Ftopic%2F24600-variants-butt-stock-for-sten-mk-ii-and-sten-mk-iii%2F=",
+        "https://hatchfive.wordpress.com/2017/07/05/sten-gun-sling/",
+        "https://commons.wikimedia.org/wiki/File:Sten_Mk_II_IMG_4781_(Nemo5576)_noBG.png",
+        "https://commons.wikimedia.org/wiki/File:Pistolet_maszynowy_STEN,_Muzeum_Or%C5%82a_Bia%C5%82ego.jpg"
+      ],
+      "modelling_notes": "Represents a late-production Mk II with the skeleton (loop) butt; early Mk IIs had a T-shaped tubular butt. Overall and barrel length follow the published figures; the receiver, trigger housing, collar, sleeve and butt proportions were measured from scaled side photographs of museum examples (barrel projection varies between sleeve patterns). The magazine is shown in the firing position (horizontal, left). The sling follows a described wartime 3/4 in web Sten sling (wire hook in the sleeve, brass loop round the butt, adjustable buckle); its exact fittings are approximated. Bolt and internal mechanism are simplified; maker codes and markings are omitted.",
+      "muster_source": "src/assets/uk/sten-mk2.asset.ts"
+    },
+    {
+      "id": "uk-universal-carrier",
+      "name": "Universal Carrier Mk II",
+      "subtitle": "Light tracked carrier",
+      "faction": "uk",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 2.06,
+        "l": 3.66
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "4 (Mk II layout): driver, gunner and two in the rear compartments"
+        },
+        {
+          "label": "Engine",
+          "value": "Ford V8 side-valve petrol, 85 hp; \"No. 1\" denotes the British-built engine"
+        },
+        {
+          "label": "Armament",
+          "value": ".303 in Bren light machine gun on the front mounting"
+        },
+        {
+          "label": "Armour",
+          "value": "7-10 mm"
+        },
+        {
+          "label": "Length",
+          "value": "3.66 m (12 ft)"
+        },
+        {
+          "label": "Width / height",
+          "value": "2.06 m (6 ft 9 in) / 1.57 m (5 ft 2 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "About 3.3 t unladen, 3.9 t laden"
+        },
+        {
+          "label": "Speed",
+          "value": "30 mph (48 km/h)"
+        },
+        {
+          "label": "Suspension",
+          "value": "Horstmann coil springs: front two-wheel bogie and rear single wheel each side"
+        },
+        {
+          "label": "Produced",
+          "value": "Mk II from late 1942; about 113,000 carriers of all types built (1934-1960)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Universal_Carrier",
+        "https://www.historyofwar.org/articles/weapons_universal_carrier.html",
+        "https://www.armyvehicles.dk/universacarriermkii.htm",
+        "https://en.wikipedia.org/wiki/Horstmann_suspension",
+        "https://tracksandtrade.com/lots/ww-ii-universal-carrier-tracks",
+        "https://finescale.com/product-info/kit-reviews/2014/05/riich-universal-carrier/",
+        "https://hmvf.co.uk/topic/47286-carrier-confusion/",
+        "https://www.migjimenez.com/en/acrylic-colors/410-scc-15-british-1944-45-olive-drab.html"
+      ],
+      "modelling_notes": "Overall length, width, height, the three-road-wheel Horstmann arrangement, the rear sprocket / front idler layout, the crew positions and the 167-link track are from the references; plate junctions, wheel and fitting positions are proportioned from photographs and published scale drawings against those totals, and the track pitch is derived from the link count. The engine is enclosed (not modelled inside the housing); rear-compartment stowage, the spare track links on the nose and the absence of unit markings are representative choices rather than one specific vehicle. The Bren Mk II is the project's own weapon model.",
+      "muster_source": "src/assets/uk/universal-carrier.asset.ts"
+    },
+    {
+      "id": "uk-water-bottle-37",
+      "name": "Water Bottle Mk VII, 1937 Pattern Carrier",
+      "subtitle": "Enamelled bottle in felt cover and web carrier",
+      "faction": "uk",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.24,
+        "l": 0.16
+      },
+      "facts": [
+        {
+          "label": "Introduced",
+          "value": "1939 (Mk VII)"
+        },
+        {
+          "label": "Capacity",
+          "value": "2 pints (about 1.1 l)"
+        },
+        {
+          "label": "Bottle",
+          "value": "Green-enamelled steel, cork stopper on a cord"
+        },
+        {
+          "label": "Size",
+          "value": "About 190 mm high, 140 mm wide"
+        },
+        {
+          "label": "Carrier",
+          "value": "1937-pattern web \"skeleton\" carrier with brass buckles"
+        }
+      ],
+      "references": [
+        "https://talesfromthesupplydepot.blog/2021/06/10/mk-vii-water-bottle/",
+        "https://www.legendsliveon.co.uk/articles/ww2-british-army-water-bottle",
+        "https://en.wikipedia.org/wiki/1937_pattern_web_equipment",
+        "https://hatchfive.wordpress.com/2021/08/03/the-evolution-of-british-webbing-part-5-the-1937-pattern-set/"
+      ],
+      "modelling_notes": "The first-issue skeleton carrier (girth band, cross loops, shoulder press stud and two buckled chapes) is shown; the later closed \"bucket\" carrier is not modelled. The kidney curve and felt thickness are estimated from photographs. Webbing shade is a lightly blancoed khaki green; shades varied widely.",
+      "muster_source": "src/assets/uk/water-bottle-37.asset.ts"
+    },
+    {
+      "id": "us-bar-gunner",
+      "name": "BAR Gunner (1944)",
+      "subtitle": "US Army infantry, BAR M1918A2",
+      "faction": "usa",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.7
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "Normandy, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Browning Automatic Rifle M1918A2"
+        },
+        {
+          "label": "Uniform",
+          "value": "M1941 field jacket, wool trousers, M1938 leggings"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1941_field_jacket",
+        "https://www.wwiiimpressions.com/products/445",
+        "https://en.wikipedia.org/wiki/M1_helmet",
+        "https://www.iwm.org.uk/collections/item/object/30101008",
+        "https://www.wwiiimpressions.com/products/469b",
+        "https://en.wikipedia.org/wiki/U.S._Army_M1943_uniform",
+        "https://en.wikipedia.org/wiki/M1918_Browning_Automatic_Rifle"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose per choice; cloth folds are procedural. Weapon and gear pieces are the project's own models (usa/weapons, usa/gear), worn in their low-detail mode.",
+      "muster_source": "src/assets/usa/bar-gunner.asset.ts"
+    },
+    {
+      "id": "us-bar-m1918a2",
+      "name": "BAR M1918A2",
+      "subtitle": "Automatic rifle, .30-06",
+      "faction": "usa",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.18,
+        "l": 1.26
+      },
+      "facts": [
+        {
+          "label": "Authorized",
+          "value": "30 June 1938 (M1918A2)"
+        },
+        {
+          "label": "Calibre",
+          "value": ".30-06 Springfield"
+        },
+        {
+          "label": "Action",
+          "value": "Gas-operated, open bolt, automatic only"
+        },
+        {
+          "label": "Rate of fire",
+          "value": "Slow 300-450 / fast 500-650 rounds/min"
+        },
+        {
+          "label": "Length",
+          "value": "1,214 mm (47.8 in)"
+        },
+        {
+          "label": "Barrel",
+          "value": "610 mm (24 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "8.8 kg (19.4 lb) without magazine"
+        },
+        {
+          "label": "Feed",
+          "value": "20-round box magazine"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1918_Browning_automatic_rifle",
+        "https://www.inetres.com/gp/military/infantry/rifle/M1918.html",
+        "https://man.fas.org/dod-101/sys/land/docs/m1918.htm",
+        "https://www.forgottenweapons.com/bar-comparison-m1918-vs-m1918a2/",
+        "https://www.americanrifleman.org/content/the-browning-automatic-rifle-a-combat-chronicle/",
+        "https://commons.wikimedia.org/wiki/File:Army_Heritage_Museum_B.A.R..jpg",
+        "https://commons.wikimedia.org/wiki/File:BAR-M1918A2-batey-haosef-1.jpg",
+        "https://commons.wikimedia.org/wiki/File:M1918_Variants.jpg"
+      ],
+      "modelling_notes": "Represents a 1943-44 M1918A2 with walnut butt stock and hand guard (black plastic stocks were also used from 1942), Parkerized metal, a blued 20-round magazine and an olive-drab M1923-pattern web sling. Overall and barrel length, sight radius and the layout follow published figures and museum photographs (flat-sided receiver with the sloped rear, rear sight at the rear with the windage knob on the right, charging handle on the left, ejection port cover on the right, change lever S / F / A on the left of the trigger housing, magazine release in the front of the guard, wing-shaped A2 magazine guides, deep hand guard with finger grooves and the heat shield, front swivel just ahead of the hand guard, gas cylinder bracket with the regulator, hooded front sight with light ports, bipod with wing-nut locks, telescoping legs and skid feet on the flash hider). Dimensions of the individual parts are proportioned from those, not measured. The hinged shoulder rest is shown folded. Omitted: the butt monopod (dropped from production in 1942) and the barrel carrying handle (a late-war addition); the action is shown closed, internal parts, the rate reducer in the butt, receiver markings and serial numbers are not modelled.",
+      "muster_source": "src/assets/usa/bar-m1918a2.asset.ts"
+    },
+    {
+      "id": "us-m1910-canteen",
+      "name": "M1910 Canteen, Cup and Cover",
+      "subtitle": "One-quart canteen set",
+      "faction": "usa",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.36,
+        "l": 0.26
+      },
+      "facts": [
+        {
+          "label": "Capacity",
+          "value": "1 US quart (approx. 0.95 l)"
+        },
+        {
+          "label": "Canteen",
+          "value": "Aluminium or corrosion-resistant steel"
+        },
+        {
+          "label": "Cap",
+          "value": "Black plastic, chained to the neck"
+        },
+        {
+          "label": "Cover",
+          "value": "Cotton duck lined with wool felt, two lift-the-dot flaps"
+        },
+        {
+          "label": "Attachment",
+          "value": "M1910 double-hook wire hanger"
+        }
+      ],
+      "references": [
+        "https://americanmilitariareference.com/m-1910-canteen/",
+        "https://www.moncasquem1.com/en-en/blogs/blog-mon-casque-m1/cover-canteen-mounted-dismounted-m1910",
+        "https://www.dimensions.com/element/canteen-military",
+        "https://www.ima-usa.com/products/original-u-s-wwii-m-1942-canteen-cup",
+        "https://www.reddickmilitaria.com/us-ww2-weapons-field-gear/us-wwii-m1910-canteen-cover-light-od-canvas/"
+      ],
+      "modelling_notes": "Canteen and cup sizes follow published approximate dimensions (canteen about 127 x 71 mm, cup about 140 x 76 x 95 mm); the exact kidney curvature is estimated. The cover shown is the side-seam type in OD No. 7 duck; maker and date stamps and the \"U.S.\" marking are omitted. The cup handle latch is simplified.",
+      "muster_source": "src/assets/usa/canteen.asset.ts"
+    },
+    {
+      "id": "us-m1943-entrenching-tool",
+      "name": "M1943 Entrenching Tool",
+      "subtitle": "Folding shovel with carrier",
+      "faction": "usa",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.3,
+        "l": 0.62
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1943"
+        },
+        {
+          "label": "Length",
+          "value": "approx. 71 cm extended, 53 cm folded"
+        },
+        {
+          "label": "Blade",
+          "value": "approx. 15 x 20 cm"
+        },
+        {
+          "label": "Handle",
+          "value": "One-piece wood"
+        },
+        {
+          "label": "Carrier",
+          "value": "Cotton duck, lift-the-dot flap, M1910 hanger"
+        }
+      ],
+      "references": [
+        "https://www.ima-usa.com/products/original-u-s-wwii-m1943-entrenching-tool-shovel-with-canvas-carrier",
+        "https://www.ima-usa.com/products/original-u-s-wwii-m1943-entrenching-tool-shovel-canvas-cover-carrier",
+        "https://whatpriceglory.com/products/1927-us-m1943-entrenching-tool-carrier-first-version/",
+        "http://www.vietnamgear.com/kit.aspx?kit=36",
+        "https://en.wikipedia.org/wiki/Entrenching_tool"
+      ],
+      "modelling_notes": "Dimensions from collector descriptions (28 in extended, 21 in folded, blade about 6 x 8 in, carrier about 10 x 7 in). Blade outline, hinge fork and locking nut are simplified from photographs. The carrier is the 1944 type with three pairs of hanger eyelets; maker and date stamps are omitted.",
+      "muster_source": "src/assets/usa/entrenching-tool.asset.ts"
+    },
+    {
+      "id": "us-m1-garand",
+      "name": "M1 Garand",
+      "subtitle": "Semi-automatic rifle, .30-06",
+      "faction": "usa",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 1.14
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1936"
+        },
+        {
+          "label": "Calibre",
+          "value": ".30-06 Springfield"
+        },
+        {
+          "label": "Action",
+          "value": "Gas-operated, rotating bolt, semi-automatic"
+        },
+        {
+          "label": "Length",
+          "value": "1,107 mm (43.6 in)"
+        },
+        {
+          "label": "Barrel",
+          "value": "610 mm (24 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "4.3-5.3 kg"
+        },
+        {
+          "label": "Feed",
+          "value": "8-round en-bloc clip"
+        },
+        {
+          "label": "Produced",
+          "value": "1934-1957, about 5.47 million"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1_Garand",
+        "https://archive.org/details/FM23-51940",
+        "https://ww2aa.proboards.com/thread/10120/garand-stock-hand-guard-measurements",
+        "https://m1-garand-rifle.com/m1-garand-assembly/assembly.html",
+        "https://www.ssusa.org/content/from-en-bloc-to-box-magazine-m1s-mimicking-m14s/",
+        "https://thecmp.org/1907-sling-installation/"
+      ],
+      "modelling_notes": "Represents a WWII-production rifle with the gas-port (spline-type) gas cylinder, walnut stock and handguards, Parkerized metal and an M1907 leather sling. Overall and barrel length, length of pull (13 in), sight radius (about 28 in) and the stock and handguard lengths follow published figures; receiver, gas cylinder, sights, bands and swivels are proportioned from those and from the parts nomenclature (FM 23-5: elevating knob on the left, windage knob on the right, safety at the front of the trigger guard, front sling swivel on the stock ferrule, stacking swivel on the gas cylinder). The bolt is shown closed; the en-bloc clip, internal mechanism, markings and cartouches are not modelled. Sling simplified: adjustment holes omitted and the long/short strap junction shown as a D-ring with a short tab.",
+      "muster_source": "src/assets/usa/m1-garand.asset.ts"
+    },
+    {
+      "id": "us-m1-helmet",
+      "name": "M1 Steel Helmet",
+      "subtitle": "Infantry steel helmet with liner",
+      "faction": "usa",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.32,
+        "l": 0.44
+      },
+      "facts": [
+        {
+          "label": "Adopted",
+          "value": "1941"
+        },
+        {
+          "label": "Shell",
+          "value": "Hadfield manganese steel, 1.1 mm"
+        },
+        {
+          "label": "Size",
+          "value": "approx. 280 x 240 mm, 180 mm deep"
+        },
+        {
+          "label": "Weight",
+          "value": "approx. 1.4 kg with liner"
+        },
+        {
+          "label": "Finish",
+          "value": "Flat olive drab paint with ground cork"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1_helmet",
+        "https://www.militarytrader.com/militaria-collectibles/wwii-era-m1-helmets-a-beginners-guide",
+        "https://www.ima-usa.com/products/original-u-s-wwii-1944-m1-mccord-swivel-bale-front-seam-helmet-with-converted-paratrooper-liner"
+      ],
+      "modelling_notes": "Shell outline built to the published 280 x 240 x 180 mm; the brim flare and rim-line curvature are estimated from photographs. The liner suspension is simplified (six straps, headband, nape strap; no size tabs or maker markings). The chinstrap hardware (buckle, hook, T1 release) is modelled in simplified form. No net, markings or unit insignia are shown.",
+      "muster_source": "src/assets/usa/m1-helmet.asset.ts"
+    },
+    {
+      "id": "us-m18-hellcat",
+      "name": "M18 Hellcat",
+      "subtitle": "76 mm Gun Motor Carriage",
+      "faction": "usa",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.87,
+        "l": 5.28
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "76 mm Gun M1A1, M1A1C or M1A2 (45 rounds)"
+        },
+        {
+          "label": "Machine gun",
+          "value": ".50 cal Browning M2 HB on the turret ring mount"
+        },
+        {
+          "label": "Engine",
+          "value": "Continental R-975-C1 or -C4 9-cylinder radial, 350-400 hp"
+        },
+        {
+          "label": "Weight",
+          "value": "37,557 lb (17.0 t) combat loaded"
+        },
+        {
+          "label": "Length",
+          "value": "5.28 m hull; 6.65 m with the gun forward"
+        },
+        {
+          "label": "Width / height",
+          "value": "2.87 m / 2.57 m over the AA machine gun"
+        },
+        {
+          "label": "Armour",
+          "value": "0.19-0.5 in hull, 0.5-1.0 in turret; open top"
+        },
+        {
+          "label": "Produced",
+          "value": "Buick, July 1943 - October 1944 (2,507 built)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M18_Hellcat",
+        "https://afvdatabase.com/usa/m18hellcat.html",
+        "https://www.historyofwar.org/articles/weapons_M18_76mm_HMC_Hellcat.html"
+      ],
+      "modelling_notes": "Overall length, width, height, ground clearance, track centres, track pitch/shoe count and ground contact length follow the published data; road wheel and idler diameters, the road wheel disc pattern, plate junction heights and fitting positions are proportioned from photographs. The turret interior is simplified (breech and recoil guard, three seats, a ready-round rack, a stowage box and handwheels; no traverse gear or wiring). The hull interior below the turret basket is not modelled. Tool and stowage layout follows common period practice rather than one specific vehicle; the rear idler is shown toothed like the sprocket.",
+      "muster_source": "src/assets/usa/m18-hellcat.asset.ts"
+    },
+    {
+      "id": "us-m2a1-howitzer",
+      "name": "105 mm Howitzer M2A1",
+      "subtitle": "Light field howitzer on Carriage M2A1",
+      "faction": "usa",
+      "category": "Artillery",
+      "footprint_m": {
+        "w": 4,
+        "l": 5.6
+      },
+      "facts": [
+        {
+          "label": "Calibre",
+          "value": "105 mm (tube 2.36 m, L/22.5)"
+        },
+        {
+          "label": "Breech",
+          "value": "Horizontal sliding wedge"
+        },
+        {
+          "label": "Recoil",
+          "value": "Hydropneumatic, constant, 42 in (1.07 m)"
+        },
+        {
+          "label": "Elevation / traverse",
+          "value": "-5 to +66 deg / 23 deg right and left"
+        },
+        {
+          "label": "Weight (travelling)",
+          "value": "About 4,475 lb (2,030 kg)"
+        },
+        {
+          "label": "Length / width / height",
+          "value": "About 5.9 m / 2.15 m / 1.52 m travelling"
+        },
+        {
+          "label": "Maximum range",
+          "value": "About 12,200 yd (11.2 km) with HE"
+        },
+        {
+          "label": "Produced",
+          "value": "1941-1953; about 8,500 built during the war, 10,202 in all"
+        }
+      ],
+      "references": [
+        "https://archive.org/details/TM9-1325",
+        "https://en.wikipedia.org/wiki/M101_howitzer",
+        "https://www.historyofwar.org/articles/weapons_105mm_howitzer_M2.html",
+        "https://militaria.british-classic-motorcycles.co.uk/index.php/105-mm-howitzer-m2/",
+        "https://americangimuseum.org/collections/restored-vehicles/m2a1-105mm-howitzer-1941-1953/",
+        "https://commons.wikimedia.org/wiki/Category:M101_105_mm_howitzers_in_museums"
+      ],
+      "modelling_notes": "Key numbers from TM 9-1325 (1944): howitzer 2.574 m muzzle to breech face, tube 2.363 m, travelling length ~5.9 m, width over hub caps 2.146 m, height ~1.52 m, 9.00-20 combat tyres. The M2A1 carriage has no firing jack: it fires from its wheels and spades, the axle pivoting on the equalizing support. Deployed shows the tube at 14 deg; Closed shows the unhitched travel layout (trails together, lunette on the centre line, tube level), resting on the spades. Simplified or approximated from photographs, kit references and manual figures rather than drawings: the early shield outline (the separate top shield is not modelled), elevating-arc and equilibrator arrangement, gearbox and handwheel layout (elevating handwheel shown on the right, traversing on the left), sight mounts and spade shape. Internal recoil, breech and firing mechanisms are not modelled; the cleaning staff, trail lock, lanyard, ammunition and markings are omitted; spades rest on the display surface instead of being dug in.",
+      "muster_source": "src/assets/usa/m2a1-howitzer.asset.ts"
+    },
+    {
+      "id": "us-m3a1-halftrack",
+      "name": "M3A1 Half-track",
+      "subtitle": "Half-track personnel carrier",
+      "faction": "usa",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 2.22,
+        "l": 6.16
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "1941-1945 (M3 series)"
+        },
+        {
+          "label": "Crew",
+          "value": "13 (driver and 12 passengers)"
+        },
+        {
+          "label": "Engine",
+          "value": "White 160AX, 6.3 L six-cylinder petrol, 148 hp"
+        },
+        {
+          "label": "Armament",
+          "value": ".50 cal Browning M2 HB on the M49 ring mount"
+        },
+        {
+          "label": "Armour",
+          "value": "6-12 mm (1/4 in plates, 1/2 in windscreen cover)"
+        },
+        {
+          "label": "Length",
+          "value": "6.16 m with roller (242 5/8 in)"
+        },
+        {
+          "label": "Width",
+          "value": "2.22 m over the mine racks (87 1/2 in)"
+        },
+        {
+          "label": "Height",
+          "value": "2.43 m to the ring mount (95 5/8 in)"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "3.44 m (135 1/2 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "9.3 t gross (20,500 lb)"
+        },
+        {
+          "label": "Track",
+          "value": "12 in rubber band track, 4 in pitch, 58 pitches"
+        },
+        {
+          "label": "Top speed",
+          "value": "72 km/h (45 mph) on road"
+        }
+      ],
+      "references": [
+        "https://archive.org/details/TechnicalManualTm9-710BasicHalf-trackVehicleswhiteAutocarAnd (TM 9-710, Basic Half-Track Vehicles, War Department 1944)",
+        "https://en.wikipedia.org/wiki/M3_half-track",
+        "https://afvdatabase.com/usa/halftrackm3.html",
+        "https://military-history.fandom.com/wiki/M3_Half-track"
+      ],
+      "modelling_notes": "Wheelbase, length with roller, width over the mine racks, height to the ring mount, tread, tyre size and ground clearance follow TM 9-710 (1944); the track data (12 in centre-guide band, 4 in pitch, 58 pitches, one bogie with four dual wheels, one dual support roller, 18-tooth sprocket) follow afvdatabase.com. Plate heights, overhangs, the cab and hood shapes and the positions of fittings are estimated from photographs of preserved vehicles and scaled to these figures. The windscreen armour cover is shown lowered with its vision slits; the canvas top, bows and side curtains are not fitted. The engine compartment is closed; the underside shows a simplified frame, front axle, springs, transfer case and shafts. The band track is a simplified moulded band with bar tread and steel centre guides; the bogie volute spring, idler tension gear and brake parts are simplified. Mine racks hold simplified M1A1 anti-tank mines; the .30 cal side guns, rifles, radios and personal kit are not modelled. The only markings are restrained white stars on the hood and body sides; registration numbers and unit markings are omitted.",
+      "muster_source": "src/assets/usa/m3a1-halftrack.asset.ts"
+    },
+    {
+      "id": "us-m4a3-sherman",
+      "name": "M4A3(75)W Sherman",
+      "subtitle": "Medium tank",
+      "faction": "usa",
+      "category": "Armor",
+      "footprint_m": {
+        "w": 2.62,
+        "l": 5.9
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "5"
+        },
+        {
+          "label": "Main gun",
+          "value": "75 mm Gun M3 in Mount M34A1, 104 rounds"
+        },
+        {
+          "label": "Machine guns",
+          "value": ".50 cal M2 HB (turret roof), 2 x .30 cal M1919A4 (coaxial and bow)"
+        },
+        {
+          "label": "Engine",
+          "value": "Ford GAA V-8 petrol, 450 hp net (500 hp gross)"
+        },
+        {
+          "label": "Weight",
+          "value": "69,600 lb (31.6 t) combat loaded"
+        },
+        {
+          "label": "Length",
+          "value": "6.27 m over sand shields; the gun does not overhang the hull"
+        },
+        {
+          "label": "Width / height",
+          "value": "2.67 m with sand shields / 2.94 m over the cupola"
+        },
+        {
+          "label": "Armour",
+          "value": "64 mm glacis at 47 deg; 76 mm turret front, 89 mm gun shield"
+        },
+        {
+          "label": "Suspension",
+          "value": "VVSS, 3 bogies per side; 79 T48 shoes per track"
+        },
+        {
+          "label": "Produced",
+          "value": "Fisher Tank Arsenal, Feb. 1944 - Mar. 1945 (3,071 built)"
+        }
+      ],
+      "references": [
+        "https://www.theshermantank.com/wp-content/uploads/M4A3-75w-spec-sheet.pdf",
+        "https://www.theshermantank.com/about/sherman-tank-turrets/",
+        "https://en.wikipedia.org/wiki/M4_Sherman",
+        "https://www.militarytrader.com/military-vehicles/a-look-at-the-m4a3-75mm-w-sherman",
+        "TM 9-759, Medium Tank M4A3 (War Department technical manual)",
+        "R. P. Hunnicutt, Sherman: A History of the American Medium Tank (1978)"
+      ],
+      "modelling_notes": "Hull plate junction heights, bogie spacing and fitting positions are proportioned from published drawings and photographs against the verified totals. No interior is modelled (hatches closed); the tow cable run on the left hull side and the pioneer tool layout follow common period practice rather than one specific vehicle. Track links are T48 rubber chevron shoes with individual end connectors and guide horns.",
+      "muster_source": "src/assets/usa/m4a3-sherman.asset.ts"
+    },
+    {
+      "id": "us-mk2-grenade",
+      "name": "Mk 2 Fragmentation Grenade",
+      "subtitle": "Hand grenade with M10A3 fuze",
+      "faction": "usa",
+      "category": "Equipment",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 0.14
+      },
+      "facts": [
+        {
+          "label": "Body",
+          "value": "Cast iron, 40 knobs (5 rows of 8)"
+        },
+        {
+          "label": "Size",
+          "value": "approx. 58 mm diameter, 114 mm tall"
+        },
+        {
+          "label": "Weight",
+          "value": "approx. 600 g"
+        },
+        {
+          "label": "Fuze",
+          "value": "M10A3 igniting fuze, 4-5 s delay"
+        },
+        {
+          "label": "Filling",
+          "value": "approx. 57 g flaked TNT"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Mk_2_grenade",
+        "https://www.ima-usa.com/products/original-u-s-wwii-inert-mkii-pineapple-grenade-with-yellow-ring-and-m10a3-fuze-1",
+        "https://www.sonsoflibertymuseum.org/mk2-fragmentation-grenade.cfm"
+      ],
+      "modelling_notes": "Body outline estimated from the published 58 x 114 mm and photographs. The M10A3 fuze is simplified (external shapes only; the lever marking is not shown). Inert display piece; no internal filler or delay train is modelled.",
+      "muster_source": "src/assets/usa/mk2-grenade.asset.ts"
+    },
+    {
+      "id": "us-p51d",
+      "name": "North American P-51D Mustang",
+      "subtitle": "Single-seat long-range fighter, 1944-45",
+      "faction": "usa",
+      "category": "Aircraft",
+      "footprint_m": {
+        "w": 11.28,
+        "l": 9.7
+      },
+      "facts": [
+        {
+          "label": "Crew",
+          "value": "1"
+        },
+        {
+          "label": "Engine",
+          "value": "Packard V-1650-7 liquid-cooled V-12, 1,490 hp"
+        },
+        {
+          "label": "Propeller",
+          "value": "Hamilton Standard, four blades, 11 ft 2 in (3.40 m)"
+        },
+        {
+          "label": "Armament",
+          "value": "6 x .50 in (12.7 mm) Browning M2 machine guns"
+        },
+        {
+          "label": "Span",
+          "value": "37 ft 0 in (11.28 m)"
+        },
+        {
+          "label": "Length",
+          "value": "32 ft 3 in (9.83 m)"
+        },
+        {
+          "label": "Wing area",
+          "value": "235 sq ft (21.83 sq m)"
+        },
+        {
+          "label": "Empty weight",
+          "value": "7,635 lb (3,465 kg)"
+        },
+        {
+          "label": "Finish (as modelled)",
+          "value": "Natural metal, aluminium-lacquered wings, olive drab anti-glare panel"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/North_American_P-51_Mustang",
+        "https://www.warbirdsresourcegroup.org/URG/p51mustang_specifications.html",
+        "https://airandspace.si.edu/collection-objects/north-american-p-51d-30-na-mustang/nasm_A19600300000",
+        "https://www.mustangsmustangs.com/p-51/variants/p51d",
+        "https://www.mustangsmustangs.com/p-51/specifications/",
+        "https://m-selig.ae.illinois.edu/ads/coord/p51droot.dat",
+        "https://m-selig.ae.illinois.edu/ads/coord/p51dtip.dat",
+        "https://www.key.aero/forum/historic-aviation/141825-p51-mustang-wings-painted-or-not"
+      ],
+      "modelling_notes": "Represents a P-51D-20-NA (straight dorsal fin fillet, K-14 gunsight, no rocket stubs) in late-1944 factory finish: bare aluminium fuselage and tail, wings filled and painted with aluminium lacquer, bare flaps, ailerons and gun-bay doors, olive drab anti-glare panel, black propeller blades with yellow tips. Only the national star-and-bar insignia are applied; unit codes, serials, nose art, stencils and squadron colours are deliberately omitted. Span, length, wing area, propeller diameter and the published parked height (4.08 m, tail down, one blade vertical) set the proportions and the ~10 deg three-point attitude; the wing uses the published P-51D root and tip ordinates, but fuselage sections, scoops, canopy, tail and undercarriage geometry are proportioned from photographs and general drawings, not factory drawings. The inner main-gear doors are shown drooped open as often seen on parked aircraft. Panel lines and fasteners are painted, not modelled; the engine is not modelled inside the cowling; the cockpit is simplified (painted instrument faces; no wiring, pedals or oxygen system).",
+      "muster_source": "src/assets/usa/p51d.asset.ts"
+    },
+    {
+      "id": "us-rifleman",
+      "name": "Rifleman (1944)",
+      "subtitle": "US Army infantry, M1 Garand",
+      "faction": "usa",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.5
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "Normandy, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "M1 rifle (M1 Garand)"
+        },
+        {
+          "label": "Uniform",
+          "value": "M1941 field jacket, wool trousers, M1938 leggings"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1941_field_jacket",
+        "https://www.wwiiimpressions.com/products/445",
+        "https://en.wikipedia.org/wiki/M1_helmet",
+        "https://www.iwm.org.uk/collections/item/object/30101008",
+        "https://www.wwiiimpressions.com/products/469b",
+        "https://en.wikipedia.org/wiki/U.S._Army_M1943_uniform",
+        "https://en.wikipedia.org/wiki/M1_Garand"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose per choice; cloth folds are procedural. Weapon and gear pieces are the project's own models (usa/weapons, usa/gear), worn in their low-detail mode.",
+      "muster_source": "src/assets/usa/rifleman.asset.ts"
+    },
+    {
+      "id": "us-squad-leader",
+      "name": "Squad Leader (1944)",
+      "subtitle": "US Army infantry, Thompson M1A1",
+      "faction": "usa",
+      "category": "Infantry",
+      "footprint_m": {
+        "w": 0.6,
+        "l": 0.6
+      },
+      "facts": [
+        {
+          "label": "Depicted",
+          "value": "Normandy, 1944"
+        },
+        {
+          "label": "Primary weapon",
+          "value": "Thompson M1A1 submachine gun"
+        },
+        {
+          "label": "Uniform",
+          "value": "M1941 field jacket, wool trousers, M1938 leggings"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/M1941_field_jacket",
+        "https://www.wwiiimpressions.com/products/445",
+        "https://en.wikipedia.org/wiki/M1_helmet",
+        "https://www.iwm.org.uk/collections/item/object/30101008",
+        "https://www.wwiiimpressions.com/products/469b",
+        "https://en.wikipedia.org/wiki/U.S._Army_M1943_uniform",
+        "https://en.wikipedia.org/wiki/Thompson_submachine_gun"
+      ],
+      "modelling_notes": "Figure, uniform and kit are simplified: one body type and face, one static pose; cloth folds are procedural. Weapon and gear pieces are the project's own models (usa/weapons, usa/gear), worn in their low-detail mode.",
+      "muster_source": "src/assets/usa/squad-leader.asset.ts"
+    },
+    {
+      "id": "us-thompson-m1a1",
+      "name": "Thompson M1A1",
+      "subtitle": "Submachine gun, .45 ACP",
+      "faction": "usa",
+      "category": "Weapons",
+      "footprint_m": {
+        "w": 0.14,
+        "l": 0.86
+      },
+      "facts": [
+        {
+          "label": "Standardized",
+          "value": "October 1942"
+        },
+        {
+          "label": "Calibre",
+          "value": ".45 ACP"
+        },
+        {
+          "label": "Action",
+          "value": "Blowback, selective fire"
+        },
+        {
+          "label": "Length",
+          "value": "810 mm"
+        },
+        {
+          "label": "Barrel",
+          "value": "267 mm (10.5 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "4.5 kg (empty)"
+        },
+        {
+          "label": "Feed",
+          "value": "20- or 30-round box magazine"
+        },
+        {
+          "label": "Produced",
+          "value": "539,143 (M1A1)"
+        }
+      ],
+      "references": [
+        "https://en.wikipedia.org/wiki/Thompson_submachine_gun",
+        "https://www.machinegunboards.com/forums/index.php?/topic/95-patched-sling-swivel-socket/",
+        "https://www.ima-usa.com/products/original-u-s-wwii-thompson-m1-m1a1-british-issue-anglicized-buttstock",
+        "https://www.apexgunparts.com/thompson-horizontal-foregrip-usgi-nos.html"
+      ],
+      "modelling_notes": "Represents a wartime M1A1 with Parkerized metal, walnut butt stock, pistol grip and horizontal fore-grip, a blued 30-round (or 20-round) box magazine and an olive-drab web sling on the US-pattern swivels under the fore-grip and under the butt. Overall and barrel length follow the published figures; receiver, frame, grip, stock and sights are proportioned from those and from parts descriptions (side cocking handle on the right, selector and safety levers on the left, fixed peep sight with protective wings). The action is shown closed (bolt forward); internal parts, markings and serial numbers are not modelled. On the display stand the sling is laid to the viewer side of the cradles.",
+      "muster_source": "src/assets/usa/thompson-m1a1.asset.ts"
+    },
+    {
+      "id": "us-willys-mb",
+      "name": "Willys MB",
+      "subtitle": "1/4-ton 4x4 truck (\"jeep\")",
+      "faction": "usa",
+      "category": "Vehicles",
+      "footprint_m": {
+        "w": 1.575,
+        "l": 3.37
+      },
+      "facts": [
+        {
+          "label": "Produced",
+          "value": "1941-1945"
+        },
+        {
+          "label": "Built",
+          "value": "Over 359,000 Willys MB and over 277,000 Ford GPW"
+        },
+        {
+          "label": "Crew",
+          "value": "2 operating, 5 persons including crew"
+        },
+        {
+          "label": "Engine",
+          "value": "Willys L134 \"Go Devil\", 2.2 L four-cylinder, 60 hp gross"
+        },
+        {
+          "label": "Drive",
+          "value": "4x4, 3-speed gearbox, 2-speed transfer case"
+        },
+        {
+          "label": "Length",
+          "value": "3.37 m (132 5/8 in)"
+        },
+        {
+          "label": "Width",
+          "value": "1.57 m (62 in)"
+        },
+        {
+          "label": "Height",
+          "value": "1.77 m top up, 1.32 m top down"
+        },
+        {
+          "label": "Wheelbase",
+          "value": "2.03 m (80 in)"
+        },
+        {
+          "label": "Track",
+          "value": "1.24 m (49 in)"
+        },
+        {
+          "label": "Weight",
+          "value": "1,113 kg road weight (2,453 lb)"
+        },
+        {
+          "label": "Tyres",
+          "value": "6.00-16 on 16 x 4.50E combat wheels"
+        },
+        {
+          "label": "Top speed",
+          "value": "105 km/h (65 mph)"
+        }
+      ],
+      "references": [
+        "https://archive.org/details/TM9-803 (TM 9-803, 1/4-ton 4x4 truck, War Department 1944)",
+        "https://archive.org/stream/TM9-803-nsia/TM9-803_djvu.txt",
+        "https://en.wikipedia.org/wiki/Willys_MB",
+        "https://www.jeepdatabase.com/willys-mb",
+        "https://www.willysjeepparts.com/Blackout_Lights.htm",
+        "https://wwiijeepparts.com/Archives/WWIIJeepTools.html",
+        "https://jeepvillage.com/en/windshield/1066-windshield-glass.html"
+      ],
+      "modelling_notes": "Wheelbase, length, width, heights, tread, ground clearance, tyre and wheel size, spring lengths and leaf counts follow TM 9-803 (1944); windscreen pane size follows reproduction glass data. Body heights, overhangs, panel shapes and fitting positions are estimated from photographs of preserved vehicles. Lamp layout follows TM 9-803 and parts references (sealed-beam headlamps behind the grille, blackout marker lamps on the grille below them, hooded blackout driving lamp on the left fender, combination tail lamps); the axe and shovel sit on the body left side, the fuel can at the rear left and the spare wheel at the rear right as listed for WWII vehicles, but their exact brackets are simplified. The engine compartment is closed: only the radiator, the underside of the engine, gearbox, transfer case, propeller shafts and exhaust are modelled. The steering-wheel spoke pattern, instrument layout and data plates are approximated; the non-directional tread is a simplified bar pattern without sidewall lettering. Wiring, brake and fuel lines, the fuel tank under the driver seat and the side curtains are not modelled. The canvas top is shown folded and strapped on the folded bows. The only marking is the optional white hood star; registration numbers and unit markings are omitted.",
+      "muster_source": "src/assets/usa/willys-mb.asset.ts"
+    }
+  ]
+}

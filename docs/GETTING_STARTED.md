@@ -49,6 +49,20 @@ $blender = 'C:\Program Files\Blender Foundation\Blender 5.2\blender.exe'
 
 The scripts update `examples/khepri/qa/`. These are geometry/export checks, not runtime or animation acceptance.
 
+## Review sheet
+
+`review` renders an exported GLB in the pinned Three.js viewer from several angles, measures it, and checks placement and budgets. It needs the release runtime (`.tooling/release-runtime.json`).
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 review --input assets/ps1_ww2_pump_shotgun_01/ps1_ww2_pump_shotgun_01.glb --output tmp/factory/review/shotgun.png --profile ps1_ww2_frontline --category weapon --json
+```
+
+- `--views` picks angles from `q-front, q-front-r, front, left, right, rear, q-rear, q-rear-l, top, bottom, ground, high` (default `q-front,left,front,q-rear,top,ground`).
+- `--scale-figure` adds a 1.80 m reference figure.
+- `--profile` and `--category` take the triangle band and placement tolerances from the profile. `--expect file.json` adds or overrides keys: `triangles`, `max_draw_calls`, `dimensions` (`width` X, `height` Y, `length` Z in metres), `dimension_tolerance`, `ground_tolerance`, `centre_tolerance` (`null` disables centring).
+
+Conventions: metres at 1:1 scale, +Y up, +Z forward, origin on the ground at the footprint centre. The command exits 1 when a check fails, and the report lists each failure (for example `not_grounded`, `not_centred`, `triangles_above_max`). Real-world dimensions for WW2 subjects are in `profiles/ps1_ww2_frontline/references/muster-ww2-reference-data.json`. Treat them as unverified secondary data. The view angles, scale figure and conventions are adapted from [Muster](https://github.com/Kenton-GMI/muster-ww2) (MIT).
+
 ## Continue development
 
 Read `AGENTS.md` and `knowledge/START_HERE.md`. The prior WWII project state is preserved at `knowledge/project-summaries/pre-0.5.0-active-project.json`. KHEPRI's checks do not certify that separate art pipeline.

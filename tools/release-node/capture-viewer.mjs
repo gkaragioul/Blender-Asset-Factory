@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 
-const [, , url, screenshotPath, reportPath, browserPath, nodeModules] = process.argv;
+const [, , url, screenshotPath, reportPath, browserPath, nodeModules, viewportWidth, viewportHeight] = process.argv;
 if (![url, screenshotPath, reportPath, browserPath, nodeModules].every(Boolean)) {
   process.stderr.write('usage: capture-viewer.mjs <url> <screenshot> <report> <browser> <node_modules>\n');
   process.exit(2);
@@ -26,7 +26,7 @@ try {
     args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--enable-webgl', '--disable-gpu-sandbox'],
   });
   checkpoint('browser_launched');
-  const page = await browser.newPage({ viewport: { width: 960, height: 540 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: Number(viewportWidth) || 960, height: Number(viewportHeight) || 540 }, deviceScaleFactor: 1 });
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   page.on('pageerror', (error) => consoleErrors.push(String(error)));
   page.on('response', (response) => { if (response.status() >= 400) consoleErrors.push(`HTTP ${response.status()} ${response.url()}`); });

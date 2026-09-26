@@ -92,6 +92,8 @@ Local runtimes, credentials, model weights, backups, and generated job directori
 - **Code** (Python, PowerShell, JavaScript, schemas, specifications, tests, and documentation) is released under the [MIT License](LICENSE).
 - **Example assets** (the `.blend`, `.glb`, and `.png` files in `examples/` and `assets/`, and the KHEPRI concept blueprint and its prompt) are released under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). See [LICENSE-ASSETS.md](LICENSE-ASSETS.md) for the list, the suggested credit line, and notes on the AI-generated blueprint.
 
+- **Reference data** in `profiles/ps1_ww2_frontline/references/` is catalog metadata from [Muster](https://github.com/Kenton-GMI/muster-ww2), used under its MIT License; see [THIRD_PARTY_NOTICES.md](profiles/ps1_ww2_frontline/references/THIRD_PARTY_NOTICES.md).
+
 Third-party tools, models, and references named in the documentation are not included and keep their own licences.
 
 ## Disclaimer

@@ -10,6 +10,15 @@
     "environment_triangles": [300, 1500],
     "silhouette_first": true
   },
+  "placement": {
+    "units": "metres, real 1:1 scale",
+    "up_axis": "+Y",
+    "forward_axis": "+Z",
+    "origin": "on the ground (y = 0) at the centre of the footprint",
+    "ground_tolerance_m": 0.0005,
+    "centre_tolerance_m": 0.005,
+    "dimension_tolerance": 0.05
+  },
   "textures": {
     "filtering": "nearest",
     "base_color_sizes": [128, 256],
