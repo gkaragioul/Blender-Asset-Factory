@@ -1,5 +1,11 @@
 # Blender Asset Factory
 
+<p align="center">
+  <a href="https://buymeacoffee.com/gkaragioul"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a><br>
+  <sub>Free to download and use. Tips are voluntary and don't buy support or a warranty.</sub>
+</p>
+
+
 **Development release · 0.5.0**
 
 A local-first toolchain for creating and checking Blender assets for Three.js projects. Blender is the editable source of truth; the factory adds specifications, validation, separate optimized exports, runtime previews, and durable production knowledge.
