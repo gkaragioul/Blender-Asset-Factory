@@ -9,5 +9,5 @@
   "prior_project_state": "knowledge/project-summaries/pre-0.5.0-active-project.json",
   "project_id": "blender_asset_factory_0_5_0",
   "status": "release_candidate_verified",
-  "summary": "Private 0.5.0 release packages the existing factory history and KHEPRI revision 4. Blender fitting checks and GLB round-trip verification pass; the full factory regression suite and KHEPRI runtime acceptance were not run for this packaging release."
+  "summary": "The 0.5.0 release packages the existing factory history and KHEPRI revision 4. Blender fitting checks and GLB round-trip verification pass; the full factory regression suite and KHEPRI runtime acceptance were not run for this packaging release."
 }
