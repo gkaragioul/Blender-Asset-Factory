@@ -15,7 +15,7 @@
   "properties": {
     "schema_version": {"const": 1},
     "root": {"const": "."},
-    "model_root": {"const": "G:/LLMs"},
+    "model_root": {"type": "string", "minLength": 1},
     "tooling_root": {"const": ".tooling"},
     "reports_root": {"const": "reports"},
     "bridge_url": {"const": "http://127.0.0.1:9876"},

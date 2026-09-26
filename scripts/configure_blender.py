@@ -4,7 +4,8 @@ import bpy
 
 
 ADDON_MODULE = "blender_mcp_bridge"
-FACTORY_ROOT = Path(r"G:\DevWork\GameDev\BlenderAssetFactory").resolve()
+# The factory root is the repository checkout that contains this script.
+FACTORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:

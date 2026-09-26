@@ -14,7 +14,7 @@ Preserve builder identity enforcement, canonical/worktree path restrictions, rec
 
 ## Implementation
 
-Use test-first changes for factory behavior. Preserve unrelated dirty work. Keep all factory-owned writable paths on `G:` and model weights under `G:\LLMs`.
+Use test-first changes for factory behavior. Preserve unrelated dirty work. Keep all factory-owned writable paths inside the factory root (the repository checkout, or a trusted worktree under `.worktrees/`) and model weights under the model root set by `model_root` in `factory/config.json` (default `models/`). Pass `-ModelRoot` to `bootstrap/setup.ps1` only together with the same `model_root` value.
 
 ## Verification
 

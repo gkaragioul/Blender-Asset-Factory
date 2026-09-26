@@ -1,8 +1,21 @@
-param([switch]$DryRun, [switch]$SkipRelease)
+param(
+    [switch]$DryRun,
+    [switch]$SkipRelease,
+    # Folder for model weights. Defaults to model_root in factory\config.json;
+    # a relative value is resolved from the repository root.
+    [string]$ModelRoot
+)
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$modelRoot = 'G:\LLMs'
+if ([string]::IsNullOrWhiteSpace($ModelRoot)) {
+    $factoryConfig = Get-Content -Raw (Join-Path $root 'factory\config.json') | ConvertFrom-Json
+    $ModelRoot = $factoryConfig.model_root
+}
+if (-not [IO.Path]::IsPathRooted($ModelRoot)) {
+    $ModelRoot = Join-Path $root $ModelRoot
+}
+$modelRoot = [IO.Path]::GetFullPath($ModelRoot)
 $tooling = Join-Path $root '.tooling'
 $uvDir = Join-Path $tooling 'uv'
 $pythonDir = Join-Path $tooling 'python'
@@ -27,9 +40,21 @@ if ($DryRun) {
     exit 0
 }
 
+function Test-OwnedPath([string]$Path) {
+    $full = [IO.Path]::GetFullPath($Path).TrimEnd('\')
+    foreach ($owner in @($root, $modelRoot)) {
+        $base = [IO.Path]::GetFullPath($owner).TrimEnd('\')
+        if ($full.Equals($base, [StringComparison]::OrdinalIgnoreCase) -or
+            $full.StartsWith($base + '\', [StringComparison]::OrdinalIgnoreCase)) {
+            return $true
+        }
+    }
+    return $false
+}
+
 foreach ($target in @($tooling, $uvDir, $pythonDir, $cacheDir, $modelRoot, (Join-Path $modelRoot 'manifests'))) {
-    if (-not $target.StartsWith('G:\', [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Refusing non-G target: $target"
+    if (-not (Test-OwnedPath $target)) {
+        throw "Refusing target outside the factory root and model root: $target"
     }
     New-Item -ItemType Directory -Force -Path $target | Out-Null
 }

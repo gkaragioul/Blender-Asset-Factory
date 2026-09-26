@@ -36,7 +36,7 @@ class ContinuityTest(unittest.TestCase):
         os.environ.get("BAF_VERIFY_CHILD") == "1",
         "avoid recursive verify child",
     )
-    def test_verify_command_records_success_on_g(self):
+    def test_verify_command_records_success_under_root(self):
         completed = subprocess.run(
             [sys.executable, "-m", "factory", "verify", "--json"],
             cwd=ROOT,
@@ -46,9 +46,7 @@ class ContinuityTest(unittest.TestCase):
         )
         result = json.loads(completed.stdout)
         self.assertTrue(result["ok"])
-        self.assertEqual(
-            Path(result["data"]["report_path"]).drive.upper(), "G:"
-        )
+        self.assertIn(ROOT, Path(result["data"]["report_path"]).resolve().parents)
 
 
 if __name__ == "__main__":

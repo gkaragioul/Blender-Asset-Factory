@@ -1,3 +1,8 @@
-G:\DevWork\GameDev\BlenderAssetFactory
+The factory root is the folder that contains this file (the repository checkout).
 
 This is the canonical parent folder for all Blender projects and generated assets.
+Tooling is installed under .tooling/, reports go to reports/, and model weights go to
+the model root set by "model_root" in factory/config.json (default: models/).
+
+Older design documents show the original author's layout (G:\DevWork\GameDev\BlenderAssetFactory
+and G:\LLMs). Treat those paths as examples; the factory no longer requires drive G:.

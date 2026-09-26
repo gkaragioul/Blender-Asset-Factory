@@ -5,7 +5,9 @@ from pathlib import Path
 import bpy
 
 
-PROJECT_DIR = Path(r"G:\DevWork\GameDev\BlenderAssetFactory\projects\PS1_Asset_Starter")
+# The factory root is the repository checkout that contains this script.
+FACTORY_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_DIR = FACTORY_ROOT / "projects" / "PS1_Asset_Starter"
 PROJECT_FILE = PROJECT_DIR / "PS1_Asset_Starter.blend"
 
 bpy.ops.object.select_all(action="SELECT")
@@ -23,8 +25,8 @@ for name in ("ASSET", "COLLISION", "PREVIEW", "REFERENCES"):
         collection = bpy.data.collections.new(name)
         scene.collection.children.link(collection)
 
-scene["asset_factory_root"] = r"G:\DevWork\GameDev\BlenderAssetFactory"
-scene["assets_directory"] = r"G:\DevWork\GameDev\BlenderAssetFactory\assets"
+scene["asset_factory_root"] = str(FACTORY_ROOT)
+scene["assets_directory"] = str(FACTORY_ROOT / "assets")
 scene["target_style"] = "PS1-era optimized Three.js"
 
 PROJECT_DIR.mkdir(parents=True, exist_ok=True)

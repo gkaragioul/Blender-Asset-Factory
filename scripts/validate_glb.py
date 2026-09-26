@@ -1,9 +1,12 @@
 """Import the generated GLB into a clean Blender process as a portability check."""
 
+from pathlib import Path
+
 import bpy
 
 
-GLB = r"G:\DevWork\GameDev\BlenderAssetFactory\assets\ps1_wood_crate_01\ps1_wood_crate_01.glb"
+FACTORY_ROOT = Path(__file__).resolve().parents[1]
+GLB = str(FACTORY_ROOT / "assets" / "ps1_wood_crate_01" / "ps1_wood_crate_01.glb")
 
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.object.delete(use_global=False)

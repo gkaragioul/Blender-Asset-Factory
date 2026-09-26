@@ -13,5 +13,5 @@
     "wood_light": [0.48, 0.24, 0.09, 1.0],
     "ground": [0.035, 0.04, 0.05, 1.0]
   },
-  "output_directory": "G:/DevWork/GameDev/BlenderAssetFactory/assets"
+  "output_directory": "assets"
 }

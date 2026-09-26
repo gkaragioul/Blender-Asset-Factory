@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import unittest
 from pathlib import Path
@@ -7,8 +8,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _inside_root(path: str) -> bool:
+    child = os.path.normcase(os.path.abspath(path))
+    parent = os.path.normcase(os.path.abspath(ROOT))
+    return child.startswith(parent.rstrip("\\/") + os.sep)
+
+
 class ReleaseBootstrapTest(unittest.TestCase):
-    def test_release_setup_dry_run_is_pinned_and_stays_on_g(self):
+    def test_release_setup_dry_run_is_pinned_and_stays_under_root(self):
         completed = subprocess.run(
             [
                 "powershell.exe",
@@ -33,7 +40,7 @@ class ReleaseBootstrapTest(unittest.TestCase):
             "three": "0.185.1",
         })
         self.assertTrue(result["targets"])
-        self.assertTrue(all(Path(path).drive.upper() == "G:" for path in result["targets"]))
+        self.assertTrue(all(_inside_root(path) for path in result["targets"]))
 
     def test_manifest_pins_download_checksums_and_licenses(self):
         manifest = json.loads((ROOT / "tools" / "manifests" / "release-toolchain.json").read_text(encoding="utf-8"))

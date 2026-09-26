@@ -31,10 +31,11 @@ $result = [ordered]@{
     targets = $targets
 }
 
+$rootPrefix = [IO.Path]::GetFullPath($root).TrimEnd('\') + '\'
 foreach ($target in $targets) {
     $full = [IO.Path]::GetFullPath($target)
-    if (-not $full.StartsWith('G:\', [StringComparison]::OrdinalIgnoreCase)) {
-        throw "Refusing non-G target: $full"
+    if (-not $full.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing target outside the factory root: $full"
     }
 }
 if ($DryRun) {
