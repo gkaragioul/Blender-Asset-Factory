@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -202,8 +203,11 @@ def apply_ps1_texture(repo_root: Path, structural: list[bpy.types.Object]) -> Pa
     output.mkdir(parents=True, exist_ok=True)
     prototype_atlas = repo_root / PROTOTYPE_ATLAS
     ps1_texture_path = output / f"{ASSET_ID}_texture_{TEXTURE_SIZE}.png"
+    # Blender's bundled Python lacks Pillow, so the texture step runs in an
+    # external interpreter: BAF_TEXTURE_PYTHON, or python3 on PATH.
+    texture_python = os.environ.get("BAF_TEXTURE_PYTHON", "python3")
     subprocess.run(
-        ["/home/<user>/.hermes/hermes-agent/venv/bin/python3", str(repo_root / "scripts" / "prepare_ps1_over_under_texture.py"), str(prototype_atlas), str(ps1_texture_path)],
+        [texture_python, str(repo_root / "scripts" / "prepare_ps1_over_under_texture.py"), str(prototype_atlas), str(ps1_texture_path)],
         check=True,
         cwd=repo_root,
     )

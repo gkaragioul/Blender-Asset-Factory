@@ -5,13 +5,18 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+from pathlib import Path
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 
-SERVER = r"%LOCALAPPDATA%\blender-mcp-server\.venv\Scripts\blender-mcp-server.exe"
-BLENDER = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
+FACTORY_ROOT = Path(__file__).resolve().parents[1]
+# Path to the blender-mcp-server executable; defaults to the one on PATH.
+SERVER = os.environ.get("BLENDER_MCP_SERVER", "blender-mcp-server")
+BLENDER = os.environ.get(
+    "BLENDER_BIN", r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
+)
 
 
 async def main() -> None:
@@ -26,7 +31,7 @@ async def main() -> None:
             security = await session.call_tool(
                 "blender_python_exec",
                 {
-                    "script_path": r"G:\DevWork\GameDev\BlenderAssetFactory\scripts\mcp_root_probe.py",
+                    "script_path": str(FACTORY_ROOT / "scripts" / "mcp_root_probe.py"),
                     "args": {},
                     "timeout_seconds": 30,
                 },
