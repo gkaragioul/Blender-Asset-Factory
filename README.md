@@ -1,6 +1,6 @@
 # Blender Asset Factory
 
-**Private development workspace · 0.5.0**
+**Development release · 0.5.0**
 
 A local-first toolchain for creating and checking Blender assets for Three.js projects. Blender is the editable source of truth; the factory adds specifications, validation, separate optimized exports, runtime previews, and durable production knowledge.
 
@@ -29,9 +29,23 @@ For the factory on Windows, run from the repository root:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\bootstrap\setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 doctor --json
 powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 resume --json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 verify --json
 ```
 
 Bootstrap downloads local tooling. Model weights and optional creative applications are separate installations. Read [Getting started](docs/GETTING_STARTED.md) before production work.
+
+## Where files go
+
+The factory root is the repository checkout. `factory/config.json` sets the other locations:
+
+| Setting | Default | Contents |
+| --- | --- | --- |
+| `tooling_root` | `.tooling/` | uv, Python, Node.js, gltfpack, and pinned npm packages installed by bootstrap |
+| `reports_root` | `reports/` | Doctor, verification, validation, and preview reports |
+| `model_root` | `models/` | Model weights (not bundled) |
+| `blender_candidates` | Standard Windows and Linux locations | Where the factory looks for Blender |
+
+To keep model weights elsewhere, set `model_root` to an absolute path before running bootstrap, or pass `-ModelRoot <path>` to `bootstrap\setup.ps1` and set the same value in `factory/config.json`. Bootstrap refuses to write anywhere outside the factory root and the model root. Older design documents in `docs/superpowers/` and some generated manifests still show the original author's `G:\` layout; treat those paths as examples.
 
 ## Release status
 
@@ -63,4 +77,29 @@ examples/khepri/     Rover source, export, reference, renders, QA
 
 Keep source files separate from optimized derivatives. The factory HTTP bridge and the separate Blender MCP add-on use different protocols; see the setup guide.
 
-Local runtimes, credentials, model weights, backups, and generated job directories are excluded from publication. This repository is private; this release grants no open-source license.
+Local runtimes, credentials, model weights, backups, and generated job directories are not part of the repository.
+
+## What it touches
+
+- **Downloads and runs tools.** `bootstrap\setup.ps1` downloads the uv installer script from `astral.sh` and runs it, then installs Python into `.tooling/`. `bootstrap\setup-release.ps1` downloads Node.js and gltfpack (checked against the SHA-256 values in `tools/manifests/release-toolchain.json`) and runs `npm ci` with install scripts disabled for gltf-validator, playwright-core and three.
+- **Starts other programs.** Factory commands run Blender in the background with the factory's Python scripts, run gltfpack and the glTF validator, and start Chrome or Edge headless through playwright-core with a temporary local web server on `127.0.0.1` for previews and contact sheets. `doctor` checks the HTTP bridge on `127.0.0.1:9876`.
+- **Writes files** inside the checkout: `.tooling/`, `reports/`, `tmp/`, `projects/`, `products/`, `assets/`, and the state files in `knowledge/`. Bootstrap also creates the model root. Publication moves each finished release package into place in one step, and failed runs delete their own partial output.
+- **Changes Blender settings** only when you run `scripts/configure_blender.py`: it enables the `blender_mcp_bridge` add-on, sets its approved script folder to this checkout, and saves your Blender preferences.
+- **Paid API (optional).** `scripts/generate_benchmark_concepts.py` reads `BFL_API_KEY` and sends prompts and reference image URLs to the Black Forest Labs API, which bills your account.
+
+## License
+
+- **Code** (Python, PowerShell, JavaScript, schemas, specifications, tests, and documentation) is released under the [MIT License](LICENSE).
+- **Example assets** (the `.blend`, `.glb`, and `.png` files in `examples/` and `assets/`, and the KHEPRI concept blueprint and its prompt) are released under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). See [LICENSE-ASSETS.md](LICENSE-ASSETS.md) for the list, the suggested credit line, and notes on the AI-generated blueprint.
+
+Third-party tools, models, and references named in the documentation are not included and keep their own licences.
+
+## Disclaimer
+
+This software and the example assets are provided "as is", without warranty of any kind, under the MIT License and CC BY 4.0 respectively. Use them at your own risk.
+
+- Bootstrap downloads and runs software from the internet, including an installer script that is not checksum-verified, and runs PowerShell with the execution policy bypassed.
+- The factory runs Python code inside Blender and starts a headless browser. Run it only on specifications, scripts, and `.blend` files you trust.
+- Factory commands create, replace, and delete files inside the checkout, and `scripts/configure_blender.py` changes your Blender preferences. Keep backups of work you care about.
+- Optional providers can send prompts and image URLs to paid third-party services when you supply an API key.
+- The example assets are development assets; they have not passed runtime, LOD, or rigging validation.

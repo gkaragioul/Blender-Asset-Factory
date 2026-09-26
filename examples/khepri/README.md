@@ -22,3 +22,5 @@ Revision 4 repairs floating roof/mast components, simplifies hull trim and the a
 This is a development asset. Three.js runtime QA, texture baking, LODs, and an animation-ready rig are not yet validated. The generated blueprint contains inconsistent projections.
 
 See [verification commands](../../docs/GETTING_STARTED.md#recheck-khepri).
+
+The model, export, renders, and blueprint are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the verification scripts are MIT. See [LICENSE-ASSETS.md](../../LICENSE-ASSETS.md).

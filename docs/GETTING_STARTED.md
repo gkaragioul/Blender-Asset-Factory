@@ -18,7 +18,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\factory.ps1 resume --json
 
 Tooling is installed under `.tooling/`. Model weights, ComfyUI, ArmorPaint, and Material Maker are not bundled. Review `factory/config.json` before choosing storage locations.
 
-The current configuration resolves root and tooling paths relative to the checkout. Some inherited operator documents, `AGENTS.md`, and `FACTORY_ROOT.txt` describe the original G: production layout. These restrictions were not rewritten by this documentation release. Reconcile the trusted checkout/storage contract before production publication or running older absolute-path commands.
+The configuration resolves the root, tooling, and report paths relative to the checkout, so the repository can live on any drive. Model weights go to `model_root` in `factory/config.json` (default `models/` inside the checkout). To use another folder, set `model_root` to an absolute path before running bootstrap, or pass the same path to bootstrap with `-ModelRoot`:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\bootstrap\setup.ps1 -ModelRoot 'D:\Models'
+```
+
+Bootstrap refuses to write outside the factory root and the model root. Some inherited design documents and generated manifests still show the original G: production layout; treat those absolute paths as examples.
 
 A fresh clone needs bootstrap before its doctor can pass. The publication checkout was not independently bootstrapped for this release.
 

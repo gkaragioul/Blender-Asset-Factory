@@ -1,6 +1,6 @@
 # Blender Asset Factory — project home
 
-**0.5.0 · Private development release**
+**0.5.0 · Development release**
 
 Build in Blender. Check geometry. Preserve the source. Prepare a separate runtime export.
 
@@ -27,4 +27,4 @@ Roof equipment now has seated bases, the sensor head connects to its mast, side 
 
 Blender geometry and export checks pass. Runtime optimization and Three.js acceptance remain the next validation stage.
 
-This is a Markdown landing page inside the private repository. Public GitHub Pages hosting is not enabled.
+This is a Markdown landing page inside the repository. GitHub Pages hosting is not enabled.
