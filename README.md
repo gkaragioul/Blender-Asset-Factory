@@ -1,5 +1,15 @@
 # Blender Asset Factory
 
+## Consolidation into Talos Suite
+
+Blender Asset Factory is becoming the **Asset Factory** workspace within **Talos Suite**, alongside its Three.js animation tools. Talos Suite is private and JavaScript-first; Blender and Python remain part of the asset-production pipeline.
+
+The combined app is in local development and its code migration has not yet been pushed. This repository is retained temporarily so its source history, examples and release downloads remain available until preservation is verified. Existing licences are unchanged.
+
+[Current Talos Suite project page](https://github.com/gkaragioul/gkaragioul/blob/main/TALOS_SUITE.md)
+
+---
+
 <p align="center">
   <a href="https://buymeacoffee.com/gkaragioul"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a><br>
   <sub>Free to download and use. Tips are voluntary and don't buy support or a warranty.</sub>
